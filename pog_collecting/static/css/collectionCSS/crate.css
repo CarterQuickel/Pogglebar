@@ -12,6 +12,7 @@
     /* Thick bottom border shadow for weight */
     position: relative;
     top: 0;
+    transition: all 0.1s ease;
 }
 
 .crate:disabled {
@@ -73,7 +74,7 @@
 }
 
 #openCratesBtn {
-    background-color: #ffffff;
+    background-color: #ecdcdc;
     border: transparent;
     position: fixed;
     border-radius: 100px;
@@ -87,9 +88,35 @@
     scale: 0.6;
     box-shadow: 0 0 5px black;
     overflow: visible;
+    transition: all 0.1s ease;
 }
 
 #openCratesBtn:hover {
+    background-color: #d4bebe;
+    scale: 0.7;
+}
+
+#openCratesBtn:active {
+    scale: 0.65;
+}
+
+#crate1_b5:disabled,
+#crate1_b10:disabled,
+#crate2_b5:disabled,
+#crate2_b10:disabled,
+#crate3_b5:disabled,
+#crate3_b10:disabled,
+#crate4_b5:disabled,
+#crate4_b10:disabled,
+#crate5_b5:disabled,
+#crate5_b10:disabled,
+#crate1:disabled,
+#crate2:disabled,
+#crate3:disabled,
+#crate4:disabled,
+#crate5:disabled {
+    pointer-events: none;
+    cursor: not-allowed;
     background-color: #a3a3a3;
 }
 
@@ -113,16 +140,8 @@
     background-color: rgb(245, 88, 88);
 }
 
-#crate1_b5:disabled {
-    background-color: #a3a3a3;
-}
-
 #crate1_b10 {
     background-color: rgb(245, 88, 88);
-}
-
-#crate1_b10:disabled {
-    background-color: #a3a3a3;
 }
 
 /* crate 1 */
@@ -130,24 +149,12 @@
     background-color: rgb(245, 88, 88);
 }
 
-#crate1:disabled {
-    background-color: #a3a3a3;
-}
-
 #crate2_b5 {
     background-color: rgb(250, 250, 114);
 }
 
-#crate2_b5:disabled {
-    background-color: #a3a3a3;
-}
-
 #crate2_b10 {
     background-color: rgb(250, 250, 114);
-}
-
-#crate2_b10:disabled {
-    background-color: #a3a3a3;
 }
 
 /* crate 2 */
@@ -155,24 +162,12 @@
     background-color: rgb(250, 250, 114);
 }
 
-#crate2:disabled {
-    background-color: #a3a3a3;
-}
-
 #crate3_b5 {
     background-color: rgb(128, 255, 128);
 }
 
-#crate3_b5:disabled {
-    background-color: #a3a3a3;
-}
-
 #crate3_b10 {
     background-color: rgb(128, 255, 128);
-}
-
-#crate3_b10:disabled {
-    background-color: #a3a3a3;
 }
 
 /* crate 3 */
@@ -180,24 +175,12 @@
     background-color: rgb(128, 255, 128);
 }
 
-#crate3:disabled {
-    background-color: #a3a3a3;
-}
-
 #crate4_b5 {
     background-color: lightskyblue;
 }
 
-#crate4_b5:disabled {
-    background-color: #a3a3a3;
-}
-
 #crate4_b10 {
     background-color: lightskyblue;
-}
-
-#crate4_b10:disabled {
-    background-color: #a3a3a3;
 }
 
 /* crate 4 */
@@ -205,31 +188,15 @@
     background-color: lightskyblue;
 }
 
-#crate4:disabled {
-    background-color: #a3a3a3;
-}
-
 #crate5_b5 {
     background-color: rgb(219, 143, 255);
-}
-
-#crate5_b5:disabled {
-    background-color: #a3a3a3;
 }
 
 #crate5_b10 {
     background-color: rgb(219, 143, 255);
 }
 
-#crate5_b10:disabled {
-    background-color: #a3a3a3;
-}
-
 /* crate 5 */
 #crate5 {
     background-color: rgb(219, 143, 255);
-}
-
-#crate5:disabled {
-    background-color: #a3a3a3;
 }

@@ -111,11 +111,17 @@ function trade(id, locked) {
     document.getElementById("descPanel").innerHTML = "";
 }
 
+// color key toggle
 document.getElementById("colors").addEventListener("click", () => {
     const colorKey = document.getElementById("colorKey")
     const isVisible = colorKey.style.display === "flex";
     colorKey.style.display = isVisible ? "none" : "flex";
 })
+
+//report
+document.getElementById("help").addEventListener("click", () => {
+    window.open("https://github.com/CarterQuickel/Pogglebar/issues", "_blank");
+});
 
 // number abbreviation function
 function abbreviateNumber(value) {

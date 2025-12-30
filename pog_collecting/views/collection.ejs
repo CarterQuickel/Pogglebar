@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="../static/css/collectionCSS/settings.css">
     <link rel="stylesheet" href="../static/css/collectionCSS/tooltip.css">
     <link rel="stylesheet" href="../static/css/collectionCSS/banner.css">
-    <link rel="stylesheet" href="../static/css/collectionCSS/help.css">
     <link rel="stylesheet" href="../static/css/collectionCSS/binder.css">
 </head>
 
@@ -56,15 +55,6 @@
             <button id="closeBinder">Close</button>
         </div>
     </div>
-    <!--How to Play-->
-    <div id="helpBanner" style="display:none;">
-        <div class="helpCont">
-            <h1 style="font-size: 60px; margin-top: -10px;">HOW TO PLAY</h1>
-            <p style="margin-top: -50px">Basic Rules for Pogglebar</p>
-            <div id="htpDiv"></div>
-            <button id="closeHelp">Close</button>
-        </div>
-    </div>
     <!--Profile Pic Container-->
     <div id="pfpChanger">
         <h3>Choose your Profile Picture</h3>
@@ -96,8 +86,6 @@
         </div>
         <div style="right: 0; top: 0;" class="rightstuff">
             <button id="useWish">Wish (0/7)</button>
-            <img id="shopBtn" class="imgbtn" title="Shop" src="../static/icons/buttons_main/shop.png" width="40"
-                height="40"></img>
             <img src="../static/icons/buttons_main/chat.png" title="Chatroom" width="40" height="40" id="chatRoomButton"
                 class="imgbtn">
             <img src="../static/icons/buttons_main/patches.png" title="Patch Notes" width="40" height="40"
@@ -108,9 +96,9 @@
                 id="leaderboardButton" class="imgbtn">
             <div class="verticalL"></div>
             <img id="darkmode" class="imgbtn" src="../static/icons/buttons_main/sun.png" width="40" height="40"
-                title="Mode">
+                title="Color Mode">
             <img id="help" class="imgbtn" src="../static/icons/buttons_main/help.png" width="40" height="40"
-                title="How to Play">
+                title="Report an Issue">
         </div>
     </div>
     <div id="centerlayout" style="text-align: center;">
@@ -182,6 +170,7 @@
             <div id="settings_tools_btns">
                 <img src="../static/icons/buttons_main/binder.png" title="View Collection" width="40" height="40" class="tools" id="binder">
                 <img src="../static/icons/buttons_main/color_key.png" title="View Color Key" width="40" height="40" class="tools" id="colors">
+                <img src="../static/icons/buttons_main/shop.png" title="View Shop" width="40" height="40" class="tools" id="shopBtn">
             </div>
         </div>
         <img id="openCratesBtn" src="../static/icons/buttons_main/crate.png" width="30" height="30" title="Pog Crates">
@@ -321,7 +310,6 @@
 <script src="../static/js/collectionJS/sellitem.js"></script>
 <script src="../static/js/collectionJS/stuffWork.js"></script>
 <!--as long as they aren't dependent on each other, there is no needed order-->
-<script src="../static/js/collectionJS/howtoplay.js"></script>
 <script src="../static/js/collectionJS/levelup.js"></script>
 <script src="../static/js/collectionJS/income.js"></script>
 <script src="../static/js/collectionJS/merge.js"></script>

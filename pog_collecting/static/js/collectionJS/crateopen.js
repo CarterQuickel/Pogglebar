@@ -692,6 +692,7 @@ function addPogToInventory(pogResult) {
     }
 
     //add pog to inventory
+    document.getElementById("descPanel").innerHTML = "";
     inventory.push(pogResult);
 
     // XP gain

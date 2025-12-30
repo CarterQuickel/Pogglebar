@@ -10,6 +10,7 @@ document.getElementById("inventory").addEventListener("click", (e) => {
     selectedID = item.id;
     refreshInventory();
     viewDesc(
+        index,
         item.name,
         item.locked,
         item.rarity,
@@ -24,11 +25,11 @@ document.getElementById("inventory").addEventListener("click", (e) => {
 });
 
 //might use pogid and their color and creator down the line, unsure yet
-function viewDesc(name, locked, rarity, id, pogid, color, creator, desc, income, value) {
+function viewDesc(index, name, locked, rarity, id, pogid, color, creator, desc, income, value) {
     const panel = document.getElementById("descPanel");
     const ab_value = abbreviateNumber(value);
     panel.innerHTML = `
-    <h3 id="headerName">${name}</h3>
+    <h3 id="headerName">(${parseInt(index) + 1}) ${name}</h3>
     <div id="money-info">
         <strong class="moneytxt">$${abbreviateNumber(Math.round(income * ((window.perNameBonus && window.perNameBonus[name])) || 1))}/s</strong><br>
         <strong class="moneytxt">$${ab_value}</strong><br>
