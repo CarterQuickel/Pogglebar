@@ -2,7 +2,7 @@
 setInterval(update, 100);
 function update() {
     // update inventory size text
-    document.getElementById("invTxt").innerHTML = `${inventory.length}/${Isize} Slots`
+    document.getElementById("space").innerHTML = `${inventory.length}/${Isize}`;
 
     // update XP Txt
     document.getElementById("XPTxt").innerText = `Level ${level}`;
@@ -49,9 +49,9 @@ function update() {
 
     // change inventory text color if full
     if (inventory.length >= Isize) {
-        document.getElementById("invTxt").style.color = "red";
+        document.getElementById("space").style.color = "red";
     } else {
-        document.getElementById("invTxt").style.color = lightMode ? "black" : "white";
+        document.getElementById("space").style.color = "#ecdcdc";
     }
 }
 

@@ -2,9 +2,7 @@ body {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin-top: 80px;
     user-select: none;
-    overflow: hidden;
     color: white;
-    transition: all 0.1s ease;
 }
 
 h1 {

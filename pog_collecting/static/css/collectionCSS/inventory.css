@@ -1,3 +1,13 @@
+#invcont {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+    margin: 8px auto;
+}
+
 #inventory {
     background-color: #33122e;
     border-radius: 6px;
@@ -14,7 +24,22 @@
     flex: 1;
     overflow-x: hidden;
     transition: all 0.1s ease;
-    margin: 8px auto;
+}
+
+#space {
+    position: absolute;
+    top: 15px;
+    text-align: left;
+    left: 0;
+    transform: scale(1.4);
+    transform-origin: left center;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 99;
 }
 
 #stats {
@@ -137,10 +162,10 @@
 }
 
 .item.highlight {
-  outline: 3px solid white;
-  outline-offset: -3px;
-  border-radius: 300px;
-  box-shadow: 0 0 20px rgba(255,255,255);
+    outline: 3px solid white;
+    outline-offset: -3px;
+    border-radius: 300px;
+    box-shadow: 0 0 20px rgba(255, 255, 255);
 }
 
 .item.locked {
