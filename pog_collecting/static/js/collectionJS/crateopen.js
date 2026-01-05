@@ -55,7 +55,7 @@ function calculatePogResult(cost, index) {
 }
 
 function openCrate(cost, index) {
-    if (!validateCrateOpening(cost, 1)) return;
+    
     const result = calculatePogResult(cost, index);
     if (!result) return;
     // play animation path here if desired, then add
@@ -66,7 +66,7 @@ function openCrate(cost, index) {
 }
 
 function openMultipleCrates(cost, index, count) {
-    if (!validateCrateOpening(cost, count)) return;
+    
     const results = [];
     for (let i = 0; i < count; i++) {
         const res = calculatePogResult(cost, index);
@@ -95,7 +95,6 @@ function cleanupGachaOverlay() {
 // ===== UPDATED SINGLE CRATE WITH BETTER CLEANUP =====
 
 async function openCrateWithAnimation(cost, index) {
-    if (!validateCrateOpening(cost, 1)) return;
 
     const result = calculatePogResult(cost, index);
     if (!result) return;
@@ -114,8 +113,7 @@ async function openCrateWithAnimation(cost, index) {
 
 
 async function openMultipleCratesWithAnimation(cost, index, count) {
-    if (!validateCrateOpening(cost, count)) return;
-
+    
     // Calculate all results
     const results = [];
     for (let i = 0; i < count; i++) {
@@ -186,8 +184,6 @@ async function showAnimationForRarity(rarity, pogResult) {
 
 // Updated main functions with animation
 async function openCrateWithAnimation(cost, index) {
-    if (!validateCrateOpening(cost, 1)) return;
-
     const result = calculatePogResult(cost, index);
     if (!result) return;
 
@@ -209,19 +205,19 @@ async function openCrateWithAnimation(cost, index) {
 
 crateButtons.forEach(crate => {
     const price = crates[Object.keys(crates)[crate.index]].price;
-    
+
     // Single crate WITH animation
     document.getElementById(crate.single).addEventListener("click", () =>
-        transaction(price, crate.index)
+        transaction(price, crate.index, 1)
     );
     
     // Multi-crates WITH animation
     document.getElementById(crate.multi5).addEventListener("click", () => 
-        openMultipleCratesWithAnimation(price, crate.index, 5)
+        transaction(price, crate.index, 5)
     );
     
     document.getElementById(crate.multi10).addEventListener("click", () => 
-        openMultipleCratesWithAnimation(price, crate.index, 10)
+        transaction(price, crate.index, 10)
     );
 });
 
@@ -626,8 +622,6 @@ async function testMythicAnimation() {
 // ===== MULTI-PULL WITH ANIMATION =====
 
 async function openMultipleCratesWithAnimation(cost, index, count) {
-    if (!validateCrateOpening(cost, count)) return;
-
     // Calculate all results first
     const results = [];
     for (let i = 0; i < count; i++) {

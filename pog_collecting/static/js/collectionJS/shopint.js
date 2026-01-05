@@ -11,6 +11,7 @@ document.getElementById("closeShop").addEventListener("click", () => {
 
 // default transaction
 let defprice = 0
+let defamount = 0
 let defreason = ""
 
 //shop items
@@ -44,15 +45,17 @@ let shopHTML = shopitems.map((item) => {
 
 document.getElementById("shopItems").innerHTML = shopHTML;
 
-function transaction(price, reason) {
+function transaction(price, reason, amount) {
+    if (!validateCrateOpening(price, amount)) return;
     document.getElementById("transConf").style.display = "block";
     defprice = price;
     defreason = JSON.stringify(reason);
+    defamount = amount
 }
 
 document.getElementById("purchaseBtn").addEventListener("click", () => {
     const pinval = document.getElementById("pinField").value;
-    purchase(defprice, defreason, pinval);
+    purchase(defprice, defreason, pinval, defamount);
     document.getElementById("transConf").style.display = "none";
 });
 
@@ -61,12 +64,18 @@ document.getElementById("cancelBtn").addEventListener("click", () => {
 });
 
 // implement purchased item effect
-function implement(price, reason) {
-    openCrateWithAnimation(price, reason);
+function implement(price, reason, amount) {
+    if (amount === 1) {
+        openCrateWithAnimation(price, reason);
+    } else if (amount === 5) {
+        openMultipleCratesWithAnimation(price, reason, 5)
+    } else if (amount === 10) {
+        openMultipleCratesWithAnimation(price, reason, 10)
+    }
 }
 
 //buy buttons
-function purchase(price, reason, pin) {
+function purchase(price, reason, pin, amount) {
     fetch('/api/digipogs/transfer', {
         // post is to use app.post with the route /api/digipogs/transfer
         method: 'POST',
@@ -84,7 +93,7 @@ function purchase(price, reason, pin) {
         .then(data => {
             if (data.success) {
                 // add purchased item effect here
-                implement(price, reason);
+                implement(price, reason, amount);
                 save();
                 alert(`Purchase successful! (-${price} Digipogs)`);
             } else {

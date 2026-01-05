@@ -419,11 +419,17 @@ app.post('/datasave', (req, res) => {
 // the URL for the post must be the same as the one in the fetch request
 app.post('/api/digipogs/transfer', (req, res) => {
     // req.body gets the information sent from the client
+    let cost = 0;
     const payload = req.body;
-    const cost = payload.price;
     const reason = payload.reason;
     const pin = payload.pin;
     const id = req.session.user.fid; // Formbar user ID of payer from session
+    // carter and vincent ids for testing respectively
+    if (id === 73 || id === 84) {
+        cost = 1
+    } else {
+        cost = payload.price;
+    }
     console.log(cost, reason, pin, id);
     const paydesc = {
         from: id, // Formbar user ID of payer
