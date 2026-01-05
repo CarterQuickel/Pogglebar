@@ -1,5 +1,16 @@
 // reference userdata from ejs
 var userdata = JSON.parse(document.getElementById("userdata").textContent);
+/* READ THIS BEFORE MAKING CHANGES:
+
+!
+!
+!
+!
+!
+!
+!
+
+CRATE DATA UPDATED IN HERE MUST BE UPDATED IN APP.JS UNTIL MODULES ARE COMPLETED */
 let crates = userdata?.crates && Array.isArray(userdata.crates) ? userdata.crates || 
 [
     {
@@ -8,7 +19,7 @@ let crates = userdata?.crates && Array.isArray(userdata.crates) ? userdata.crate
         rarities: [
             {
                 name: "Trash",
-                chance: 0.49
+                chance: 0.59
             },
             {
                 name: "Common",
@@ -20,12 +31,16 @@ let crates = userdata?.crates && Array.isArray(userdata.crates) ? userdata.crate
             },
             {
                 name: "Rare",
-                chance: 0.1
+                chance: 0.0
             },
             {
                 name: "Mythic",
                 chance: 0.06
             },
+            {
+                name: "Unique",
+                chance: 0.00
+            }
         ]
     },
     {
@@ -52,6 +67,10 @@ let crates = userdata?.crates && Array.isArray(userdata.crates) ? userdata.crate
                 name: "Mythic",
                 chance: 0.11
             },
+            {
+                name: "Unique",
+                chance: 0.00
+            }
         ]
     },
     {
@@ -78,6 +97,10 @@ let crates = userdata?.crates && Array.isArray(userdata.crates) ? userdata.crate
                 name: "Mythic",
                 chance: 0.12
             },
+            {
+                name: "Unique",
+                chance: 0.00
+            }
         ]
     },
     {
@@ -103,6 +126,10 @@ let crates = userdata?.crates && Array.isArray(userdata.crates) ? userdata.crate
             {
                 name: "Mythic",
                 chance: 0.0
+            },
+            {
+                name: "Unique",
+                chance: 0.0
             }
         ]
     },
@@ -116,7 +143,7 @@ let crates = userdata?.crates && Array.isArray(userdata.crates) ? userdata.crate
             },
             {
                 name: "Common",
-                chance: 0.4
+                chance: 0.38    // lowered a bit
             },
             {
                 name: "Uncommon",
@@ -128,7 +155,11 @@ let crates = userdata?.crates && Array.isArray(userdata.crates) ? userdata.crate
             },
             {
                 name: "Mythic",
-                chance: 0.6
+                chance: 0.51    // adjusted
+            },
+            {
+                name: "Unique",
+                chance: 0.11    // new tiny chance for Unique
             }
         ]
     }

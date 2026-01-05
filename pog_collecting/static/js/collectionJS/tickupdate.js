@@ -1,11 +1,8 @@
 // update loop
 setInterval(update, 100);
 function update() {
-    //abbrevs
-    const abbreviatedXP = abbreviateNumber(xp);
-    const abbreviatedMaxXP = abbreviateNumber(maxXP);
     // update inventory size text
-    document.getElementById("invTxt").innerHTML = `${inventory.length}/${Isize} Slots`
+    document.getElementById("space").innerHTML = `${inventory.length}/${Isize}`;
 
     // update XP Txt
     document.getElementById("XPTxt").innerText = `Level ${level}`;
@@ -14,16 +11,13 @@ function update() {
     document.getElementById("income").innerText = `($${abbreviateNumber(getTotalIncome())}/s)`;
 
     //update pog / pog
-    document.getElementById("pogCount").innerText = `Pogs Discovered: ${pogAmount} / ${maxPogs}`;
+    document.getElementById("pogCount").innerText = `Pogs Discovered: ${pogAmount.length} / ${maxBinder}`;
 
     //update pogs color
-    document.getElementById("pogCount").style.color = pogAmount >= maxPogs ? "gold" : lightMode ? "black" : "white";
+    document.getElementById("pogCount").style.color = pogAmount.length >= maxBinder ? "gold" : "white";
 
     //update wish text
-    document.getElementById("useWish").innerText = `Wish (${wish})`;
-
-    //update wish visibility
-    document.getElementById("useWish").style.display = wish > 0 ? "inline-block" : "none";
+    document.getElementById("useWish").innerText = `Wish \n (${wish} / 7)`;
 
     //crate 1 text
     document.getElementById("crate1").innerHTML = `Trash Crate ($${abbreviateNumber(crates[0].price)})`;
@@ -55,9 +49,9 @@ function update() {
 
     // change inventory text color if full
     if (inventory.length >= Isize) {
-        document.getElementById("invTxt").style.color = "red";
+        document.getElementById("space").style.color = "red";
     } else {
-        document.getElementById("invTxt").style.color = lightMode ? "black" : "white";
+        document.getElementById("space").style.color = "#ecdcdc";
     }
 }
 
@@ -85,7 +79,7 @@ function updatecrates() {
         // Access price from the crates array at the current index
         let currentPrice = crates[i].price; 
         // Disable individual button if money is less than its price
-        if (money < currentPrice || inventory.length == Isize) {
+        if (money < currentPrice || inventory.length == Isize || inventory.length >= 999) {
             crateButtons[i].disabled = true;
             buym5.disabled = true;
             buym10.disabled = true;

@@ -20,6 +20,7 @@ document.getElementById("filepfp").addEventListener("change", () => {
             const reader = new FileReader();
             reader.onloadend = function () {
                 pfpimg = reader.result;
+                save()
                 document.getElementById("userPic").src = pfpimg;
                 document.getElementById("bigpfp").src = pfpimg;
             }

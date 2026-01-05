@@ -44,8 +44,6 @@ let shopHTML = shopitems.map((item) => {
 
 document.getElementById("shopItems").innerHTML = shopHTML;
 
-console.log(document.getElementById("pinField").value);
-
 function transaction(price, reason) {
     document.getElementById("transConf").style.display = "block";
     defprice = price;
@@ -155,9 +153,10 @@ function purchase(price, reason, pin) {
     }).then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(`Purchase successful: ${reason}`);
                 // add purchased item effect here
                 implement(reason);
+                save();
+                alert(`Purchase successful: ${reason}`);
             } else {
                 alert(`Purchase failed: ${data.message}`);
             }

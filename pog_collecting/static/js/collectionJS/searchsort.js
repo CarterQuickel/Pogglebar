@@ -3,6 +3,7 @@ document.getElementById("searchbtn").addEventListener("click", () => {
     box = document.getElementById("searchbox")
     inv = document.getElementById("inventory")
     searching = true;
+    document.getElementById("descPanel").innerHTML = "";
     if (searching) {
         itemSearched = box.value.toLowerCase();
         refreshInventory();
@@ -11,15 +12,19 @@ document.getElementById("searchbtn").addEventListener("click", () => {
 
 //categorize functionality
 document.getElementById("selectSort").addEventListener("change", () => {
+    sorting();
+    refreshInventory();
+    save();
+});
+
+function sorting() {
     const sortBy = document.getElementById("selectSort").value;
-    if (sortBy === "rarityAZ") {
-        inventory.sort((a, b) => a.value.localeCompare(b.value));
-    } else if (sortBy === "rarityZA") {
-        inventory.sort((a, b) => b.value.localeCompare(a.value));
-    } else if (sortBy === "incomeHf") {
-        inventory.sort((a, b) => b.income - a.income);
-    } else if (sortBy === "incomeLf") {
-        inventory.sort((a, b) => a.income - b.income);
+    inventory = Object.values(inventory);
+    const rarityOrder = { 'Otherworldly': 7, 'Unique': 6, 'Mythic': 5, 'Rare': 4, 'Uncommon': 3, 'Common': 2, 'Trash': 1 };
+    if (sortBy === "rarityHf") {
+        inventory.sort((a, b) => rarityOrder[a.rarity] - rarityOrder[b.rarity]);
+    } else if (sortBy === "rarityLf") {
+        inventory.sort((a, b) => rarityOrder[b.rarity] - rarityOrder[a.rarity]);
     } else if (sortBy === "nameAZ") {
         inventory.sort((a, b) => a.name.localeCompare(b.name));
     } else if (sortBy === "nameZA") {
@@ -29,8 +34,7 @@ document.getElementById("selectSort").addEventListener("change", () => {
     } else if (sortBy === "svLf") {
         inventory.sort((a, b) => (Math.round(a.income * 1.05)) - (Math.round(b.income * 1.05)));
     }
-    refreshInventory();
-});
+}
 
 // search variables
 let searching = false;
@@ -42,3 +46,5 @@ setInterval(() => {
         searching = false;
     }
 }, 100);
+
+sorting();

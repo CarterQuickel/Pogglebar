@@ -4,26 +4,32 @@
     font-size: 20px;
     margin-top: 10px;
     margin-bottom: -4px;
+    transition: ease-in-out 0.3s;
 }
 
-/* PB */
+/* Reset default progress styles */
 progress {
-    width: 300px;
-    height: 10px;
-    border-radius: 10px;
-    overflow: hidden;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 320px;
+  height: 11px;
 }
 
-/* empty */
+/* Background */
 progress::-webkit-progress-bar {
-    background: #ddd;
-    border-radius: 10px;
+  background: #1a1a1a;
+  border-radius: 10px;
 }
 
-/* fill */
+/* XP Fill */
 progress::-webkit-progress-value {
-    border-radius: 10px;
-    background: lightskyblue;
+  background: linear-gradient(
+    90deg,
+    #4facfe,
+    #00f2fe
+  );
+  border-radius: 8px;
+  transition: width 0.6s ease-out;
 }
 
 #XPinfo {

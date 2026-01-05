@@ -1,5 +1,6 @@
 /* settings */
 #settings {
+    transition: ease-in-out 0.3s;
     margin-top: 8px;
     top: 100px;
     right: 20px;
@@ -8,10 +9,93 @@
     padding-bottom: 10px;
     min-height: auto;
     height: auto;
+    padding-bottom: 10px;
     border-radius: 10px;
     text-align: center;
     position: static;
     flex-shrink: 1;
+}
+
+#settings_tools_btns {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+}
+
+.tools {
+    background-color: #ecdcdc;
+    border: transparent;
+    border-radius: 10px;
+    padding: 7px;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-style: bold;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.tools:hover {
+     background-color: #d4bebe;
+     margin-top: -2px;
+}
+
+#colorKey {
+    background-color: #ecdcdc;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    position: absolute;
+    box-shadow: 0 0 5px black;
+    margin-top: 260px;
+    margin-left: 70px;
+}
+
+.key-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.color-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 2px solid black;
+}
+
+.trash {
+    background-color: red;
+}
+
+.common {
+    background-color: yellow;
+}
+
+.uncommon {
+    background-color: lime;
+}
+
+.rare {
+    background-color: aqua;
+}
+
+.mythic {
+    background-color: fuchsia;
+}
+
+.unique {
+    background-color: lightgray;
+}
+
+.otherworldly {
+    background-color: black;
 }
 
 #searchbtn {
@@ -27,6 +111,7 @@
     font-size: 18px;
     cursor: pointer;
     scale: 0.8;
+    transition: all 0.1s ease;
 }
 
 #searchbtn:hover {
@@ -58,7 +143,7 @@ option {
 }
 
 #searchbox {
-    background-color: #e6e6e6;
+    background-color: #ecdcdc;
     border: transparent;
     border-radius: 10px;
     width: 400px;
@@ -78,13 +163,14 @@ option {
     width: 300px;
     color: #000000;
     border: 3px solid rgba(255, 255, 255, 0);
-    background-color: #fff0f5;
+    background-color: #ecdcdc;
     border-radius: 30px;
     background-repeat: no-repeat;
     background-size: 12px;
     cursor: pointer;
     text-align: center;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    transition: all 0.1s ease;
 }
 
 #selectSort:hover,
@@ -126,6 +212,7 @@ option {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     background-color: #659c54;
     cursor: pointer;
+    transition: all 0.1s ease;
 }
 
 #sellAll:hover {

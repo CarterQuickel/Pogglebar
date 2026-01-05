@@ -39,7 +39,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-image: linear-gradient(to right, #de5aff, #582563);
+    background-color: #de5aff;
     padding: 10px 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1000;
@@ -161,7 +161,7 @@ button:hover {
 }
 
 #submitBtn:hover {
-     background-color: rgb(137, 73, 137); 
+     background-color: rgb(137, 73, 137);
 }
 
 .chat-line { margin-bottom: 8px; line-height: 1.3; word-break: break-word; }

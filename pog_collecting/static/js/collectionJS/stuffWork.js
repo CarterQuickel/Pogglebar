@@ -14,6 +14,7 @@ rarityColor = [
     { name: "Uncommon", color: "lime", income: 27 }, //uncommon
     { name: "Rare", color: "aqua", income: 49 }, //rare
     { name: "Mythic", color: "fuchsia", income: 63 }, //mythic
+    { name: "Unique", color: "lightgray", income: 134 }, //unique
 ]
 
 // used for crate display
@@ -23,6 +24,9 @@ let enabledCrate = false;
 let pfpimg = userdata.pfp || ""
 document.getElementById("userPic").src = pfpimg;
 document.getElementById("bigpfp").src = pfpimg;
+
+//selected pog
+selectedID = 0;
 
 // wish
 let wish = userdata.wish || 0;
@@ -43,7 +47,8 @@ let userIncome = userdata.income || 0;
 let totalSold = userdata.totalSold || 0;
 
 // pogAmount
-let pogAmount = userdata.pogamount || 0;
+let pogAmount = userdata.pogamount || [];
+let maxBinder = 0;
 
 // XP
 let xp = userdata.xp || 0;
@@ -51,7 +56,7 @@ let maxXP = userdata.maxxp || 30;
 let level = userdata.level || 1;
 
 // merge
-const mergeAmount = 10;
+const mergeAmount = 5;
 let mergeCount = userdata.mergeCount || 0;
 
 // global vari
@@ -90,7 +95,33 @@ function lock(id) {
     const index = inventory.findIndex(item => item.id === id)
     inventory[index].locked = !inventory[index].locked;
     refreshInventory();
+    save();
 }
+
+//trade for 1/7 wish
+function trade(id, locked) {
+    if (!locked) {
+        const index = inventory.findIndex(item => item.id === id);
+        inventory.splice(index, 1);
+        wish++;
+        userIncome = getTotalIncome();
+        refreshInventory();
+        save();
+    }
+    document.getElementById("descPanel").innerHTML = "";
+}
+
+// color key toggle
+document.getElementById("colors").addEventListener("click", () => {
+    const colorKey = document.getElementById("colorKey")
+    const isVisible = colorKey.style.display === "flex";
+    colorKey.style.display = isVisible ? "none" : "flex";
+})
+
+//report
+document.getElementById("help").addEventListener("click", () => {
+    window.open("https://github.com/CarterQuickel/Pogglebar/issues", "_blank");
+});
 
 // number abbreviation function
 function abbreviateNumber(value) {

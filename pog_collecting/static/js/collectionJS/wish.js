@@ -23,26 +23,33 @@ function customConfirm(message) {
 };
 
 document.getElementById("useWish").addEventListener("click", async () => {
-    let wealth = await customConfirm("Wish of Wealth: Use wish to gain a large amount of money?");
-    if (wealth) {
-        money += Math.floor(money * 3.5);
-        wish--;
-    } else {
-        let power = await customConfirm("Wish of Power: Use wish to gain decreased crate costs?");
-        if (power) {
-            for (let crate in crates) {
-                crates[crate].price = Math.floor(crates[crate].price * 0.95);
-            }
-            wish--;
+    if (wish >= 7) {
+        let wealth = await customConfirm("Wish of Wealth: Use wish to gain a large amount of money?");
+        if (wealth) {
+            money += Math.floor(money * 3.5);
+            wish -= 7;
+            save();
         } else {
-            let wisdom = await customConfirm("Wish of Wisdom: Use wish to gain a large amount of XP?");
-            if (wisdom) {
-                xp += Math.floor(maxXP * 1.5);
-                levelup();
-                wish--;
+            let power = await customConfirm("Wish of Power: Use wish to gain decreased crate costs?");
+            if (power) {
+                for (let crate in crates) {
+                    crates[crate].price = Math.floor(crates[crate].price * 0.95);
+                }
+                wish -= 7;
+                save();
             } else {
-                await customConfirm("No wish was used.");
+                let wisdom = await customConfirm("Wish of Wisdom: Use wish to gain a large amount of XP?");
+                if (wisdom) {
+                    xp += Math.floor(maxXP * 1.5);
+                    levelup();
+                    wish -= 7;
+                    save();
+                } else {
+                    await customConfirm("No wish was used.");
+                }
             }
         }
+    } else {
+        await customConfirm("Not enough wishes to grant a wish.")
     }
 });

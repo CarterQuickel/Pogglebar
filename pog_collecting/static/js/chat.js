@@ -66,10 +66,25 @@ function renderMessage(chat) {
         btn.appendChild(imgEl);
         // sample click handler - replace with your real action
         btn.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            console.log('pfp clicked for', chat.name, chat);
-            // e.g. open a profile modal: openProfile(chat);
-        });
+    ev.stopPropagation();
+    console.log('🔴 CLICK DETECTED!'); // This should show if click works
+    console.log('🔴 chat.name:', chat.name);
+    console.log('🔴 chat.userId:', chat.userId);
+    console.log('🔴 Full chat object:', chat);
+    
+    // Test the function directly first
+    console.log('🔴 About to call handleUserProfileClick...');
+    
+    if (chat.userId) {
+        console.log('🔴 userId exists, calling function...');
+        handleUserProfileClick(chat.userId, chat.name);
+    } else {
+        console.log('🔴 No userId found! This might be an old message.');
+        // Let's test with a fallback
+        alert('Profile clicked but no userId found. This might be an old message.');
+    }
+});
+
 
         wrapper.appendChild(btn);
     }
@@ -113,26 +128,35 @@ function renderMessage(chat) {
     }
 }
 
+function handleUserProfileClick(userId, userName) {
+    console.log('🟢 handleUserProfileClick called with:', userId, userName);
+    alert(`User Profile\nName: ${userName}\nID: ${userId}`);
+}
+
+// Test the function immediately to make sure it works
+console.log('🟢 Testing alert function...');
+// Uncomment this line to test:
+// handleUserProfileClick('test123', 'TestUser');
+
 
 
 socket.on('chat history', (rows) => { messageCont.innerHTML = ''; (rows || []).forEach(renderMessage); });
 
 
 socket.on('chat message', (chat) => { renderMessage(chat); });
-
 form.addEventListener("submit", (e) => { 
     e.preventDefault(); 
     const text = (messageInput.value || '').trim(); 
     if (!text) return; 
     
-    // Add these diagnostic logs:
     console.log('userdata.pfp length:', userdata.pfp ? userdata.pfp.length : 'null');
     console.log('Sending pfp length:', (userdata.pfp || null) ? (userdata.pfp || null).length : 'null');
     
     socket.emit("chat message", { 
         name: myName, 
         msg: text, 
-        pfp: userdata.pfp || null
+        pfp: userdata.pfp || null,
+        userId: userdata.displayName || null // Add this line - using displayName as user ID
     }); 
     
     messageInput.value = ""; 

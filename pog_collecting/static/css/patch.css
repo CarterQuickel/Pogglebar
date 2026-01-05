@@ -16,7 +16,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-image: linear-gradient(to right, #de5aff, #582563);
+    background-color: #de5aff;
     padding: 10px 20px; /* Add padding for better spacing */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     height: 80px;
@@ -42,7 +42,8 @@ body {
     border-radius: 10px;
     padding: 20px; 
     margin: 20px auto;
-    width: 95vw; 
+    width: 95vw;
+    box-sizing: border-box;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 }
 

@@ -39,7 +39,7 @@ document.querySelectorAll(".infobtn").forEach(button => {
                                 <h3>Income</h3> <p>$${player.income}/s</p>
                                 <h3>Total Sold</h3> <p>${player.totalSold} pogs</p>
                                 <h3>Crates Opened</h3> <p>${player.cratesOpened} crates</p>
-                                <h3>Pogs Collected</h3> <p>${player.pogamount} / 285</p>
+                                <h3>Pogs Collected</h3> <p>${JSON.parse(player.pogamount).length} / 285</p>
                             </div>
                           </div>
                           <h3>Pogs in Inventory</h3> <p>${sortedI.length}</p>

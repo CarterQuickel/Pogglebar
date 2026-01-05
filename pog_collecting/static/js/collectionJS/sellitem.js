@@ -1,6 +1,5 @@
 // sell item
 function sellItem(id, sellvalue, locked) {
-    console.log(locked)
     if (!locked) {
         const index = inventory.findIndex(item => item.id === id)
         money += sellvalue;
@@ -9,6 +8,8 @@ function sellItem(id, sellvalue, locked) {
         // recalc income and refresh UI
         userIncome = getTotalIncome();
         refreshInventory();
+        save();
         if (window.checkAllAchievements) window.checkAllAchievements();
     }
+    document.getElementById("descPanel").innerHTML = "";
 }

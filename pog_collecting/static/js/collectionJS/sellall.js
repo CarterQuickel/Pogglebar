@@ -4,6 +4,7 @@ document.getElementById("sellAll").addEventListener("click", () => {
     if (confirmation == false) {
         return;
     }
+    save()
     if (!searching) {
         const initialInv = inventory.length
         for (let i = initialInv - 1; i >= 0; i--) {
@@ -31,4 +32,5 @@ document.getElementById("sellAll").addEventListener("click", () => {
             }
         }
     }
+    userIncome = getTotalIncome();
 });

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="../static/icons/monarch.png"/>
+    <link rel="icon" type="image/png" href="../static/icons/title/Pogglebar_Favicon.png" />
     <title>Leaderboard</title>
     <link rel="stylesheet" href="../static/css/leaderboard.css">
 </head>
@@ -46,7 +46,6 @@
                 <th style="border: 1px solid white; padding: 8px;">User</th>
                 <th style="border: 1px solid white; padding: 8px;">Score ($)</th>
                 <th style="border: 1px solid white; padding: 8px;">Level</th>
-                <th style="border: 1px solid white; padding: 8px;">Unique Pogs</th>
                 <th style="border: 1px solid white; padding: 8px;">Details</th>
             </tr>
         </thead>
@@ -64,9 +63,6 @@
                     </td>
                     <td style="border: 1px solid white; padding: 8px; text-align: center;">
                         <%= score.level %>
-                    </td>
-                    <td style="border: 1px solid white; padding: 8px; text-align: center;">
-                        <%= score.pogamount %> / 285
                     </td>
                     <td style="border: 1px solid white; padding: 8px; text-align: center;">
                         <button class="infobtn" data-index="<%= index %>">Player Info</button>
