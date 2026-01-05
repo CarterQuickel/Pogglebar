@@ -12,6 +12,23 @@ const io = new Server(http);
 const digio = require('socket.io-client');
 require('dotenv').config()
 
+//debug
+process.on('uncaughtException', (err) => {
+    console.error('UNCAUGHT EXCEPTION:', err);
+});
+  
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('UNHANDLED REJECTION:', reason);
+});
+  
+process.on('exit', (code) => {
+    console.error('PROCESS EXITED WITH CODE:', code);
+});
+  
+process.on('SIGTERM', () => console.error('SIGTERM received'));
+process.on('SIGINT', () => console.error('SIGINT received'));
+  
+
 //modules
 const achievements = require("./modules/backend_js/trophyList.js")
 const crateRef = require("./modules/backend_js/crateRef.js")
