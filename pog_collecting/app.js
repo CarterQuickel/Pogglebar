@@ -129,18 +129,61 @@ usdb.run(`CREATE TABLE IF NOT EXISTS userSettings (
     crates TEXT,
     pfp TEXT,
     displayname TEXT UNIQUE
- 
 )`);
 
-// chat table (persist messages) - use INTEGER time for timestamps
+// chat/trade table (persist messages and trades)
 usdb.run(`CREATE TABLE IF NOT EXISTS chat (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    trade_type TEXT DEFAULT 'trade',
     name TEXT,
     msg TEXT,
     time INTEGER,
-    pfp TEXT
+    pfp TEXT,
+    userId TEXT,
+    giving_item_name TEXT,
+    receiving_item_name TEXT,
+    trade_status TEXT DEFAULT 'pending',
+    accepter_name TEXT,
+    accepter_userId TEXT
 )`)
- 
+
+// Add columns to existing chat table if they don't exist
+usdb.run(`ALTER TABLE chat ADD COLUMN trade_type TEXT DEFAULT 'trade'`, (err) => {
+    if (err && !err.message.includes('duplicate column')) {
+        console.error('Error adding trade_type column:', err.message);
+    }
+});
+
+usdb.run(`ALTER TABLE chat ADD COLUMN giving_item_name TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column')) {
+        console.error('Error adding giving_item_name column:', err.message);
+    }
+});
+
+usdb.run(`ALTER TABLE chat ADD COLUMN receiving_item_name TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column')) {
+        console.error('Error adding receiving_item_name column:', err.message);
+    }
+});
+
+usdb.run(`ALTER TABLE chat ADD COLUMN trade_status TEXT DEFAULT 'pending'`, (err) => {
+    if (err && !err.message.includes('duplicate column')) {
+        console.error('Error adding trade_status column:', err.message);
+    }
+});
+
+usdb.run(`ALTER TABLE chat ADD COLUMN accepter_name TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column')) {
+        console.error('Error adding accepter_name column:', err.message);
+    }
+});
+
+usdb.run(`ALTER TABLE chat ADD COLUMN accepter_userId TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column')) {
+        console.error('Error adding accepter_userId column:', err.message);
+    }
+});
+
 // pog database
 const pogs = new sqlite3.Database("pogipedia/db/pog.db", (err) => {
     if (err) {
@@ -161,12 +204,82 @@ pogs.get(`SELECT COUNT(*) AS count FROM pogs`, (err, row) => {
     }
 });
 
+// Helper function to update user inventory
+function updateUserInventory(userId, newInventory, callback) {
+    const inventoryJson = JSON.stringify(newInventory);
+    usdb.run(`UPDATE userSettings SET inventory = ? WHERE displayname = ?`, 
+        [inventoryJson, userId], function(err) {
+            if (callback) callback(err, this.changes);
+        });
+}
+
+// Helper function to get user inventory
+function getUserInventory(userId, callback) {
+    usdb.get(`SELECT inventory FROM userSettings WHERE displayname = ?`, [userId], (err, row) => {
+        if (err || !row) {
+            callback(err || new Error('User not found'), null);
+            return;
+        }
+        try {
+            const inventory = JSON.parse(row.inventory || '[]');
+            callback(null, inventory);
+        } catch (parseErr) {
+            callback(parseErr, null);
+        }
+    });
+}
+
 // home page
 app.get('/collection', (req, res) => {
     if (!req.session.user) {
-        res.redirect('/');
+        return res.redirect('/');
     }
-    res.render('collection', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+
+    const displayName = req.session.user.displayName || req.session.user.displayname || null;
+    if (!displayName) {
+        // fall back to session user if displayName missing
+        return res.render('collection', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+    }
+
+    // load latest user data from DB, parse JSON fields, and render
+    usdb.get('SELECT * FROM userSettings WHERE displayname = ?', [displayName], (err, row) => {
+        if (err) {
+            console.error('Error loading user for collection:', err);
+            return res.render('collection', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+        }
+        if (!row) {
+            // no saved DB row — use session
+            return res.render('collection', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+        }
+
+        // build userdata object from DB row safely
+        const userdataFromDb = {
+            fid: row.fid,
+            displayName: row.displayname,
+            theme: row.theme,
+            score: row.score,
+            inventory: (() => { try { return JSON.parse(row.inventory || '[]'); } catch(e){ return []; } })(),
+            Isize: row.Isize,
+            xp: row.xp,
+            maxxp: row.maxxp,
+            level: row.level,
+            income: row.income,
+            totalSold: row.totalSold,
+            cratesOpened: row.cratesOpened,
+            pogamount: (() => { try { return JSON.parse(row.pogamount || '[]'); } catch(e){ return []; } })(),
+            achievements: (() => { try { return JSON.parse(row.achievements || '[]'); } catch(e){ return []; } })(),
+            mergeCount: row.mergeCount,
+            highestCombo: row.highestCombo || row.comboHigh || 0,
+            wish: row.wish,
+            crates: (() => { try { return JSON.parse(row.crates || '[]'); } catch(e){ return []; } })(),
+            pfp: row.pfp || "static/icons/pfp/defaultpfp.png"
+        };
+
+        // update session to match DB (so other routes match too)
+        req.session.user = Object.assign(req.session.user || {}, userdataFromDb);
+
+        return res.render('collection', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+    });
 });
 
 // login route
@@ -311,7 +424,7 @@ app.get('/patch', (req, res) => {
     res.render('patch', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
 });
 
-// patch notes page
+// trade room page
 app.get('/chatroom', (req, res) => {
     res.render('chatroom', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
 });
@@ -342,6 +455,17 @@ app.get('/api/leaderboard', (req, res) => {
     });
 });
 
+// API endpoint to get recent trades
+app.get('/api/trades/recent', (req, res) => {
+    usdb.all('SELECT * FROM chat WHERE trade_type = ? ORDER BY id DESC LIMIT 50', ['trade'], (err, rows) => {
+        if (err) {
+            console.error('API trades error', err);
+            return res.status(500).json({ error: 'db' });
+        }
+        res.json(rows || []);
+    });
+});
+
 // save data route
 app.post('/datasave', (req, res) => {
     const userSave = {
@@ -363,7 +487,6 @@ app.post('/datasave', (req, res) => {
         crates: req.body.crates,
         pfp: req.body.pfp
     }
-
 
     // save to session
     req.session.save(err => {
@@ -474,38 +597,215 @@ app.get('/login', (req, res) => {
     };
 });
 
+app.post('/api/user/sync-inventory', express.json(), (req, res) => {
+    const inventory = req.body && req.body.inventory ? req.body.inventory : null;
+    const displayName = req.session.user && (req.session.user.displayName || req.session.user.displayname);
+    if (!displayName || !Array.isArray(inventory)) {
+        return res.status(400).json({ ok: false, message: 'Missing user or inventory' });
+    }
+
+    const invJson = JSON.stringify(inventory);
+    usdb.run('UPDATE userSettings SET inventory = ? WHERE displayname = ?', [invJson, displayName], function(err) {
+        if (err) {
+            console.error('Failed to sync inventory to DB for', displayName, err);
+            return res.status(500).json({ ok: false, error: err.message });
+        }
+        // update session object too
+        req.session.user = req.session.user || {};
+        req.session.user.inventory = inventory;
+        // optionally update other derived session fields here
+        return res.json({ ok: true, changes: this.changes });
+    });
+});
+
 //listens
 http.listen(3000, () => {
     console.log('Server started on port 3000');
 });
 
-//chat room stuff
+//trade room stuff
 io.on('connection', (socket) => {
-    // send recent history to the connecting client (oldest -> newest)
-usdb.all('SELECT id, name, msg, time, pfp, userId FROM chat ORDER BY id DESC LIMIT 500', [], (err, rows) => {
-    if (!err && Array.isArray(rows)) {
-        socket.emit('chat history', rows.reverse());
-    }
-});
+    // Send recent trade history to the connecting client
+    usdb.all('SELECT * FROM chat WHERE trade_type = ? ORDER BY id DESC LIMIT 50', ['trade'], (err, rows) => {
+        if (!err && Array.isArray(rows)) {
+            socket.emit('trade history', rows.reverse());
+        }
+    });
 
-   // incoming chat messages: sanitize, persist, then broadcast saved record (with server timestamp)
-socket.on('chat message', (data) => {
-    const name = data && data.name ? String(data.name).slice(0, 100) : 'Anonymous';
-    const msg = data && data.msg ? String(data.msg).slice(0, 2000) : '';
-    const pfp = data && data.pfp ? String(data.pfp) : null; // Remove the .slice(0, 200) limit
-    const userId = data && data.userId ? String(data.userId).slice(0, 100) : null; // Add userId
-    const time = Date.now();
+    // Handle new trade offers
+    socket.on('trade offer', (data) => {
+        const name = data && data.name ? String(data.name).slice(0, 100) : 'Anonymous';
+        const pfp = data && data.pfp ? String(data.pfp) : null;
+        const userId = data && data.userId ? String(data.userId).slice(0, 100) : null;
+        const givingItem = data && data.giving_item_name ? String(data.giving_item_name).slice(0, 200) : '';
+        const receivingItem = data && data.receiving_item_name ? String(data.receiving_item_name).slice(0, 200) : '';
+        const message = data && data.message ? String(data.message).slice(0, 2000) : '';
+        const time = Date.now();
 
-    // Update the SQL query to include userId
-    usdb.run('INSERT INTO chat (name, msg, time, pfp, userId) VALUES (?, ?, ?, ?, ?)', 
-        [name, msg, time, pfp, userId], function (err) {
-        if (err) {
-            console.error('Error saving chat message:', err);
+        // Validate trade offer
+        if (!givingItem || !receivingItem) {
+            socket.emit('trade error', { message: 'Invalid trade offer' });
             return;
         }
-        const saved = { id: this.lastID, name, msg, time, pfp, userId };
-        io.emit('chat message', saved);
+
+        // Validate that user owns the item they're offering
+        getUserInventory(userId, (err, inventory) => {
+            if (err) {
+                socket.emit('trade error', { message: 'Could not verify inventory' });
+                return;
+            }
+
+            const hasItem = inventory.some(item => item.name === givingItem && item.rarity !== "Unique");
+            if (!hasItem) {
+                socket.emit('trade error', { message: 'You do not own this item or it cannot be traded' });
+                return;
+            }
+
+            // Save trade to database
+            usdb.run(`INSERT INTO chat (trade_type, name, msg, time, pfp, userId, giving_item_name, receiving_item_name, trade_status) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+                ['trade', name, message, time, pfp, userId, givingItem, receivingItem, 'pending'], 
+                function (err) {
+                    if (err) {
+                        console.error('Error saving trade offer:', err);
+                        socket.emit('trade error', { message: 'Failed to save trade' });
+                        return;
+                    }
+                    
+                    const savedTrade = { 
+                        id: this.lastID, 
+                        trade_type: 'trade',
+                        name, 
+                        msg: message, 
+                        time, 
+                        pfp, 
+                        userId,
+                        giving_item_name: givingItem,
+                        receiving_item_name: receivingItem,
+                        trade_status: 'pending'
+                    };
+                    
+                    // Broadcast trade to all clients
+                    io.emit('trade offer', savedTrade);
+                    console.log(`Trade posted: ${name} offering ${givingItem} for ${receivingItem}`);
+                }
+            );
+        });
+    });
+
+    // Handle trade acceptance
+    socket.on('accept trade', (data) => {
+        const tradeId = data.tradeId;
+        const accepterName = data.accepter_name;
+        const accepterUserId = data.accepter_userId;
+        
+        // First, get the trade details
+        usdb.get('SELECT * FROM chat WHERE id = ? AND trade_status = ?', [tradeId, 'pending'], (err, trade) => {
+            if (err || !trade) {
+                socket.emit('trade error', { message: 'Trade not found or already completed' });
+                return;
+            }
+
+            // Validate that accepter has the requested item
+            getUserInventory(accepterUserId, (err, accepterInventory) => {
+                if (err) {
+                    socket.emit('trade error', { message: 'Could not verify your inventory' });
+                    return;
+                }
+
+                const hasRequestedItem = accepterInventory.some(item => 
+                    item.name === trade.receiving_item_name && item.rarity !== "Unique"
+                );
+
+                if (!hasRequestedItem) {
+                    socket.emit('trade error', { message: 'You do not own the requested item' });
+                    return;
+                }
+
+                // Get trader's inventory
+                getUserInventory(trade.userId, (err, traderInventory) => {
+                    if (err) {
+                        socket.emit('trade error', { message: 'Could not verify trader inventory' });
+                        return;
+                    }
+
+                    // Validate trader still has the offered item
+                    const traderHasItem = traderInventory.some(item => 
+                        item.name === trade.giving_item_name && item.rarity !== "Unique"
+                    );
+
+                    if (!traderHasItem) {
+                        socket.emit('trade error', { message: 'Trader no longer has the offered item' });
+                        return;
+                    }
+
+                    // Perform the trade - update inventories
+                    // Remove offered item from trader, add requested item to trader
+                    const traderItemIndex = traderInventory.findIndex(item => item.name === trade.giving_item_name);
+                    const offeredItem = traderInventory[traderItemIndex];
+                    traderInventory.splice(traderItemIndex, 1);
+
+                    const accepterItemIndex = accepterInventory.findIndex(item => item.name === trade.receiving_item_name);
+                    const requestedItem = accepterInventory[accepterItemIndex];
+                    traderInventory.push(requestedItem);
+
+                    // Remove requested item from accepter, add offered item to accepter
+                    accepterInventory.splice(accepterItemIndex, 1);
+                    accepterInventory.push(offeredItem);
+
+                    // Update both inventories in database
+                    updateUserInventory(trade.userId, traderInventory, (err) => {
+                        if (err) {
+                            socket.emit('trade error', { message: 'Failed to update trader inventory' });
+                            return;
+                        }
+
+                        updateUserInventory(accepterUserId, accepterInventory, (err) => {
+                            if (err) {
+                                socket.emit('trade error', { message: 'Failed to update accepter inventory' });
+                                return;
+                            }
+
+                            // Update trade status to completed
+                            usdb.run(`UPDATE chat SET trade_status = ?, accepter_name = ?, accepter_userId = ? WHERE id = ?`,
+                                ['completed', accepterName, accepterUserId, tradeId], (err) => {
+                                    if (err) {
+                                        console.error('Error updating trade status:', err);
+                                        socket.emit('trade error', { message: 'Failed to complete trade' });
+                                        return;
+                                    }
+
+                                    // build payload with updated inventories so clients can update without refetch
+                                    const payload = {
+                                        tradeId,
+                                        traderUserId: trade.userId,
+                                        accepterUserId,
+                                        giving_item_name: trade.giving_item_name,
+                                        receiving_item_name: trade.receiving_item_name,
+                                        updatedTraderInventory: traderInventory,
+                                        updatedAccepterInventory: accepterInventory
+                                    };
+
+                                    // Notify all clients (clients will apply update only if it matches their user)
+                                    io.emit('trade completed', payload);
+                                    
+                                    // Notify the accepter socket with their updated inventory (ack)
+                                    socket.emit('trade accepted', { 
+                                        success: true, 
+                                        message: 'Trade completed successfully!',
+                                        received_item: trade.giving_item_name,
+                                        updatedInventory: accepterInventory
+                                    });
+
+                                    console.log(`Trade ${tradeId} completed: ${accepterName} accepted ${trade.name}'s trade`);
+                                    console.log(`${trade.name} gave ${trade.giving_item_name}, received ${trade.receiving_item_name}`);
+                                    console.log(`${accepterName} gave ${trade.receiving_item_name}, received ${trade.giving_item_name}`);
+                                });
+                        });
+                    });
+                });
+            });
+        });
     });
 });
 
-});
