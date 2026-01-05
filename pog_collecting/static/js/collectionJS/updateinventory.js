@@ -10,13 +10,14 @@ function refreshInventory() {
 
     //the computer is recomputing
     computeComboStats();
-    console.log(pogAmount)
+    console.log(computeComboStats());
 
     // failsafe if they delete all items
     if (inventory.length === 0 && money < 200) {
         money = 200;
     }
 
+    //combo highlight
     const highlightColors = Object.keys(rarityCounts).filter(rarity => rarityCounts[rarity] >= 3);
 
     const bronzeCount = inventory.filter(item => item.name === "Bronze Pog").length;
