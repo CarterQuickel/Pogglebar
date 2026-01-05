@@ -212,7 +212,7 @@ crateButtons.forEach(crate => {
     
     // Single crate WITH animation
     document.getElementById(crate.single).addEventListener("click", () =>
-        openCrateWithAnimation(price, crate.index)
+        transaction(price, crate.index)
     );
     
     // Multi-crates WITH animation
@@ -224,17 +224,6 @@ crateButtons.forEach(crate => {
         openMultipleCratesWithAnimation(price, crate.index, 10)
     );
 });
-
-
-// Crates container toggle - ADD THIS!
-document.getElementById("openCratesBtn").addEventListener("click", () => {
-    const cratesContainer = document.getElementById("cratesCont");
-    const isVisible = cratesContainer.style.display === "block";
-    cratesContainer.style.display = isVisible ? "none" : "block";
-    enabledCrate = !isVisible;
-});
-
-
 
 // ===== ANIMATION HELPER FUNCTIONS =====
 

@@ -47,7 +47,7 @@ document.getElementById("shopItems").innerHTML = shopHTML;
 function transaction(price, reason) {
     document.getElementById("transConf").style.display = "block";
     defprice = price;
-    defreason = reason;
+    defreason = JSON.stringify(reason);
 }
 
 document.getElementById("purchaseBtn").addEventListener("click", () => {
@@ -61,78 +61,8 @@ document.getElementById("cancelBtn").addEventListener("click", () => {
 });
 
 // implement purchased item effect
-function implement(reason) {
-    if (reason === "1 Wish") {
-        wish++;
-    } else if (reason === "5 Wishes") {
-        wish += 5;
-    } else if (reason === "10 Wishes") {
-        wish += 10;
-    } else if (reason === "$100K") {
-        money += 100000;
-    } else if (reason === "$1M") {
-        money += 1000000;
-    } else if (reason === "$10M") {
-        money += 10000000;
-    } else if (reason === "1 Slot") {
-        Isize += 1;
-    } else if (reason === "5 Slots") {
-        Isize += 5;
-    } else if (reason === "10 Slots") {
-        Isize += 10;
-    } else if (reason === "Double Money") {
-        userIncome *= 2;
-    } else if (reason === "Double XP") {
-        xp *= 2;
-        levelup();
-    } else if (reason === "Half Crate Costs") {
-        for (let crate in crates) {
-            crates[crate].price = Math.floor(crates[crate].price * 0.5);
-        }
-    } else if (reason === "Common Pog") {
-        const id = Math.random() * 100000
-        inventory.push({
-            locked: false,
-            pogid: 0,
-            name: "SW",
-            pogcol: "Grey & Black",
-            color: "yellow",
-            income: 15,
-            value: "Common",
-            id: id,
-            description: "This Pog was created to represent the York Tech 2022-2023 class of Computer Software.",
-            creator: "Mr. Smith"
-        });
-        refreshInventory();
-    } else if (reason === "Mythical Pog") {
-        const id = Math.random() * 100000
-        inventory.push({
-            locked: false,
-            pogid: 0,
-            name: "Fallout",
-            pogcol: "Iridescent",
-            color: "purple",
-            income: 63,
-            value: "Mythic",
-            id: id,
-            description: "Based on a vault door in fallout character Vault Boy.",
-            creator: "Mr. Smith"
-        });
-        refreshInventory();
-    } else if (reason === "Bronze Pog") {
-        const id = Math.random() * 100000
-        inventory.push({ 
-            pogid: 286, 
-            name: "Silver Pog", 
-            pogcol: "Silver", 
-            color: "orange", 
-            income: 620, 
-            value: "Unique", 
-            id: Math.random() * 100000, 
-            description: "A pog made from pure silver.", 
-            creator: "Silversmith" });
-        refreshInventory();
-    }
+function implement(price, reason) {
+    openCrateWithAnimation(price, reason);
 }
 
 //buy buttons
@@ -154,9 +84,9 @@ function purchase(price, reason, pin) {
         .then(data => {
             if (data.success) {
                 // add purchased item effect here
-                implement(reason);
+                implement(price, reason);
                 save();
-                alert(`Purchase successful: ${reason}`);
+                alert(`Purchase successful! (-${price} Digipogs)`);
             } else {
                 alert(`Purchase failed: ${data.message}`);
             }

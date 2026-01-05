@@ -24,10 +24,6 @@ process.on('unhandledRejection', (reason, promise) => {
 process.on('exit', (code) => {
     console.error('PROCESS EXITED WITH CODE:', code);
 });
-  
-process.on('SIGTERM', () => console.error('SIGTERM received'));
-process.on('SIGINT', () => console.error('SIGINT received'));
-  
 
 //modules
 const achievements = require("./modules/backend_js/trophyList.js")

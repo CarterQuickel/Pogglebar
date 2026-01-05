@@ -1,6 +1,6 @@
 /* Base Crate Style */
 .crate {
-    width: 300px;
+    width: 350px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     padding: 15px 30px;
     font-size: 20px;
@@ -68,27 +68,9 @@
     justify-content: center;
     align-items: center;
     position: absolute;
-    margin-right: -260px;
+    margin-right: -300px;
     scale: 0.75;
     z-index: 21;
-}
-
-#openCratesBtn {
-    background-color: #ecdcdc;
-    border: transparent;
-    position: fixed;
-    border-radius: 100px;
-    padding: 20px;
-    width: 100px;
-    height: 100px;
-    bottom: 0px;
-    right: 0px;
-    cursor: pointer;
-    z-index: 1000;
-    scale: 0.6;
-    box-shadow: 0 0 5px black;
-    overflow: visible;
-    transition: all 0.1s ease;
 }
 
 #openCratesBtn:hover {
@@ -124,16 +106,10 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    position: fixed;
     background-color: #3e1e42;
     padding: 20px;
-    border-radius: 20px;
-    margin-right: 100px;
+    border-radius: 10px;
     margin-bottom: 20px;
-    right: 0;
-    bottom: 0;
-    box-shadow: 0 0 5px black;
-    z-index: 900;
 }
 
 #crate1_b5 {

@@ -103,26 +103,7 @@
     height: 220px;
 }
 
-.buyBtn {
-    background-color: #5ea54e;
-    border: transparent;
-    margin-top: 10px;
-    border-radius: 45px;
-    width: 100px;
-    padding: 8px;
-    text-align: center;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-style: bold;
-    font-size: 15px;
-    cursor: pointer;
-    scale: 1.2;
-}
 
-.buyBtn:hover {
-    background-color: #4a8440;
-    box-shadow: 0 0 5px white;
-    color: white;
-}
 
 #cateName {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -192,13 +173,12 @@ h5 {
     margin-top: 20px;
     background-color: rgb(255, 233, 233);
     border: transparent;
-    border-radius: 10px;
+    border-radius: 45px;
     width: 70px;
-    height: 25px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-style: bold;
     font-size: 15px;
     cursor: pointer;
+    padding: 8px;
 }
 
 #cancelBtn:hover {
