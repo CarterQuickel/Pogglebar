@@ -14,9 +14,7 @@ require('dotenv').config()
 
 //modules
 const achievements = require("./modules/backend_js/trophyList.js")
-console.log(achievements);
 const crateRef = require("./modules/backend_js/crateRef.js")
-console.log(crateRef);
 
 // API key for Formbar API access
 const API_KEY = process.env.API_KEY;
