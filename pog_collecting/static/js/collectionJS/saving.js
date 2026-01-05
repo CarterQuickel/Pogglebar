@@ -51,7 +51,7 @@ document.getElementById("leaderboardButton").addEventListener("click", () => {
     window.location.href = "/leaderboard";
 });
 
-document.getElementById("chatRoomButton").addEventListener("click", () => {
+/* document.getElementById("chatRoomButton").addEventListener("click", () => {
     save();
     window.location.href = "/chatroom";
-});
+}); */
