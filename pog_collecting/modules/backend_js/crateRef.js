@@ -79,58 +79,58 @@ const crateRef = [
         ]
     },
     {
-        name: "risky crate",
-        price: 10000,
-        rarities: [
-            {
-                name: "Trash",
-                chance: 0.0
-            },
-            {
-                name: "Common",
-                chance: 0.5
-            },
-            {
-                name: "Uncommon",
-                chance: 0.0
-            },
-            {
-                name: "Rare",
-                chance: 0.5
-            },
-            {
-                name: "Mythic",
-                chance: 0.0
-            }
-        ]
-    },
-    {
-        name: "godly crate",
+        name: "rare crate",
         price: 5000,
         rarities: [
             {
                 name: "Trash",
+                chance: 0.1
+            },
+            {
+                name: "Common",
+                chance: 0.25
+            },
+            {
+                name: "Uncommon",
+                chance: 0.20
+            },
+            {
+                name: "Rare",
+                chance: 0.30
+            },
+            {
+                name: "Mythic",
+                chance: 0.15
+            }
+        ]
+    },
+    {
+        name: "mythic crate",
+        price: 7000,
+        rarities: [
+            {
+                name: "Trash",
                 chance: 0.0
             },
             {
                 name: "Common",
-                chance: 0.38    // lowered a bit
+                chance: 0.025   // lowered a bit
             },
             {
                 name: "Uncommon",
-                chance: 0.0
+                chance: 0.15    // unchanged
             },
             {
                 name: "Rare",
-                chance: 0.0
+                chance: 0.32    // increased a bit
             },
             {
                 name: "Mythic",
-                chance: 0.51    // adjusted
+                chance: 0.5    // adjusted
             },
             {
                 name: "Unique",
-                chance: 0.11    // new tiny chance for Unique
+                chance: 0.005    // new tiny chance for Unique
             }
         ]
     }
