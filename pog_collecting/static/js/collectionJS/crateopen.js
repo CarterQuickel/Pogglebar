@@ -202,22 +202,18 @@ async function openCrateWithAnimation(cost, index) {
 
 // Set up all event listeners with animation
 // ===== UPDATED EVENT LISTENERS WITH MULTI-PULL ANIMATIONS =====
+function amount() {
+    const boxnum = document.getElementById("amountSelect").value;
+    console.log(boxnum);
+    return parseInt(boxnum);
+}
 
 crateButtons.forEach(crate => {
     const price = crates[Object.keys(crates)[crate.index]].price;
 
     // Single crate WITH animation
     document.getElementById(crate.single).addEventListener("click", () =>
-        transaction(price, crate.index, 1)
-    );
-    
-    // Multi-crates WITH animation
-    document.getElementById(crate.multi5).addEventListener("click", () => 
-        transaction(price, crate.index, 5)
-    );
-    
-    document.getElementById(crate.multi10).addEventListener("click", () => 
-        transaction(price, crate.index, 10)
+        transaction(price, crate.index, amount())
     );
 });
 

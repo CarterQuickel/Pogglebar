@@ -30,20 +30,29 @@
         </div>
     </div>
     <!--Shop-->
-    <div id="shopBanner" style="display:none;">
-        <div class="shopCont">
-            <h1 style="font-size: 60px; margin-top: -10px;">POGGLESHOP</h1>
-            <p style="margin-top: -50px">All purchases are used with digipogs</p>
-            <div id="shopItems"></div>
-            <button id="closeShop">Close</button>
-        </div>
-    </div>
     <div id="transConf" style="display: none;">
         <h5>Purchase Item?</h5>
-        <label>PIN</label>
+        <label>PIN (digipogs only)</label>
         <input id="pinField" type="password" />
-        <button id="purchaseBtn">Purchase</button>
         <br>
+        <div id="dropdowns">
+            <div>
+                <label>Currency</label>
+                <select id="balanceSelect" class="selector">
+                    <option value="money">Legacy Money</option>
+                    <option value="digi">Digipogs</option>
+                </select>
+                </div>
+            <div>
+                <label>Amount</label>
+                <select id="amountSelect" class="selector">
+                    <option value="1">1 Crate</option>
+                    <option value="5">5 Crates</option>
+                    <option value="10">10 Crates</option>
+                </select>
+            </div>
+        </div>
+        <button id="purchaseBtn">Purchase</button>
         <button id="cancelBtn">Cancel</button>
     </div>
     <!--Binder-->
@@ -175,8 +184,6 @@
                         class="tools" id="binder">
                     <img src="../static/icons/buttons_main/color_key.png" title="View Color Key" width="40" height="40"
                         class="tools" id="colors">
-                    <img src="../static/icons/buttons_main/shop.png" title="View Shop" width="40" height="40"
-                        class="tools" id="shopBtn">
                 </div>
             </div>
             <div id="cratesCont">

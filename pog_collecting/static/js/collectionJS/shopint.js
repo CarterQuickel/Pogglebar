@@ -1,56 +1,23 @@
-document.getElementById("shopBtn").addEventListener("click", () => {
-    const shop = document.getElementById("shopBanner");
-    shop.style.display = "block";
-});
-
-document.getElementById("closeShop").addEventListener("click", () => {
-    const shop = document.getElementById("shopBanner");
-    shop.style.display = "none";
-    document.getElementById("transConf").style.display = "none";
-});
-
 // default transaction
 let defprice = 0
 let defamount = 0
 let defreason = ""
 
-//shop items
-let shopHTML = shopitems.map((item) => {
-    const categoryName = item.category;
-    const categoryItems = item.items;
-    return `
-    <h3 id="cateName">${categoryName}</h3>
-    <div id="itemsCont">
-        <div class="itemTag">
-            <h3>${categoryItems && categoryItems[0] ? categoryItems[0].name : 'Error Rendering'}</h3>
-            <p>${categoryItems[0].description}</p>
-            <br>
-            <button class="buyBtn" onclick="transaction(${categoryItems[0].price}, '${categoryItems[0].name.replace(/'/g, "\\'")}')">${categoryItems[0].price} Digipogs</button>
-        </div>
-        <div class="itemTag">
-            <h3>${categoryItems && categoryItems[1] ? categoryItems[1].name : 'Error Rendering'}</h3>
-            <p>${categoryItems[1].description}</p>
-            <br>
-            <button class="buyBtn" onclick="transaction(${categoryItems[1].price}, '${categoryItems[1].name.replace(/'/g, "\\'")}')">${categoryItems[1].price} Digipogs</button>
-        </div>
-        <div class="itemTag">
-            <h3>${categoryItems && categoryItems[2] ? categoryItems[2].name : 'Error Rendering'}</h3>
-            <p>${categoryItems[2].description}</p>
-            <br>
-            <button class="buyBtn" onclick="transaction(${categoryItems[2].price}, '${categoryItems[2].name.replace(/'/g, "\\'")}')">${categoryItems[2].price} Digipogs</button>
-        </div>
-    </div>
-    `
-}).join('');
-
-document.getElementById("shopItems").innerHTML = shopHTML;
+function transferType() {
+    const balanceType = document.getElementById("balanceSelect").value;
+    if (balanceType === "money") {
+        return "Money";
+    } else if (balanceType === "digi") {
+        return "Digipogs";
+    }
+}
 
 function transaction(price, reason, amount) {
     if (!validateCrateOpening(price, amount)) return;
     document.getElementById("transConf").style.display = "block";
     defprice = price;
-    defreason = JSON.stringify(reason);
-    defamount = amount
+    defreason = reason;
+    defamount = amount;
 }
 
 document.getElementById("purchaseBtn").addEventListener("click", () => {
@@ -76,6 +43,12 @@ function implement(price, reason, amount) {
 
 //buy buttons
 function purchase(price, reason, pin, amount) {
+    const type = transferType();
+    if (type === "Money") {
+        money -= price;
+        implement(price, reason, amount);
+        save();
+    } else if (type === "Digipogs") {
     fetch('/api/digipogs/transfer', {
         // post is to use app.post with the route /api/digipogs/transfer
         method: 'POST',
@@ -103,4 +76,5 @@ function purchase(price, reason, pin, amount) {
         .catch(err => {
             console.error("Error during purchase:", err);
         })
-}
+    };
+};
