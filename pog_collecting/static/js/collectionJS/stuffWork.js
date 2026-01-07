@@ -12,7 +12,6 @@ rarityColor = [
     { name: "Trash", color: "red", income: 4 }, //trash
     { name: "Common", color: "yellow", income: 15 }, //common
     { name: "Uncommon", color: "lime", income: 27 }, //uncommon
-    { name: "Rare", color: "aqua", income: 49 }, //rare
     { name: "Mythic", color: "fuchsia", income: 63 }, //mythic
     { name: "Unique", color: "lightgray", income: 134 }, //unique
 ]

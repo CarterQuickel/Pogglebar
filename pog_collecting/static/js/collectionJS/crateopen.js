@@ -1,151 +1,7 @@
-// ===== HELPER FUNCTIONS =====
-
-function validateCrateOpening(cost, count = 1) {
-    if (inventory.length + count > Isize) {
-        alert(`Not enough inventory space to open ${count} crate${count > 1 ? 's' : ''}!`);
-        return false;
-    }
-    if (money < cost * count) {
-        alert(`Not enough money to open ${count} crate${count > 1 ? 's' : ''}!`);
-        return false;
-    }
-    if (inventory.length + count >= 999) {
-        alert("Inventory full! Sell some pogs to make space.");
-        return false;
-    }
-    return true;
-}
-
-// Replace the calculate/add/open functions with the cleaned versions below
-
-function calculatePogResult(cost, index) {
-    const crateKeys = Object.keys(crates || {});
-    const key = crateKeys[index];
-    if (!key) return null;
-    const crate = crates[key];
-    if (!crate || !Array.isArray(crate.rarities)) return null;
-
-    let rand = Math.random();
-    let cumulativeChance = 0;
-
-    for (const item of crate.rarities) {
-        cumulativeChance += Number(item.chance) || 0;
-        if (rand < cumulativeChance) {
-            const candidates = (pogList || []).filter(p => p.rarity === item.name);
-            if (candidates.length === 0) return null;
-            const chosen = candidates[Math.floor(Math.random() * candidates.length)];
-            console.log(chosen)
-
-            const meta = (rarityColor || []).find(r => r.name === chosen.rarity) || {};
-            return {
-                locked: false,
-                pogid: chosen.id || null,
-                name: chosen.name,
-                id: Date.now() + Math.floor(Math.random() * 10000),
-                rarity: chosen.rarity,
-                pogcol: chosen.color || 'white',
-                color: meta.color || 'white',
-                income: meta.income || 5,
-                description: chosen.description || '',
-                creator: chosen.creator || ''
-            };
-        }
-    }
-    return null;
-}
-
-function openCrate(cost, index) {
-    if (!validateCrateOpening(cost, 1)) return;
-    const result = calculatePogResult(cost, index);
-    if (!result) return;
-    // play animation path here if desired, then add
-    addPogToInventory(result);
-    money = (typeof money === 'number' ? money : 0) - cost;
-    cratesOpened = (typeof cratesOpened === 'number' ? cratesOpened : 0) + 1;
-    refreshInventory();
-}
-
-function openMultipleCrates(cost, index, count) {
-    if (!validateCrateOpening(cost, count)) return;
-    const results = [];
-    for (let i = 0; i < count; i++) {
-        const res = calculatePogResult(cost, index);
-        if (res) results.push(res);
-    }
-    // Optionally animate sequential reveals here
-    results.forEach(r => addPogToInventory(r));
-    money = (typeof money === 'number' ? money : 0) - cost * results.length;
-    cratesOpened = (typeof cratesOpened === 'number' ? cratesOpened : 0) + results.length;
-    refreshInventory();
-}
-
-// ===== ANIMATION FUNCTIONS (for future integration) =====
-
-//reduces lag
-function cleanupGachaOverlay() {
-    document.getElementById('gachaOverlay').style.display = 'none';
-        document.getElementById('shootingStarsContainer').innerHTML = '';
-        const centerReveal = document.getElementById('centerPogReveal');
-        if (centerReveal) {
-            centerReveal.style.display = 'none';
-            centerReveal.innerHTML = '';
-        }
-}
-
-// ===== UPDATED SINGLE CRATE WITH BETTER CLEANUP =====
-
-async function openCrateWithAnimation(cost, index) {
-    if (!validateCrateOpening(cost, 1)) return;
-
-    const result = calculatePogResult(cost, index);
-    if (!result) return;
-
-    // Show animation based on rarity
-    await showAnimationForRarity(result.rarity, result);
-
-    // Add to inventory AFTER animation completes
-    addPogToInventory(result);
-    money -= cost;
-    cratesOpened++;
-    
-    // Make sure inventory refreshes and is visible
-    refreshInventory();
-}
-
-
-async function openMultipleCratesWithAnimation(cost, index, count) {
-    if (!validateCrateOpening(cost, count)) return;
-
-    // Calculate all results
-    const results = [];
-    for (let i = 0; i < count; i++) {
-        const result = calculatePogResult(cost, index);
-        if (result) results.push(result);
-    }
-
-    // TODO: Add multi-pull animation
-    // await showMultiPullAnimation(results, count);
-
-    // Add all to inventory
-    results.forEach(result => addPogToInventory(result));
-    money -= cost * count;
-    cratesOpened += count;
-    refreshInventory();
-}
-
-// ===== EVENT LISTENERS =====
-
-const crateButtons = [
-    { single: "crate1", multi5: "crate1_b5", multi10: "crate1_b10", index: 0 },
-    { single: "crate2", multi5: "crate2_b5", multi10: "crate2_b10", index: 1 },
-    { single: "crate3", multi5: "crate3_b5", multi10: "crate3_b10", index: 2 },
-    { single: "crate4", multi5: "crate4_b5", multi10: "crate4_b10", index: 3 },
-    { single: "crate5", multi5: "crate5_b5", multi10: "crate5_b10", index: 4 }
-];
-
-// ===== ANIMATION INTEGRATION =====
-
+// ===== ANIMATION SEQUENCES =====
 async function showAnimationForRarity(rarity, pogResult) {
+    if (!isAnimationRunning) return; // Check if we should continue
+    
     document.getElementById('gachaOverlay').style.display = 'block';
     
     let animationType, starCount, duration;
@@ -169,75 +25,80 @@ async function showAnimationForRarity(rarity, pogResult) {
             break;
     }
     
+    // Step 1: Stars
     createStarShapedShootingStars(animationType, starCount);
     await new Promise(resolve => setTimeout(resolve, duration));
     
+    if (!isAnimationRunning) return; // Check if skipped
+    
+    // Step 2: Click to continue
     const isSpecial = rarity === 'Unique' || rarity === 'Mythic';
     await showClickToContinue(isSpecial);
     
+    if (!isAnimationRunning) return; // Check if skipped
+    
+    // Step 3: Reveal
     if (rarity === 'Unique') {
         await createMiniExplosion();
+        if (!isAnimationRunning) return;
         await revealUniquePogInCenter(pogResult);
+        if (!isAnimationRunning) return;
         await showUniqueParticleExplosion();
+    } else if (rarity === 'Mythic') {
+        await revealMythicPog(pogResult);
+    } else {
+        await revealCommonPog(pogResult);
     }
     
+    // Cleanup
     cleanupGachaOverlay();
 }
 
-// Updated main functions with animation
-async function openCrateWithAnimation(cost, index) {
-    if (!validateCrateOpening(cost, 1)) return;
-
-    const result = calculatePogResult(cost, index);
-    if (!result) return;
-
-    // changed it so the pog is added before animation to prevent save scumming
-    addPogToInventory(result);
-    money -= cost;
-    cratesOpened++;
-    refreshInventory();
+async function showMultiPullAnimation(results, pullCount, highestRarity) {
+    if (!isAnimationRunning) return;
     
-    // Show animation based on rarity
-    showAnimationForRarity(result.rarity, result);
+    document.getElementById('gachaOverlay').style.display = 'block';
+    
+    let animationType, starCount, duration;
+    
+    switch(highestRarity.rarity) {
+        case 'Unique':
+            animationType = 'unique';
+            starCount = 15;
+            duration = 4000;
+            addUniqueScreenEffects();
+            break;
+        case 'Mythic':
+            animationType = 'mythic';
+            starCount = 12;
+            duration = 3500;
+            break;
+        default:
+            animationType = 'normal';
+            starCount = 8;
+            duration = 2500;
+            break;
+    }
+    
+    // Step 1: Stars
+    createStarShapedShootingStars(animationType, starCount);
+    await new Promise(resolve => setTimeout(resolve, duration));
+    
+    if (!isAnimationRunning) return;
+    
+    // Step 2: Click to continue
+    const hasSpecial = results.some(r => r.rarity === 'Unique' || r.rarity === 'Mythic');
+    await showClickToContinue(hasSpecial);
+    
+    if (!isAnimationRunning) return;
+    
+    // Step 3: Show results
+    await showResultsSummary(results, pullCount);
+    
+    // Cleanup handled by summary button
 }
 
-
-// ===== UPDATED EVENT LISTENERS =====
-
-// Set up all event listeners with animation
-// ===== UPDATED EVENT LISTENERS WITH MULTI-PULL ANIMATIONS =====
-
-crateButtons.forEach(crate => {
-    const price = crates[Object.keys(crates)[crate.index]].price;
-    
-    // Single crate WITH animation
-    document.getElementById(crate.single).addEventListener("click", () =>
-        openCrateWithAnimation(price, crate.index)
-    );
-    
-    // Multi-crates WITH animation
-    document.getElementById(crate.multi5).addEventListener("click", () => 
-        openMultipleCratesWithAnimation(price, crate.index, 5)
-    );
-    
-    document.getElementById(crate.multi10).addEventListener("click", () => 
-        openMultipleCratesWithAnimation(price, crate.index, 10)
-    );
-});
-
-
-// Crates container toggle - ADD THIS!
-document.getElementById("openCratesBtn").addEventListener("click", () => {
-    const cratesContainer = document.getElementById("cratesCont");
-    const isVisible = cratesContainer.style.display === "block";
-    cratesContainer.style.display = isVisible ? "none" : "block";
-    enabledCrate = !isVisible;
-});
-
-
-
 // ===== ANIMATION HELPER FUNCTIONS =====
-
 function createStarShapedShootingStars(type, count) {
     const container = document.getElementById('shootingStarsContainer');
     const isRainbow = type === 'unique';
@@ -350,6 +211,434 @@ async function createMiniExplosion() {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            animation: miniExplosion 0.8s ease-out forwards;
+            --endX: ${endX}px;
+            --endY: ${endY}px;
+        `;
+        container.appendChild(particle);
+        // Remove after animation
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, 800);
+    }
+    
+    // Wait for explosion to finish
+    return new Promise(resolve => setTimeout(resolve, 800));
+}
+
+// ===== HELPER FUNCTIONS =====
+function validateCrateOpening(cost, count = 1) {
+    if (inventory.length + count > Isize) {
+        alert(`Not enough inventory space to open ${count} crate${count > 1 ? 's' : ''}!`);
+        return false;
+    }
+    if (money < cost * count) {
+        alert(`Not enough money to open ${count} crate${count > 1 ? 's' : ''}!`);
+        return false;
+    }
+    if (inventory.length + count >= 999) {
+        alert("Inventory full! Sell some pogs to make space.");
+        return false;
+    }
+    return true;
+}
+
+function calculatePogResult(cost, index) {
+    console.log(`🎲 Attempting to calculate pog result for index ${index}`);
+    
+    const crateKeys = Object.keys(crates || {});
+    const key = crateKeys[index];
+    
+    if (!key) {
+        console.log(`❌ No key found for index ${index}. Available keys:`, crateKeys);
+        return null;
+    }
+    
+    const crate = crates[key];
+    if (!crate || !Array.isArray(crate.rarities)) {
+        console.log(`❌ Invalid crate data for key ${key}:`, crate);
+        return null;
+    }
+
+    console.log(`✅ Using crate ${key} with rarities:`, crate.rarities);
+
+    let rand = Math.random();
+    let cumulativeChance = 0;
+
+    for (const item of crate.rarities) {
+        cumulativeChance += Number(item.chance) || 0;
+        if (rand < cumulativeChance) {
+            const candidates = (pogList || []).filter(p => p.rarity === item.name);
+            if (candidates.length === 0) return null;
+            const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+            console.log(chosen)
+
+            const meta = (rarityColor || []).find(r => r.name === chosen.rarity) || {};
+            return {
+                locked: false,
+                pogid: chosen.id || null,
+                name: chosen.name,
+                id: Date.now() + Math.floor(Math.random() * 10000),
+                rarity: chosen.rarity,
+                pogcol: chosen.color || 'white',
+                color: meta.color || 'white',
+                income: meta.income || 5,
+                description: chosen.description || '',
+                creator: chosen.creator || ''
+            };
+        }
+    }
+    return null;
+}
+
+function addPogToInventory(pogResult) {
+    if (!pogResult) return;
+    
+    console.log("🟢 BEFORE adding pog:", pogResult.name, "Inventory size:", inventory.length);
+
+    console.log("Adding pog to inventory:", pogResult.name, pogResult.rarity);
+    
+    let ownedQueue = { name: pogResult.name, rarity: pogResult.rarity, pogcol: pogResult.pogcol };
+    const alreadyOwned = pogAmount.find(pog =>
+        pog.name === ownedQueue.name &&
+        pog.rarity === ownedQueue.rarity &&
+        pog.pogcol === ownedQueue.pogcol
+    );
+    if (!alreadyOwned) {
+        pogAmount.push(ownedQueue)
+    }
+
+    document.getElementById("descPanel").innerHTML = "";
+    inventory.push(pogResult);
+
+    xp += Math.floor(pogResult.income * (15 * level / 15));
+    sorting();
+    levelup();
+     console.log("🟡 AFTER adding pog, before save. Inventory size:", inventory.length);
+    save();
+    console.log("🔵 AFTER save completed. Inventory size:", inventory.length);
+}
+
+// ===== SKIP ANIMATION SYSTEM =====
+let isAnimationRunning = false;
+let currentSkipHandler = null;
+
+function showSkipButton() {
+    const skipBtn = document.getElementById('skipAnimation');
+    skipBtn.style.display = 'block';
+}
+
+function hideSkipButton() {
+    const skipBtn = document.getElementById('skipAnimation');
+    skipBtn.style.display = 'none';
+    if (currentSkipHandler) {
+        skipBtn.removeEventListener('click', currentSkipHandler);
+        currentSkipHandler = null;
+    }
+}
+
+function setupSkipButton(pullType, pogResults) {
+    const skipBtn = document.getElementById('skipAnimation');
+    
+    if (currentSkipHandler) {
+        skipBtn.removeEventListener('click', currentSkipHandler);
+    }
+    
+    currentSkipHandler = () => skipAnimation(pullType, pogResults);
+    skipBtn.addEventListener('click', currentSkipHandler);
+    
+    showSkipButton();
+}
+
+async function skipAnimation(pullType, pogResults) {
+    if (!isAnimationRunning) return;
+    
+    console.log('Skipping animation for:', pullType);
+    isAnimationRunning = false;
+    hideSkipButton();
+    
+    document.getElementById('gachaOverlay').style.display = 'block';
+    
+    if (pullType === 'single') {
+        if (pogResults.rarity === 'Unique') {
+            await revealUniquePogInCenter(pogResults);
+        } else if (pogResults.rarity === 'Mythic') {
+            await revealMythicPog(pogResults);
+        } else {
+            await revealCommonPog(pogResults);
+        }
+    } else if (pullType === 'multi') {
+        await showResultsSummary(pogResults, pogResults.length);
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    cleanupGachaOverlay();
+}
+
+function cleanupGachaOverlay() {
+    document.getElementById('gachaOverlay').style.display = 'none';
+    document.getElementById('shootingStarsContainer').innerHTML = '';
+    const centerReveal = document.getElementById('centerPogReveal');
+    if (centerReveal) {
+        centerReveal.style.display = 'none';
+        centerReveal.innerHTML = '';
+    }
+    hideSkipButton();
+    isAnimationRunning = false;
+}
+
+// ===== MAIN ANIMATION FUNCTIONS =====
+async function openCrateWithAnimation(cost, index) {
+    if (!validateCrateOpening(cost, 1)) return;
+    if (isAnimationRunning) return;
+
+    const result = calculatePogResult(cost, index);
+    if (!result) return;
+
+    addPogToInventory(result);
+    money -= cost;
+    cratesOpened++;
+    refreshInventory();
+    
+    isAnimationRunning = true;
+    setupSkipButton('single', result);
+    
+    try {
+        await showAnimationForRarity(result.rarity, result);
+    } catch (error) {
+        console.error('Animation error:', error);
+        cleanupGachaOverlay();
+    }
+}
+
+async function openMultipleCratesWithAnimation(cost, index, count) {
+    if (!validateCrateOpening(cost, count)) return;
+    if (isAnimationRunning) return;
+
+    const results = [];
+    for (let i = 0; i < count; i++) {
+        const result = calculatePogResult(cost, index);
+        if (result) results.push(result);
+    }
+
+    const rarityOrder = { 'Unique': 6, 'Mythic': 5, 'Rare': 4, 'Uncommon': 3, 'Common': 2, 'Trash': 1 };
+    const highestRarity = results.reduce((highest, pog) => 
+        rarityOrder[pog.rarity] > rarityOrder[highest.rarity] ? pog : highest
+    );
+
+    results.forEach(result => addPogToInventory(result));
+    money -= cost * count;
+    cratesOpened += count;
+    refreshInventory();
+
+    isAnimationRunning = true;
+    setupSkipButton('multi', results);
+    
+    try {
+        await showMultiPullAnimation(results, count, highestRarity);
+    } catch (error) {
+        console.error('Animation error:', error);
+        cleanupGachaOverlay();
+    }
+}
+
+// ===== ANIMATION SEQUENCES =====
+async function showAnimationForRarity(rarity, pogResult) {
+    if (!isAnimationRunning) return;
+    
+    document.getElementById('gachaOverlay').style.display = 'block';
+    
+    let animationType, starCount, duration;
+    
+    switch(rarity) {
+        case 'Unique':
+            animationType = 'unique';
+            starCount = 15;
+            duration = 4000;
+            addUniqueScreenEffects();
+            break;
+        case 'Mythic':
+            animationType = 'mythic';
+            starCount = 12;
+            duration = 3500;
+            break;
+        default:
+            animationType = 'normal';
+            starCount = 8;
+            duration = 2500;
+            break;
+    }
+    
+    createStarShapedShootingStars(animationType, starCount);
+    await new Promise(resolve => setTimeout(resolve, duration));
+    
+    if (!isAnimationRunning) return;
+    
+    const isSpecial = rarity === 'Unique' || rarity === 'Mythic';
+    await showClickToContinue(isSpecial);
+    
+    if (!isAnimationRunning) return;
+    
+    if (rarity === 'Unique') {
+        await createMiniExplosion();
+        if (!isAnimationRunning) return;
+        await revealUniquePogInCenter(pogResult);
+        if (!isAnimationRunning) return;
+        await showUniqueParticleExplosion();
+    } else if (rarity === 'Mythic') {
+        await revealMythicPog(pogResult);
+    } else {
+        await revealCommonPog(pogResult);
+    }
+    
+    cleanupGachaOverlay();
+}
+
+async function showMultiPullAnimation(results, pullCount, highestRarity) {
+    if (!isAnimationRunning) return;
+    
+    document.getElementById('gachaOverlay').style.display = 'block';
+    
+    let animationType, starCount, duration;
+    
+    switch(highestRarity.rarity) {
+        case 'Unique':
+            animationType = 'unique';
+            starCount = 15;
+            duration = 4000;
+            addUniqueScreenEffects();
+            break;
+        case 'Mythic':
+            animationType = 'mythic';
+            starCount = 12;
+            duration = 3500;
+            break;
+        default:
+            animationType = 'normal';
+            starCount = 8;
+            duration = 2500;
+            break;
+    }
+    
+    createStarShapedShootingStars(animationType, starCount);
+    await new Promise(resolve => setTimeout(resolve, duration));
+    
+    if (!isAnimationRunning) return;
+    
+    const hasSpecial = results.some(r => r.rarity === 'Unique' || r.rarity === 'Mythic');
+    await showClickToContinue(hasSpecial);
+    
+    if (!isAnimationRunning) return;
+    
+    await showResultsSummary(results, pullCount);
+}
+
+// ===== ANIMATION HELPER FUNCTIONS =====
+function createStarShapedShootingStars(type, count) {
+    const container = document.getElementById('shootingStarsContainer');
+    const isRainbow = type === 'unique';
+    
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const starContainer = document.createElement('div');
+            starContainer.className = 'genshinStarShape';
+            
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            
+            const angle = (Math.random() * 360) * (Math.PI / 180);
+            const distance = Math.max(window.innerWidth, window.innerHeight) * 0.8;
+            
+            const startX = centerX + Math.cos(angle) * distance;
+            const startY = centerY + Math.sin(angle) * distance;
+            
+            const midX = centerX + Math.cos(angle) * (distance * 0.3);
+            const midY = centerY + Math.sin(angle) * (distance * 0.3);
+            
+            const size = 15 + Math.random() * 20;
+            
+            starContainer.innerHTML = `
+                <div class="simpleStarShape ${isRainbow ? 'rainbow' : ''}" style="
+                    width: ${size}px;
+                    height: ${size}px;
+                    animation: starTwinkle 1s ease-in-out infinite;
+                "></div>
+            `;
+            
+            starContainer.style.cssText = `
+                left: ${startX}px;
+                top: ${startY}px;
+                --startX: 0px;
+                --startY: 0px;
+                --midX: ${midX - startX}px;
+                --midY: ${midY - startY}px;
+                --endX: ${centerX - startX}px;
+                --endY: ${centerY - startY}px;
+                animation: starShootToCenter 3s ease-out;
+                animation-delay: ${i * 150}ms;
+            `;
+            
+            container.appendChild(starContainer);
+            
+            setTimeout(() => {
+                if (starContainer.parentNode) {
+                    starContainer.parentNode.removeChild(starContainer);
+                }
+            }, 3000 + (i * 150) + 500);
+            
+        }, i * 200);
+    }
+}
+
+async function showClickToContinue(hasSpecial = false) {
+    const clickDiv = document.getElementById('clickToContinue');
+    
+    if (hasSpecial) {
+        clickDiv.innerHTML = `
+            <p style="color: #ff00ff; font-size: 28px; text-shadow: 0 0 20px #ff00ff;">
+                Click anywhere to witness your special pog!
+            </p>
+        `;
+        clickDiv.style.animation = 'uniquePulse 1s ease-in-out infinite';
+    } else {
+        clickDiv.innerHTML = '<p>Click anywhere to continue...</p>';
+        clickDiv.style.animation = 'pulse 1.5s infinite';
+    }
+    
+    clickDiv.style.display = 'block';
+    
+    return new Promise(resolve => {
+        const handleClick = () => {
+            clickDiv.style.display = 'none';
+            document.removeEventListener('click', handleClick);
+            resolve();
+        };
+        document.addEventListener('click', handleClick);
+    });
+}
+
+async function createMiniExplosion() {
+    const container = document.getElementById('shootingStarsContainer');
+    
+    for (let i = 0; i < 10; i++) {
+        const particle = document.createElement('div');
+        
+        const angle = (i / 10) * 2 * Math.PI;
+        const distance = 50;
+        const endX = Math.cos(angle) * distance;
+        const endY = Math.sin(angle) * distance;
+        
+        particle.style.cssText = `
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #ffffff, #ffd700);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             animation: miniExplode 1s ease-out forwards;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
             z-index: 10001;
@@ -361,10 +650,8 @@ async function createMiniExplosion() {
         container.appendChild(particle);
     }
     
-    // Wait for mini explosion to finish
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Clean up mini particles
     const miniParticles = container.querySelectorAll('[style*="miniExplode"]');
     miniParticles.forEach(particle => {
         if (particle.parentNode) {
@@ -373,107 +660,9 @@ async function createMiniExplosion() {
     });
 }
 
-async function revealUniquePogInCenter(uniquePog) {
-    let centerReveal = document.getElementById('centerPogReveal');
-    if (!centerReveal) {
-        centerReveal = document.createElement('div');
-        centerReveal.id = 'centerPogReveal';
-        centerReveal.style.cssText = `
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10003;
-        `;
-        document.getElementById('gachaOverlay').appendChild(centerReveal);
-    }
-    
-    // Circular pog display
-    centerReveal.innerHTML = `
-        <div style="
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, 
-                #ff00ff, #ff69b4, #9400d3, #ffd700);
-            background-size: 400% 400%;
-            border: 8px solid white;
-            box-shadow: 
-                0 0 50px rgba(255, 0, 255, 1),
-                0 0 100px rgba(255, 215, 0, 0.8),
-                inset 0 0 40px rgba(255, 255, 255, 0.2);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            animation: uniquePogReveal 2s ease-out, uniqueBackgroundShimmer 2s ease-in-out infinite;
-            color: white;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        ">
-            <!-- Circular shine effect -->
-            <div style="
-                position: absolute;
-                top: -50%;
-                left: -50%;
-                width: 200%;
-                height: 200%;
-                background: conic-gradient(
-                    transparent, 
-                    rgba(255, 255, 255, 0.4), 
-                    transparent, 
-                    rgba(255, 255, 255, 0.4), 
-                    transparent
-                );
-                animation: circularShine 4s linear infinite;
-                border-radius: 50%;
-            "></div>
-            
-            <!-- Pog Name -->
-            <div style="
-                font-size: ${uniquePog.name.length > 12 ? '28px' : '32px'}; 
-                font-weight: bold; 
-                margin-bottom: 15px;
-                text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
-                z-index: 1;
-                max-width: 240px;
-                word-wrap: break-word;
-                line-height: 1.2;
-            ">
-                ${uniquePog.name}
-            </div>
-            
-            <!-- Rarity Label -->
-            <div style="
-                font-size: 24px; 
-                color: #ffffff; 
-                text-shadow: 0 0 15px #ff00ff, 0 0 25px #ffd700;
-                font-weight: bold;
-                z-index: 1;
-            ">
-                UNIQUE
-            </div>
-            
-            <!-- Orbiting ring -->
-            <div style="
-                position: absolute;
-                width: 320px;
-                height: 320px;
-                border: 2px solid rgba(255, 255, 255, 0.3);
-                border-radius: 50%;
-                animation: orbitRing 6s linear infinite;
-            "></div>
-        </div>
-    `;
-    
-    centerReveal.style.display = 'block';
-}
-
 async function showUniqueParticleExplosion() {
     const container = document.getElementById('shootingStarsContainer');
     
-    // Create 25 big rainbow particles
     for (let i = 0; i < 25; i++) {
         const particle = document.createElement('div');
         
@@ -509,7 +698,6 @@ async function showUniqueParticleExplosion() {
     
     await new Promise(resolve => setTimeout(resolve, 3000));
     
-    // Clean up particles
     const particles = container.querySelectorAll('[style*="explodeRainbow"]');
     particles.forEach(particle => {
         if (particle.parentNode) {
@@ -519,7 +707,6 @@ async function showUniqueParticleExplosion() {
 }
 
 function addUniqueScreenEffects() {
-    // Rainbow border flash effect
     const border = document.createElement('div');
     border.style.cssText = `
         position: fixed;
@@ -538,7 +725,6 @@ function addUniqueScreenEffects() {
     
     document.body.appendChild(border);
     
-    // Remove after animation
     setTimeout(() => {
         if (border.parentNode) {
             border.parentNode.removeChild(border);
@@ -546,163 +732,7 @@ function addUniqueScreenEffects() {
     }, 6000);
 }
 
-// ===== MAIN ANIMATION SEQUENCES =====
-
-async function showAnimationForRarity(rarity, pogResult) {
-    document.getElementById('gachaOverlay').style.display = 'block';
-    
-    // Determine animation type and settings
-    let animationType, starCount, duration;
-    
-    switch(rarity) {
-        case 'Unique':
-            animationType = 'unique';
-            starCount = 15;
-            duration = 4000;
-            addUniqueScreenEffects();
-            break;
-        case 'Mythic':
-            animationType = 'mythic';
-            starCount = 12;
-            duration = 3500;
-            break;
-        default:
-            animationType = 'normal';
-            starCount = 8;
-            duration = 2500;
-            break;
-    }
-    
-    // Step 1: Shooting stars
-    createStarShapedShootingStars(animationType, starCount);
-    await new Promise(resolve => setTimeout(resolve, duration));
-    
-    // Step 2: Click to continue
-    const isSpecial = rarity === 'Unique' || rarity === 'Mythic';
-    await showClickToContinue(isSpecial);
-    
-    // Step 3: Show pog result based on rarity
-    if (rarity === 'Unique') {
-        await createMiniExplosion();
-        await revealUniquePogInCenter(pogResult);
-        await showUniqueParticleExplosion();
-    } else if (rarity === 'Mythic') {
-        await revealMythicPog(pogResult);
-    } else {
-        // Show simple reveal for common pogs
-        await revealCommonPog(pogResult);
-    }
-    
-    // Step 4: Clean up
-    cleanupGachaOverlay();
-}
-
-
-// ===== TEST FUNCTIONS =====
-
-async function testCompleteStarAnimation() {
-    console.log("Testing complete star animation...");
-    
-    // Create fake unique pog for testing
-    const testPog = {
-        name: "Rainbow Dragon",
-        rarity: "Unique"
-    };
-    
-    await showAnimationForRarity('Unique', testPog);
-}
-
-async function testNormalAnimation() {
-    console.log("Testing normal animation...");
-    
-    const testPog = {
-        name: "Common Pog",
-        rarity: "Common"
-    };
-    
-    await showAnimationForRarity('Common', testPog);
-}
-
-async function testMythicAnimation() {
-    console.log("Testing mythic animation...");
-    
-    const testPog = {
-        name: "Mythic Pog",
-        rarity: "Mythic"
-    };
-    
-    await showAnimationForRarity('Mythic', testPog);
-}
-
-// ===== MULTI-PULL WITH ANIMATION =====
-
-async function openMultipleCratesWithAnimation(cost, index, count) {
-    if (!validateCrateOpening(cost, count)) return;
-
-    // Calculate all results first
-    const results = [];
-    for (let i = 0; i < count; i++) {
-        const result = calculatePogResult(cost, index);
-        if (result) results.push(result);
-    }
-
-    console.log(`Multi-pull results:`, results.map(r => `${r.name} (${r.rarity})`));
-
-    // Determine the highest rarity pulled
-    const rarityOrder = { 'Unique': 6, 'Mythic': 5, 'Rare': 4, 'Uncommon': 3, 'Common': 2, 'Trash': 1 };
-    const highestRarity = results.reduce((highest, pog) => 
-        rarityOrder[pog.rarity] > rarityOrder[highest.rarity] ? pog : highest
-    );
-
-    // Add all pogs to inventory AFTER animation
-    results.forEach(result => addPogToInventory(result));
-
-    // Deduct money and update
-    money -= cost * count;
-    cratesOpened += count;
-    refreshInventory();
-
-    // Show multi-pull animation
-    showMultiPullAnimation(results, count, highestRarity);
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function addPogToInventory(pogResult) {
-    if (!pogResult) return;
-    
-    console.log("Adding pog to inventory:", pogResult.name, pogResult.rarity); // DEBUG
-    
-    // add to pog amount if new pog
-    let ownedQueue = { name: pogResult.name, rarity: pogResult.rarity, pogcol: pogResult.pogcol };
-    const alreadyOwned = pogAmount.find(pog =>
-        pog.name === ownedQueue.name &&
-        pog.rarity === ownedQueue.rarity &&
-        pog.pogcol === ownedQueue.pogcol
-    );
-    if (!alreadyOwned) {
-        pogAmount.push(ownedQueue)
-    }
-
-    //add pog to inventory
-    document.getElementById("descPanel").innerHTML = "";
-    inventory.push(pogResult);
-
-    // XP gain
-    xp += Math.floor(pogResult.income * (15 * level / 15));
-    sorting();
-    levelup();
-    save();
-}
-
-// Simple reveal for common pogs
+// ===== REVEAL FUNCTIONS =====
 async function revealCommonPog(pogResult) {
     let centerReveal = document.getElementById('centerPogReveal');
     if (!centerReveal) {
@@ -718,7 +748,6 @@ async function revealCommonPog(pogResult) {
         document.getElementById('gachaOverlay').appendChild(centerReveal);
     }
     
-    // Simple rectangular card for common pogs
     centerReveal.innerHTML = `
         <div style="
             width: 250px;
@@ -755,12 +784,9 @@ async function revealCommonPog(pogResult) {
     `;
     
     centerReveal.style.display = 'block';
-    
-    // Wait for user to see it
     await new Promise(resolve => setTimeout(resolve, 2000));
 }
 
-// Mythic pog reveal (golden theme)
 async function revealMythicPog(pogResult) {
     let centerReveal = document.getElementById('centerPogReveal');
     if (!centerReveal) {
@@ -776,7 +802,6 @@ async function revealMythicPog(pogResult) {
         document.getElementById('gachaOverlay').appendChild(centerReveal);
     }
     
-    // Golden card for mythic pogs
     centerReveal.innerHTML = `
         <div style="
             width: 280px;
@@ -816,72 +841,10 @@ async function revealMythicPog(pogResult) {
     `;
     
     centerReveal.style.display = 'block';
-    
-    // Wait for user to see it
     await new Promise(resolve => setTimeout(resolve, 2500));
 }
 
-async function showMultiPullAnimation(results, pullCount, highestRarity) {
-    document.getElementById('gachaOverlay').style.display = 'block';
-    
-    // Determine animation type based on highest rarity
-    let animationType, starCount, duration;
-    
-    switch(highestRarity.rarity) {
-        case 'Unique':
-            animationType = 'unique';
-            starCount = 15;
-            duration = 4000;
-            addUniqueScreenEffects();
-            break;
-        case 'Mythic':
-            animationType = 'mythic';
-            starCount = 12;
-            duration = 3500;
-            break;
-        default:
-            animationType = 'normal';
-            starCount = 8;
-            duration = 2500;
-            break;
-    }
-    
-    // Step 1: Shooting stars (one animation for all pulls)
-    createStarShapedShootingStars(animationType, starCount);
-    await new Promise(resolve => setTimeout(resolve, duration));
-    
-    // Step 2: Click to continue
-    const hasSpecial = results.some(r => r.rarity === 'Unique' || r.rarity === 'Mythic');
-    await showClickToContinue(hasSpecial);
-    
-    // Step 3: Show ALL pogs in a line
-    await showAllPogResults(results, pullCount);
-    
-    // Step 4: Special effects for unique pogs
-    const uniquePogs = results.filter(r => r.rarity === 'Unique');
-    if (uniquePogs.length > 0) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-}
-
-async function showAllPogResults(results, pullCount) {
-    // Sort results by rarity (highest to lowest)
-    const rarityOrder = { 'Unique': 6, 'Mythic': 5, 'Rare': 4, 'Uncommon': 3, 'Common': 2, 'Trash': 1 };
-    const sortedResults = [...results].sort((a, b) => rarityOrder[b.rarity] - rarityOrder[a.rarity]);
-    
-    // Step 1: Show each pog individually
-    for (let i = 0; i < sortedResults.length; i++) {
-        const pog = sortedResults[i];
-        const isLast = i === sortedResults.length - 1;
-        
-        await showIndividualPog(pog, i + 1, pullCount, isLast);
-    }
-    
-    // Step 2: Show summary of all results
-    await showResultsSummary(sortedResults, pullCount);
-}
-
-async function showIndividualPog(pog, currentIndex, totalCount, isLast) {
+async function revealUniquePogInCenter(uniquePog) {
     let centerReveal = document.getElementById('centerPogReveal');
     if (!centerReveal) {
         centerReveal = document.createElement('div');
@@ -896,144 +859,84 @@ async function showIndividualPog(pog, currentIndex, totalCount, isLast) {
         document.getElementById('gachaOverlay').appendChild(centerReveal);
     }
     
-    // Get rarity styling
-    const rarityStyles = {
-        'Unique': {
-            bg: 'linear-gradient(135deg, #ff00ff, #ffd700)', border: '#ff00ff', shadow: 'rgba(255, 0, 255, 0.8)', textColor: 'white', size: '320px', effects: `
-                <div style="
-                    position: absolute;
-                    top: -50%;
-                    left: -50%;
-                    width: 200%;
-                    height: 200%;
-                    background: conic-gradient(transparent, rgba(255, 255, 255, 0.4), transparent);
-                    animation: circularShine 3s linear infinite;
-                    border-radius: 50%;
-                "></div>
-            `
-        },
-        'Mythic': {
-            bg: 'linear-gradient(135deg, #9b59b6, #c39bd3)', border: '#9b59b6', shadow: 'rgba(155, 89, 182, 0.6)', textColor: 'white', size: '280px', effects: ''
-        },
-        'Rare': {
-            bg: 'linear-gradient(135deg, #4a9eff, #7bb3ff)', border: '#7bb3ff', shadow: 'rgba(123, 179, 255, 0.5)', textColor: 'white', size: '260px', effects: ''
-        },
-        'Uncommon': {
-            bg: 'linear-gradient(135deg, #27ae60, #58d68d)', border: '#27ae60', shadow: 'rgba(39, 174, 96, 0.5)', textColor: 'white', size: '240px', effects: ''
-        },
-        'Common': {
-            bg: 'linear-gradient(135deg, #ffd700, #ffed4a)', border: '#ffd700', shadow: 'rgba(255, 215, 0, 0.8)', textColor: 'white', size: '230px', effects: ''
-        },
-        'Trash': {
-            bg: 'linear-gradient(135deg, #c93939ff, #c44747ff)', border: '#af2b2bff', shadow: 'rgba(153, 153, 153, 0.3)', textColor: 'white', size: '220px', effects: ''
-        }
-    };
-    
-    const style = rarityStyles[pog.rarity] || rarityStyles['Common'];
-    const isUnique = pog.rarity === 'Unique';
-    const shape = isUnique ? '50%' : '15px'; // Circle for unique, rounded rectangle for others
-    
     centerReveal.innerHTML = `
         <div style="
-            width: ${style.size};
-            height: ${style.size};
-            border-radius: ${shape};
-            background: ${style.bg};
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, 
+                #ff00ff, #ff69b4, #9400d3, #ffd700);
             background-size: 400% 400%;
-            border: ${isUnique ? '8px' : '5px'} solid ${style.border};
-            box-shadow: ${style.shadow};
+            border: 8px solid white;
+            box-shadow: 
+                0 0 50px rgba(255, 0, 255, 1),
+                0 0 100px rgba(255, 215, 0, 0.8),
+                inset 0 0 40px rgba(255, 255, 255, 0.2);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            animation: ${isUnique ? 'uniquePogReveal 2s ease-out, uniqueBackgroundShimmer 2s ease-in-out infinite' : 'individualPogReveal 1.2s ease-out'};
-            color: ${style.textColor};
+            animation: uniquePogReveal 2s ease-out, uniqueBackgroundShimmer 2s ease-in-out infinite;
+            color: white;
             text-align: center;
             position: relative;
             overflow: hidden;
-            cursor: pointer;
         ">
-            ${style.effects}
-            
-            <!-- Progress indicator -->
             <div style="
                 position: absolute;
-                top: 15px;
-                right: 15px;
-                background: rgba(0,0,0,0.7);
-                color: white;
-                padding: 5px 10px;
-                border-radius: 15px;
-                font-size: 14px;
-                z-index: 2;
-            ">
-                ${currentIndex}/${totalCount}
-            </div>
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: conic-gradient(
+                    transparent, 
+                    rgba(255, 255, 255, 0.4), 
+                    transparent, 
+                    rgba(255, 255, 255, 0.4), 
+                    transparent
+                );
+                animation: circularShine 4s linear infinite;
+                border-radius: 50%;
+            "></div>
             
-            <!-- Pog Name -->
             <div style="
-                font-size: ${pog.name.length > 12 ? (isUnique ? '28px' : '20px') : (isUnique ? '32px' : '24px')}; 
+                font-size: ${uniquePog.name.length > 12 ? '28px' : '32px'}; 
                 font-weight: bold; 
                 margin-bottom: 15px;
                 text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
                 z-index: 1;
-                max-width: ${parseInt(style.size) - 40}px;
+                max-width: 240px;
                 word-wrap: break-word;
                 line-height: 1.2;
             ">
-                ${pog.name}
+                ${uniquePog.name}
             </div>
             
-            <!-- Rarity Label -->
             <div style="
-                font-size: ${isUnique ? '24px' : '18px'}; 
+                font-size: 24px; 
+                color: #ffffff; 
+                text-shadow: 0 0 15px #ff00ff, 0 0 25px #ffd700;
                 font-weight: bold;
                 z-index: 1;
-                text-shadow: ${isUnique ? '0 0 15px #ff00ff, 0 0 25px #ffd700' : '2px 2px 4px rgba(0,0,0,0.8)'};
-                margin-bottom: 15px;
             ">
-                ${pog.rarity.toUpperCase()}
+                UNIQUE
             </div>
             
-            <!-- Click instruction -->
             <div style="
                 position: absolute;
-                bottom: 15px;
-                left: 50%;
-                transform: translateX(-50%);
-                font-size: 14px;
-                opacity: 0.8;
-                animation: pulse 1.5s infinite;
-                z-index: 1;
-            ">
-                ${isLast ? 'Click to see summary' : 'Click for next pog'}
-            </div>
-            
-            ${isUnique ? `
-                <div style="
-                    position: absolute;
-                    width: ${parseInt(style.size) + 40}px;
-                    height: ${parseInt(style.size) + 40}px;
-                    border: 2px solid rgba(255, 255, 255, 0.3);
-                    border-radius: 50%;
-                    animation: orbitRing 6s linear infinite;
-                "></div>
-            ` : ''}
+                width: 320px;
+                height: 320px;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                animation: orbitRing 6s linear infinite;
+            "></div>
         </div>
     `;
     
     centerReveal.style.display = 'block';
-    
-    // Wait for click
-    return new Promise(resolve => {
-        const handleClick = () => {
-            document.removeEventListener('click', handleClick);
-            resolve();
-        };
-        document.addEventListener('click', handleClick);
-    });
 }
 
+// ===== MULTI-PULL SUMMARY FUNCTIONS =====
 async function showResultsSummary(results, pullCount) {
     let centerReveal = document.getElementById('centerPogReveal');
     
@@ -1068,7 +971,6 @@ async function showResultsSummary(results, pullCount) {
                 ${results.map((pog, index) => createSummaryPogCard(pog, index)).join('')}
             </div>
             
-            <!-- Rarity breakdown -->
             <div style="
                 background: rgba(255,255,255,0.1);
                 border-radius: 10px;
@@ -1101,7 +1003,6 @@ async function showResultsSummary(results, pullCount) {
         </div>
     `;
     
-    // Animate summary cards appearing
     const summaryCards = centerReveal.querySelectorAll('.summaryPogCard');
     summaryCards.forEach((card, index) => {
         setTimeout(() => {
@@ -1109,10 +1010,12 @@ async function showResultsSummary(results, pullCount) {
         }, index * 50);
     });
     
+    centerReveal.style.display = 'block';
+    
     document.getElementById('closeSummary').addEventListener('click', () => {
+        hideSkipButton();
         cleanupGachaOverlay();
     });
-    
 }
 
 function createSummaryPogCard(pog, index) {
@@ -1167,73 +1070,64 @@ function createRarityBreakdown(results) {
         .join(' • ');
 }
 
+// ===== EVENT LISTENERS =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Single crate buttons
+    document.getElementById('crate1').addEventListener('click', () => 
+        openCrateWithAnimation(100, 0) // Trash Crate - $100
+    );
+    document.getElementById('crate2').addEventListener('click', () => 
+        openCrateWithAnimation(500, 1) // Common Crate - $500
+    );
+    document.getElementById('crate3').addEventListener('click', () => 
+        openCrateWithAnimation(1000, 2) // Uncommon Crate - $1000
+    );
+    document.getElementById('crate4').addEventListener('click', () => 
+        openCrateWithAnimation(5000, 3) // Rare Crate - $5000
+    );
+    document.getElementById('crate5').addEventListener('click', () => 
+        openCrateWithAnimation(7000, 4) // Mythic Crate - $7000
+    );
 
-function createPogResultCard(pog, index) {
-    // Get rarity colors
-    const rarityColors = {
-        'Unique': { bg: 'linear-gradient(135deg, #ff00ff, #ff69b4, #9400d3, #ffd700)', border: '#ff00ff', shadow: 'rgba(255, 0, 255, 0.8)' },
-        'Mythic': { bg: 'linear-gradient(135deg, #9b59b6, #c39bd3)', border: '#9b59b6', shadow: 'rgba(155, 89, 182, 0.6)' },
-        'Rare': { bg: 'linear-gradient(135deg, #4a9eff, #7bb3ff)', border: '#7bb3ff', shadow: 'rgba(123, 179, 255, 0.5)' },
-        'Uncommon': { bg: 'linear-gradient(135deg, #27ae60, #58d68d)', border: '#27ae60', shadow: 'rgba(39, 174, 96, 0.5)' },
-        'Common': { bg: 'linear-gradient(135deg, #ffd700, #ffed4a)', border: '#ffd700', shadow: 'rgba(255, 215, 0, 0.8)' },
-        'Trash': { bg: 'linear-gradient(135deg, #c93939ff, #c44747ff)', border: '#af2b2bff', shadow: 'rgba(153, 153, 153, 0.3)' }
-    };
-    
-    const colors = rarityColors[pog.rarity] || rarityColors['Common'];
-    
-    return `
-        <div class="pogResultCard" style="
-            width: 120px;
-            height: 160px;
-            background: ${colors.bg};
-            border: 3px solid ${colors.border};
-            border-radius: 12px;
-            box-shadow: 0 0 20px ${colors.shadow};
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: white;
-            opacity: 0;
-            transform: translateY(30px) scale(0.8);
-            animation-delay: ${index * 100}ms;
-            position: relative;
-            overflow: hidden;
-        ">
-            ${pog.rarity === 'Unique' ? `
-                <div style="
-                    position: absolute;
-                    top: -50%;
-                    left: -50%;
-                    width: 200%;
-                    height: 200%;
-                    background: conic-gradient(transparent, rgba(255, 255, 255, 0.3), transparent);
-                    animation: circularShine 2s linear infinite;
-                "></div>
-            ` : ''}
-            
-            <div style="
-                font-size: ${pog.name.length > 12 ? '12px' : '14px'};
-                font-weight: bold;
-                margin-bottom: 8px;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-                z-index: 1;
-                max-width: 100px;
-                word-wrap: break-word;
-                line-height: 1.2;
-            ">
-                ${pog.name}
-            </div>
-            
-            <div style="
-                font-size: 12px;
-                font-weight: bold;
-                z-index: 1;
-                text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-            ">
-                ${pog.rarity}
-            </div>
-        </div>
-    `;
-}
+    // Multi-crate buttons (+5)
+    document.getElementById('crate1_b5').addEventListener('click', () => 
+        openMultipleCratesWithAnimation(100, 0, 5)
+    );
+    document.getElementById('crate2_b5').addEventListener('click', () => 
+        openMultipleCratesWithAnimation(500, 1, 5)
+    );
+    document.getElementById('crate3_b5').addEventListener('click', () => 
+        openMultipleCratesWithAnimation(1000, 2, 5)
+    );
+    document.getElementById('crate4_b5').addEventListener('click', () => 
+        openMultipleCratesWithAnimation(5000, 3, 5)
+    );
+    document.getElementById('crate5_b5').addEventListener('click', () => 
+        openMultipleCratesWithAnimation(7000, 4, 5)
+    );
+
+    // Multi-crate buttons (+10)
+    document.getElementById('crate1_b10').addEventListener('click', () => 
+        openMultipleCratesWithAnimation(100, 0, 10)
+    );
+    document.getElementById('crate2_b10').addEventListener('click', () => 
+        openMultipleCratesWithAnimation(500, 1, 10)
+    );
+    document.getElementById('crate3_b10').addEventListener('click', () => 
+        openMultipleCratesWithAnimation(1000, 2, 10)
+    );
+    document.getElementById('crate4_b10').addEventListener('click', () => 
+        openMultipleCratesWithAnimation(5000, 3, 10)
+    );
+    document.getElementById('crate5_b10').addEventListener('click', () => 
+        openMultipleCratesWithAnimation(7000, 4, 10)
+    );
+
+    // Crates container toggle
+    document.getElementById("openCratesBtn").addEventListener("click", () => {
+        const cratesContainer = document.getElementById("cratesCont");
+        const isVisible = cratesContainer.style.display === "block";
+        cratesContainer.style.display = isVisible ? "none" : "block";
+        enabledCrate = !isVisible;
+    });
+});

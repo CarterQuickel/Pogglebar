@@ -66,3 +66,249 @@
 .confirmbtn:hover {
     background-image: linear-gradient(to right, #d6a724, #ddd26b);
 }
+
+/* ===== GACHA ANIMATION KEYFRAMES ===== */
+@keyframes starShootToCenter {
+    0% {
+        transform: translateX(var(--startX)) translateY(var(--startY)) rotate(0deg) scale(0.5);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+        transform: translateX(var(--startX)) translateY(var(--startY)) rotate(180deg) scale(1);
+    }
+    80% {
+        opacity: 1;
+        transform: translateX(var(--midX)) translateY(var(--midY)) rotate(540deg) scale(1.2);
+    }
+    100% {
+        transform: translateX(var(--endX)) translateY(var(--endY)) rotate(720deg) scale(0.8);
+        opacity: 0;
+    }
+}
+
+@keyframes uniquePogReveal {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) rotate(-180deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2) rotate(0deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes mythicPogReveal {
+    0% {
+        opacity: 0;
+        transform: scale(0.7) rotate(-10deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1) rotate(5deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes commonPogReveal {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) rotate(-5deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes uniquePulse {
+    0%, 100% { 
+        opacity: 0.8; 
+        transform: translateX(-50%) scale(1);
+        text-shadow: 0 0 20px #ff00ff;
+    }
+    50% { 
+        opacity: 1; 
+        transform: translateX(-50%) scale(1.05);
+        text-shadow: 0 0 30px #ff00ff, 0 0 40px #00ffff;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+@keyframes circularShine {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes uniqueBackgroundShimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes starTwinkle {
+    0%, 100% { 
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    50% { 
+        transform: scale(1.3) rotate(180deg);
+        opacity: 0.7;
+    }
+}
+
+@keyframes orbitRing {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.02); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes pogCardReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes miniExplode {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    70% {
+        transform: translate(
+            calc(-50% + var(--miniX)), 
+            calc(-50% + var(--miniY))
+        ) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(
+            calc(-50% + var(--miniX) * 1.5), 
+            calc(-50% + var(--miniY) * 1.5)
+        ) scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes explodeRainbow {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    70% {
+        transform: translate(
+            calc(-50% + var(--endX)), 
+            calc(-50% + var(--endY))
+        ) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(
+            calc(-50% + var(--endX) * 1.5), 
+            calc(-50% + var(--endY) * 1.5)
+        ) scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes rainbowParticleShimmer {
+    0%, 100% { 
+        background-position: 0% 50%;
+        filter: brightness(1) saturate(1);
+    }
+    50% { 
+        background-position: 100% 50%;
+        filter: brightness(1.3) saturate(1.5);
+    }
+}
+
+@keyframes borderPulse {
+    0%, 100% { 
+        opacity: 0.8;
+        filter: brightness(1);
+    }
+    50% { 
+        opacity: 1;
+        filter: brightness(1.3);
+    }
+}
+
+@keyframes rainbowShift {
+    0% { 
+        background-position: 0% 50%;
+        filter: brightness(1) saturate(1);
+    }
+    50% { 
+        background-position: 100% 50%;
+        filter: brightness(1.3) saturate(1.5);
+    }
+    100% { 
+        background-position: 0% 50%;
+        filter: brightness(1) saturate(1);
+    }
+}
+
+/* ===== STAR SHAPE STYLES ===== */
+.genshinStarShape {
+    position: absolute;
+    z-index: 10000;
+}
+
+.simpleStarShape {
+    position: relative;
+    background: rgba(255, 255, 255, 1);
+    transform: rotate(45deg);
+    box-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.8),
+        0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.simpleStarShape::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 1);
+    transform: rotate(45deg);
+    z-index: -1;
+}
+
+.simpleStarShape.rainbow {
+    background: linear-gradient(45deg, 
+        #ff0000, #ff7f00, #ffff00, #00ff00, 
+        #0000ff, #4b0082, #9400d3);
+    background-size: 200% 200%;
+    animation: rainbowShift 0.8s ease-in-out infinite;
+    box-shadow: 
+        0 0 15px rgba(255, 215, 0, 0.9),
+        0 0 25px rgba(255, 0, 255, 0.7);
+}
+
+.simpleStarShape.rainbow::before {
+    background: radial-gradient(circle,
+        rgba(255, 215, 0, 0.6) 0%,
+        rgba(255, 0, 255, 0.4) 50%,
+        transparent 100%);
+}
+
+/* ===== SUMMARY CARD STYLES ===== */
+.summaryPogCard {
+    animation: pogCardReveal 0.4s ease-out forwards;
+}
