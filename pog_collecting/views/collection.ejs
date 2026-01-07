@@ -32,9 +32,7 @@
     <!--Shop-->
     <div id="transConf" style="display: none;">
         <h5>Purchase Item?</h5>
-        <label>PIN (digipogs only)</label>
-        <input id="pinField" type="password" />
-        <br>
+        <h5 id="crateprice"></h5>
         <div id="dropdowns">
             <div>
                 <label>Currency</label>
@@ -44,13 +42,18 @@
                 </select>
                 </div>
             <div>
-                <label>Amount</label>
+                <label>Quantity</label>
                 <select id="amountSelect" class="selector">
                     <option value="1">1 Crate</option>
                     <option value="5">5 Crates</option>
                     <option value="10">10 Crates</option>
                 </select>
             </div>
+        </div>
+        <div id="pin" style="display: none;">
+            <br>
+            <label>PIN</label>
+            <input id="pinField" type="password" />
         </div>
         <button id="purchaseBtn">Purchase</button>
         <button id="cancelBtn">Cancel</button>

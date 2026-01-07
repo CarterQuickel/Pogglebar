@@ -207,13 +207,22 @@ function amount() {
     console.log(boxnum);
     return parseInt(boxnum);
 }
-
 crateButtons.forEach(crate => {
     const price = crates[Object.keys(crates)[crate.index]].price;
 
     // Single crate WITH animation
     document.getElementById(crate.single).addEventListener("click", () =>
-        transaction(price, crate.index, amount())
+        transaction(price, crate.index, 1)
+    );
+
+    // Multi 5 crate WITH animation
+    document.getElementById(crate.multi5).addEventListener("click", () =>
+        transaction(price, crate.index, 5)
+    );
+
+    // Multi 10 crate WITH animation
+    document.getElementById(crate.multi10).addEventListener("click", () =>
+        transaction(price, crate.index, 10)
     );
 });
 

@@ -12,9 +12,20 @@ function transferType() {
     }
 }
 
+document.getElementById("balanceSelect").addEventListener("change", () => {
+    const type = transferType();
+    if (type === "Money") {
+        document.getElementById("pin").style.display = "none";
+    } else if (type === "Digipogs") {
+        document.getElementById("pin").style.display = "block";
+    }
+});
+
+//purchasing functions
 function transaction(price, reason, amount) {
     if (!validateCrateOpening(price, amount)) return;
     document.getElementById("transConf").style.display = "block";
+    document.getElementById("crateprice").innerText = `Price: $${price * amount}`;
     defprice = price;
     defreason = reason;
     defamount = amount;
