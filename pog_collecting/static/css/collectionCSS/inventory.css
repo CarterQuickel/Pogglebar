@@ -54,7 +54,7 @@
     border-radius: 6px;
     font-size: 14px;
     pointer-events: none;
-    z-index: 99;
+    z-index: 10;
 }
 
 #stats {
