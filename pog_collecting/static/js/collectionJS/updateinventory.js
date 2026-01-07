@@ -58,7 +58,7 @@ function refreshInventory() {
             // show trade button
             canTrade = item.name === "Dragon Ball",
             // return html
-            `<div data-index=${index} class="item ${hasBonus ? 'highlight' : ''} ${item.locked ? 'locked' : ''} ${selected ? 'select' : ''}" style="border: 4px solid ${unique ? "lightgray" : "black"}; background-color: ${isBronze ? '#CD7F32' : isSilver ? '#C0C0C0' : isGold ? '#FFDF00' : isDiamond ? '#4EE2EC' : isAstral ? '#8A2BE2' : isGod ? 'white' : 'rgb(66, 51, 66)'};">
+            `<div data-index=${index} data-id=${item.id} class="item ${hasBonus ? 'highlight' : ''} ${item.locked ? 'locked' : ''} ${selected ? 'select' : ''}" style="border: 4px solid ${unique ? "lightgray" : "black"}; background-color: ${isBronze ? '#CD7F32' : isSilver ? '#C0C0C0' : isGold ? '#FFDF00' : isDiamond ? '#4EE2EC' : isAstral ? '#8A2BE2' : isGod ? 'white' : 'rgb(66, 51, 66)'};">
             <img id="lock" style="background-color: ${item.locked ? "white" : "rgba(200, 200, 200, 1)"}" src="../static/icons/buttons_main/lock.png" onclick="lock(${item.id})" width="11" height="12" title="Lock (can't be sold when locked)">
             <h1 class="name" style="color: ${item.color};">${item.name}</h1>
             <h2 class="multiplier" style="display: ${multiplier > 1 ? "block" : "none"}">${showMultiplier}</h2>
