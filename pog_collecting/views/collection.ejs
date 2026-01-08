@@ -32,9 +32,7 @@
     <!--Shop-->
     <div id="transConf" style="display: none;">
         <h5>Purchase Item?</h5>
-        <label>PIN (digipogs only)</label>
-        <input id="pinField" type="password" />
-        <br>
+        <h5 id="crateprice"></h5>
         <div id="dropdowns">
             <div>
                 <label>Currency</label>
@@ -44,13 +42,18 @@
                 </select>
                 </div>
             <div>
-                <label>Amount</label>
+                <label>Quantity</label>
                 <select id="amountSelect" class="selector">
                     <option value="1">1 Crate</option>
                     <option value="5">5 Crates</option>
                     <option value="10">10 Crates</option>
                 </select>
             </div>
+        </div>
+        <div id="pin" style="display: none;">
+            <br>
+            <label>PIN</label>
+            <input id="pinField" type="password" />
         </div>
         <button id="purchaseBtn">Purchase</button>
         <button id="cancelBtn">Cancel</button>
@@ -199,11 +202,7 @@
                                 Mythic: 6%<br>
                             </span>
                         </div>
-                        <button id="crate1" class="crate">Common Crate - $100</button>
-                        <div class="buymCont">
-                            <button id="crate1_b5" class="buym">+5</button>
-                            <button id="crate1_b10" class="buym">+10</button>
-                        </div>
+                        <button id="crate1" class="crate">Trash Crate</button>
                     </div>
                     <div class="buttonSources">
                         <div class="tooltip-chances">
@@ -216,11 +215,7 @@
                                 Mythic: 11%<br>
                             </span>
                         </div>
-                        <button id="crate2" class="crate">Rare Crate - $500</button>
-                        <div class="buymCont">
-                            <button id="crate2_b5" class="buym">+5</button>
-                            <button id="crate2_b10" class="buym">+10</button>
-                        </div>
+                        <button id="crate2" class="crate">Common Crate</button>
                     </div>
                     <div class="buttonSources">
                         <div class="tooltip-chances">
@@ -233,11 +228,7 @@
                                 Mythic: 12%<br>
                             </span>
                         </div>
-                        <button id="crate3" class="crate">Epic Crate - $1000</button>
-                        <div class="buymCont">
-                            <button id="crate3_b5" class="buym">+5</button>
-                            <button id="crate3_b10" class="buym">+10</button>
-                        </div>
+                        <button id="crate3" class="crate">Uncommon Crate</button>
                     </div>
                     <div class="buttonSources">
                         <div class="tooltip-chances">
@@ -250,11 +241,7 @@
                                 Mythic: 0%<br>
                             </span>
                         </div>
-                        <button id="crate4" class="crate">Legendary Crate - $5000</button>
-                        <div class="buymCont">
-                            <button id="crate4_b5" class="buym">+5</button>
-                            <button id="crate4_b10" class="buym">+10</button>
-                        </div>
+                        <button id="crate4" class="crate">Rare Crate</button>
                     </div>
                     <div class="buttonSources">
                         <div class="tooltip-chances">
@@ -268,11 +255,7 @@
                                 Unique: 11%
                             </span>
                         </div>
-                        <button id="crate5" class="crate">Mythical Crate - $7000</button>
-                        <div class="buymCont">
-                            <button id="crate5_b5" class="buym">+5</button>
-                            <button id="crate5_b10" class="buym">+10</button>
-                        </div>
+                        <button id="crate5" class="crate">Mythic Crate</button>
                     </div>
                 </div>
             </div>

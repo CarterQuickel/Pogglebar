@@ -1,5 +1,7 @@
 // default transaction
 let defprice = 0
+// the price for the true transaction
+let defrealprice = 0
 let defamount = 0
 let defreason = ""
 
@@ -12,17 +14,58 @@ function transferType() {
     }
 }
 
-function transaction(price, reason, amount) {
-    if (!validateCrateOpening(price, amount)) return;
+document.getElementById("amountSelect").addEventListener("change", () => {
+    const price = defprice;
+    const amount = parseInt(document.getElementById("amountSelect").value);
+    determineCost(price, amount);
+    defamount = amount;
+});
+
+document.getElementById("balanceSelect").addEventListener("change", () => {
+    const type = transferType();
+    if (type === "Money") {
+        document.getElementById("pin").style.display = "none";
+    } else if (type === "Digipogs") {
+        document.getElementById("pin").style.display = "block";
+    }
+    determineCost(defprice, defamount);
+});
+
+//price determination
+function determineCost(price, amount) {
+    const type = transferType();
+    let monies = true;
+    if (type === "Money") {
+        monies = true; 
+    } else if (type === "Digipogs") {
+        monies = false;
+    }
+    const purchaseCost = monies ? price * amount : (price * amount) / 5;
+    document.getElementById("crateprice").innerText = `Price: $${abbreviateNumber(purchaseCost)}`;
+    defrealprice = purchaseCost;
+    console.log(defrealprice);
+    return purchaseCost;
+};
+
+//purchasing functions
+function transaction(price, reason) {
+    const count = parseInt(document.getElementById("amountSelect").value);
+    // determine total price
+    determineCost(price, count);
+    // open transaction confirmation modal
     document.getElementById("transConf").style.display = "block";
+    // variable definitions for later use
     defprice = price;
     defreason = reason;
-    defamount = amount;
+    defamount = count;
 }
 
 document.getElementById("purchaseBtn").addEventListener("click", () => {
+    const count = parseInt(document.getElementById("amountSelect").value);
+    const type = transferType();
+    if (!validateCrateOpening(type, defrealprice, count)) return;
     const pinval = document.getElementById("pinField").value;
-    purchase(defprice, defreason, pinval, defamount);
+    purchase(defrealprice, defreason, pinval, defamount);
     document.getElementById("transConf").style.display = "none";
 });
 
@@ -44,6 +87,7 @@ function implement(price, reason, amount) {
 //buy buttons
 function purchase(price, reason, pin, amount) {
     const type = transferType();
+    console.log(price);
     if (type === "Money") {
         money -= price;
         implement(price, reason, amount);
