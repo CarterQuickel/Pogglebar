@@ -1,123 +1,3 @@
-#shopBanner {
-    position: fixed;
-    top: 0;
-    padding-top: 40px; /* offsets the shop to be centered */
-    padding-bottom: auto;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100001;
-}
-
-.shopCont {
-    background-color: rgb(0, 0, 0);
-    width: 60%;
-    margin-top: 30px;
-    margin: auto;
-    border-radius: 30px;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    padding: 20px;
-    border: 6px solid rgb(44, 44, 44);
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    color: White;
-}
-
-#closeShop {
-    margin-top: 20px;
-    background-color: rgb(255, 233, 233);
-    border: transparent;
-    border-radius: 10px;
-    width: 70px;
-    height: 25px;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-style: bold;
-    font-size: 15px;
-    cursor: pointer;
-}
-
-#closeShop:hover {
-    background-color: rgb(112, 106, 106);
-}
-
-#shopItems {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    max-height: 70vh;
-    overflow-y: auto;
-    margin-top: 20px;
-}
-
-/* Scrollbar track (background) */
-#shopItems::-webkit-scrollbar {
-    width: 15px;
-    /* width of vertical scrollbar */
-    border-radius: 3px;
-}
-
-/* Scrollbar track */
-#shopItems::-webkit-scrollbar-track {
-    background: #292929;
-}
-
-/* Scrollbar thumb (the draggable handle) */
-#shopItems::-webkit-scrollbar-thumb {
-    background-color: #dddddd;
-    /* color of the thumb */
-}
-
-/* Scrollbar thumb on hover */
-#shopItems::-webkit-scrollbar-thumb:hover {
-    background-color: #858585;
-}
-
-#itemsCont {
-    gap: 20px;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    margin-bottom: 50px;
-    border: 10px solid rgb(219, 77, 101);
-    padding: 20px;
-    border-radius: 20px;
-    margin-right: auto;
-    margin-left: auto;
-    width: fit-content;
-}
-
-.itemTag {
-    border: transparent;
-    border-radius: 10px;
-    padding: 10px;
-    text-align: center;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-style: bold;
-    font-size: 15px;
-    background-color: rgb(66, 51, 66);
-    width: 220px;
-    height: 220px;
-}
-
-
-
-#cateName {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: 25px;
-    background-color: rgb(219, 77, 101);
-    width: 400px;
-    padding: 5px 10px 5px 10px;
-    border-radius: 10px;
-    align-items: center;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: -20px;
-}
-
 #transConf {
     background-color: rgb(0, 0, 0);
     width: 40%;
@@ -183,4 +63,29 @@ h5 {
 
 #cancelBtn:hover {
     background-color: rgb(112, 106, 106);
+}
+
+.selector {
+    margin-top: 10px;
+    font-size: 16px;
+    padding: 5px;
+    width: 150px;
+    color: #000000;
+    border: 3px solid rgba(255, 255, 255, 0);
+    background-color: #ecdcdc;
+    border-radius: 30px;
+    background-repeat: no-repeat;
+    background-size: 12px;
+    cursor: pointer;
+    text-align: center;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    transition: all 0.1s ease;
+}
+
+#dropdowns {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    align-items: center;
+    margin-top: 15px;
 }

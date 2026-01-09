@@ -1,13 +1,15 @@
 // ===== HELPER FUNCTIONS =====
 
-function validateCrateOpening(cost, count = 1) {
+function validateCrateOpening(type, cost, count) {
     if (inventory.length + count > Isize) {
         alert(`Not enough inventory space to open ${count} crate${count > 1 ? 's' : ''}!`);
         return false;
     }
-    if (money < cost * count) {
-        alert(`Not enough money to open ${count} crate${count > 1 ? 's' : ''}!`);
-        return false;
+    if (type === "Money") {
+        if (money < cost) {
+            alert(`Not enough money to open ${count} crate${count > 1 ? 's' : ''}! (Need $${abbreviateNumber(cost)})`);
+            return false;
+        }
     }
     if (inventory.length + count >= 999) {
         alert("Inventory full! Sell some pogs to make space.");
@@ -60,7 +62,6 @@ function openCrate(cost, index) {
     if (!result) return;
     // play animation path here if desired, then add
     addPogToInventory(result);
-    money = (typeof money === 'number' ? money : 0) - cost;
     cratesOpened = (typeof cratesOpened === 'number' ? cratesOpened : 0) + 1;
     refreshInventory();
 }
@@ -74,7 +75,6 @@ function openMultipleCrates(cost, index, count) {
     }
     // Optionally animate sequential reveals here
     results.forEach(r => addPogToInventory(r));
-    money = (typeof money === 'number' ? money : 0) - cost * results.length;
     cratesOpened = (typeof cratesOpened === 'number' ? cratesOpened : 0) + results.length;
     refreshInventory();
 }
@@ -104,7 +104,6 @@ async function openCrateWithAnimation(cost, index) {
 
     // Add to inventory AFTER animation completes
     addPogToInventory(result);
-    money -= cost;
     cratesOpened++;
     
     // Make sure inventory refreshes and is visible
@@ -126,7 +125,6 @@ async function openMultipleCratesWithAnimation(cost, index, count) {
 
     // Add all to inventory
     results.forEach(result => addPogToInventory(result));
-    money -= cost * count;
     cratesOpened += count;
     refreshInventory();
 }
@@ -189,7 +187,6 @@ async function openCrateWithAnimation(cost, index) {
 
     // changed it so the pog is added before animation to prevent save scumming
     addPogToInventory(result);
-    money -= cost;
     cratesOpened++;
     refreshInventory();
     
@@ -202,22 +199,17 @@ async function openCrateWithAnimation(cost, index) {
 
 // Set up all event listeners with animation
 // ===== UPDATED EVENT LISTENERS WITH MULTI-PULL ANIMATIONS =====
-
+function amount() {
+    const boxnum = document.getElementById("amountSelect").value;
+    console.log(boxnum);
+    return parseInt(boxnum);
+}
 crateButtons.forEach(crate => {
     const price = crates[Object.keys(crates)[crate.index]].price;
 
     // Single crate WITH animation
     document.getElementById(crate.single).addEventListener("click", () =>
-        transaction(price, crate.index, 1)
-    );
-    
-    // Multi-crates WITH animation
-    document.getElementById(crate.multi5).addEventListener("click", () => 
-        transaction(price, crate.index, 5)
-    );
-    
-    document.getElementById(crate.multi10).addEventListener("click", () => 
-        transaction(price, crate.index, 10)
+        transaction(price, crate.index)
     );
 });
 
@@ -641,7 +633,6 @@ async function openMultipleCratesWithAnimation(cost, index, count) {
     results.forEach(result => addPogToInventory(result));
 
     // Deduct money and update
-    money -= cost * count;
     cratesOpened += count;
     refreshInventory();
 

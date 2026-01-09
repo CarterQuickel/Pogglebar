@@ -5,7 +5,9 @@ document.getElementById("inventory").addEventListener("click", (e) => {
     if (!itemDiv) return;
 
     const index = itemDiv.dataset.index;
-    const item = inventory[index];
+    const id = itemDiv.dataset.id;
+    const item = inventory.find(i => i.id == id);
+    if (!item) return; // defensive: item not found
     let sellvalue = Math.round((item.income * 2.94 * (level / 1.6))**((level / 100) + 1));
     selectedID = item.id;
     refreshInventory();
@@ -35,6 +37,6 @@ function viewDesc(index, name, locked, rarity, id, pogid, color, creator, desc, 
         <strong class="moneytxt">$${ab_value}</strong><br>
     </div>
     <p>${desc}</p>
-    <button id="sellbtn" style="filter: brightness(${locked ? 0.6 : 1}); pointer-events: ${locked ? "none" : "auto"}"onclick="sellItem(${id}, ${sellvalue}, ${locked})">${locked ? "Locked" : "Sell"}</button>
+    <button id="sellbtn" style="filter: brightness(${locked ? 0.6 : 1}); pointer-events: ${locked ? "none" : "auto"}"onclick="sellItem(${id}, ${value}, ${locked})">${locked ? "Locked" : "Sell"}</button>
     `;
 }

@@ -419,17 +419,21 @@ app.post('/datasave', (req, res) => {
 // the URL for the post must be the same as the one in the fetch request
 app.post('/api/digipogs/transfer', (req, res) => {
     // req.body gets the information sent from the client
-    let cost = 0;
+    const cost = req.body.price;
     const payload = req.body;
     const reason = payload.reason;
     const pin = payload.pin;
     const id = req.session.user.fid; // Formbar user ID of payer from session
+    
     // carter and vincent ids for testing respectively
-    if (id === 73 || id === 84) {
-        cost = 1
-    } else {
-        cost = payload.price;
+    const isAdmin = id === 73 || id === 84 || id === 44;
+    
+    if (isAdmin) {
+        // For admins, return success without processing actual transaction
+        console.log('Admin transaction bypassed cost deduction.');
+        return res.json({ success: true, message: 'Admin transaction (no cost)', amount: 0 });
     }
+    
     console.log(cost, reason, pin, id);
     const paydesc = {
         from: id, // Formbar user ID of payer
@@ -439,7 +443,7 @@ app.post('/api/digipogs/transfer', (req, res) => {
         // security pin for the payer's account
         pin: pin,
         pool: true
-    }
+    };
     // make a direct transfer request using fetch
     fetch(`${AUTH_URL}/api/digipogs/transfer`, {
         method: 'POST',
