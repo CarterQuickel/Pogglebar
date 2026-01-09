@@ -1,15 +1,15 @@
 // ===== HELPER FUNCTIONS =====
 
 function validateCrateOpening(type, cost, count) {
+    if (type === "Money") {
+        if (money < cost) {
+            alert(`Not enough money to open ${count} crate${count > 1 ? 's' : ''}! (Need $${abbreviateNumber(cost-money)} more)`);
+            return false;
+        }
+    }
     if (inventory.length + count > Isize) {
         alert(`Not enough inventory space to open ${count} crate${count > 1 ? 's' : ''}!`);
         return false;
-    }
-    if (type === "Money") {
-        if (money < cost) {
-            alert(`Not enough money to open ${count} crate${count > 1 ? 's' : ''}! (Need $${abbreviateNumber(cost)})`);
-            return false;
-        }
     }
     if (inventory.length + count >= 999) {
         alert("Inventory full! Sell some pogs to make space.");
