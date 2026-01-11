@@ -1,11 +1,14 @@
 // update loop
+let xpHover = false;
 setInterval(update, 100);
 function update() {
     // update inventory size text
     document.getElementById("space").innerHTML = `${inventory.length}/${Isize}`;
 
     // update XP Txt
-    document.getElementById("XPTxt").innerText = `Level ${level}`;
+    document.getElementById("XPTxt").style.minWidth = xpHover ? "140px" : "40px";
+    document.getElementById("XPTxt").style.borderRadius = xpHover ? "20px" : "40px";
+    document.getElementById("XPTxt").innerText = xpHover ? `${xp} / ${maxXP} XP` : level;
 
     // update income Txt
     document.getElementById("income").innerText = `($${abbreviateNumber(getTotalIncome())}/s)`;
@@ -54,3 +57,11 @@ function updatePB() {
     XPPB.value = xp;
     XPPB.max = maxXP;
 }
+
+document.getElementById("XPTxt").addEventListener("mouseenter", () => {
+    xpHover = true;
+});
+
+document.getElementById("XPTxt").addEventListener("mouseleave", () => {
+    xpHover = false;
+});

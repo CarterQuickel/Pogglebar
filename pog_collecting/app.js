@@ -36,7 +36,7 @@ const API_KEY = process.env.API_KEY;
 const AUTH_URL = process.env.AUTH_URL; // ... or the address to the instance of fbjs you wish to connect to
 
 //URL to take user back to after authentication
-const THIS_URL = "http://192.168.0.111:3000/login"; // ... or whatever the address to your application is
+const THIS_URL = process.env.THIS_URL; // ... or whatever the address to your application is
 
 const headers = [
     'id', 'name', 'color', 'code', 'number', 'code2',
@@ -333,7 +333,7 @@ app.get('/achievements', (req, res) => {
 
 app.get('/leaderboard', (req, res) => {
     usdb.all(
-        'SELECT * FROM userSettings ORDER BY score DESC LIMIT 10', [],
+        'SELECT * FROM userSettings ORDER BY score DESC LIMIT 100', [],
         (err, rows) => {
             if (err) {
                 console.error('DB select error:', err);
