@@ -11,7 +11,7 @@ function update() {
     document.getElementById("income").innerText = `($${abbreviateNumber(getTotalIncome())}/s)`;
 
     //update pog / pog
-    document.getElementById("pogCount").innerText = `Pogs Discovered: ${pogAmount.length} / ${maxBinder}`;
+    document.getElementById("pogCount").innerText = `Pogs Discovered: ${Math.round((pogAmount.length / maxBinder) * 100)}% (${pogAmount.length} / ${maxBinder})`;
 
     //update pogs color
     document.getElementById("pogCount").style.color = pogAmount.length >= maxBinder ? "gold" : "white";
@@ -53,19 +53,4 @@ function updatePB() {
     const XPPB = document.getElementById("XPPB")
     XPPB.value = xp;
     XPPB.max = maxXP;
-}
-
-setInterval(updatecrates, 100);
-function updatecrates() {
-    const crateButtons = document.getElementsByClassName("crate");
-    for (let i = 0; i < crateButtons.length; i++) {
-        // Access price from the crates array at the current index
-        let currentPrice = crates[i].price; 
-        // Disable individual button if money is less than its price
-        if (money < currentPrice || inventory.length == Isize || inventory.length >= 999) {
-            crateButtons[i].disabled = true;
-        } else {
-            crateButtons[i].disabled = false;
-        }
-    }
 }

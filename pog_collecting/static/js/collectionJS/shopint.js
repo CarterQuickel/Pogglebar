@@ -40,7 +40,7 @@ function determineCost(price, amount) {
     } else if (type === "Digipogs") {
         monies = false;
     }
-    const purchaseCost = monies ? price * amount : (price * amount) / 5;
+    const purchaseCost = monies ? price * amount * ((1 + (cratesOpened / 5))**2) : (price * amount) / 5; // money : digipogs
     document.getElementById("crateprice").innerText = `Price: $${abbreviateNumber(purchaseCost)}`;
     defrealprice = purchaseCost;
     console.log(defrealprice);
@@ -53,7 +53,7 @@ function transaction(price, reason) {
     // determine total price
     determineCost(price, count);
     // open transaction confirmation modal
-    document.getElementById("transConf").style.display = "block";
+    document.getElementById("overlay").style.display = "block";
     // variable definitions for later use
     defprice = price;
     defreason = reason;
@@ -66,11 +66,11 @@ document.getElementById("purchaseBtn").addEventListener("click", () => {
     if (!validateCrateOpening(type, defrealprice, count)) return;
     const pinval = document.getElementById("pinField").value;
     purchase(defrealprice, defreason, pinval, defamount);
-    document.getElementById("transConf").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
 });
 
 document.getElementById("cancelBtn").addEventListener("click", () => {
-    document.getElementById("transConf").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
 });
 
 // implement purchased item effect
