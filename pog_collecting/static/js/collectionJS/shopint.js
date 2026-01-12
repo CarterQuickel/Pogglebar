@@ -40,7 +40,8 @@ function determineCost(price, amount) {
     } else if (type === "Digipogs") {
         monies = false;
     }
-    const purchaseCost = monies ? price * amount * ((1 + (cratesOpened / 5))**2) : (price * amount) / 5; // money : digipogs
+    const scaling = ((1 + (cratesOpened / 5))**1.37);
+    const purchaseCost = monies ? price * amount * scaling : (price * amount) / 5; // money : digipogs
     document.getElementById("crateprice").innerText = `Price: $${abbreviateNumber(purchaseCost)}`;
     defrealprice = purchaseCost;
     console.log(defrealprice);

@@ -156,7 +156,10 @@ usdb.run(`CREATE TABLE IF NOT EXISTS chat (
     trade_status TEXT DEFAULT 'pending',
     accepter_name TEXT,
     accepter_userId TEXT
-)`)
+)`, (err) => {
+    if (err) console.error("Create table error:", err);
+    else console.log("Chat table ready");
+});
 
 // Add columns to existing chat table if they don't exist
 usdb.run(`ALTER TABLE chat ADD COLUMN trade_type TEXT DEFAULT 'trade'`, (err) => {
