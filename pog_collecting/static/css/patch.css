@@ -5,6 +5,7 @@ body {
     margin-top: 150px; /* Match the margin-top from collection */
     background-color: #f4f4f9; /* Light background for better contrast */
     color: #333; /* Darker text for readability */
+    user-select: none;
 }
 
 /* Patch Banner Styling */

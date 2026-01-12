@@ -26,6 +26,21 @@
     transition: all 0.1s ease;
 }
 
+.multiplier {
+    position: absolute;
+    top: 180px;
+    right: 0;
+    transform: scale(1.4);
+    transform-origin: right center;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 99;
+}
+
 #space {
     position: absolute;
     top: 15px;
@@ -39,15 +54,7 @@
     border-radius: 6px;
     font-size: 14px;
     pointer-events: none;
-    z-index: 99;
-}
-
-#stats {
-    border: transparent;
-    margin: 10px;
-    padding: 10px;
-    border-radius: 10px;
-    background-color: #3e1e42;
+    z-index: 10;
 }
 
 .mergebtn {

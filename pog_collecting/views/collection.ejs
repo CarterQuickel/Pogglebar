@@ -30,21 +30,35 @@
         </div>
     </div>
     <!--Shop-->
-    <div id="shopBanner" style="display:none;">
-        <div class="shopCont">
-            <h1 style="font-size: 60px; margin-top: -10px;">POGGLESHOP</h1>
-            <p style="margin-top: -50px">All purchases are used with digipogs</p>
-            <div id="shopItems"></div>
-            <button id="closeShop">Close</button>
+    <div id="overlay" style="display: none;">
+        <div id="transConf">
+            <h5>Purchase Item?</h5>
+            <h5 id="crateprice"></h5>
+            <div id="dropdowns">
+                <div>
+                    <label>Currency</label>
+                    <select id="balanceSelect" class="selector">
+                        <option value="money">Legacy Money</option>
+                        <option value="digi">Digipogs</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Quantity</label>
+                    <select id="amountSelect" class="selector">
+                        <option value="1">1 Crate</option>
+                        <option value="5">5 Crates</option>
+                        <option value="10">10 Crates</option>
+                    </select>
+                </div>
+            </div>
+            <div id="pin" style="display: none;">
+                <br>
+                <label>PIN</label>
+                <input id="pinField" type="password" />
+            </div>
+            <button id="purchaseBtn">Purchase</button>
+            <button id="cancelBtn">Cancel</button>
         </div>
-    </div>
-    <div id="transConf" style="display: none;">
-        <h5>Purchase Item?</h5>
-        <label>PIN</label>
-        <input id="pinField" type="password" />
-        <button id="purchaseBtn" class="pageButtons">Purchase</button>
-        <br>
-        <button id="cancelBtn" class="pageButtons">Cancel</button>
     </div>
     <!--Binder-->
     <div id="binderBanner" style="display:none;">
@@ -86,8 +100,8 @@
         </div>
         <div style="right: 0; top: 0;" class="rightstuff">
             <button id="useWish">Wish (0/7)</button>
-            <!--<img src="../static/icons/buttons_main/chat.png" title="Chatroom" width="40" height="40" id="chatRoomButton"
-                class="imgbtn">-->
+            <img src="../static/icons/buttons_main/chat.png" title="Chatroom" width="40" height="40" id="chatRoomButton"
+                class="imgbtn">
             <img src="../static/icons/buttons_main/patches.png" title="Patch Notes" width="40" height="40"
                 id="patchNotesButton" class="imgbtn">
             <img src="../static/icons/buttons_main/trophy.png" title="Achievements" width="40" height="40"
@@ -110,159 +124,141 @@
             <div id="space">0/10</div>
             <div id="inventory"></div>
         </div>
-        <div id="settings">
-            <div id="sortcont">
-                <div id="searchbar">
-                    <input id="searchbox" type="text" placeholder="Search Pogs...">
-                    <img id="searchbtn" src="../static/icons/buttons_main/search.png" width="20" height="20"
-                        title="Search Pogs">
+        <div id="leftmost">
+            <div id="settings">
+                <div id="sortcont">
+                    <div id="searchbar">
+                        <input id="searchbox" type="text" placeholder="Search Pogs...">
+                        <img id="searchbtn" src="../static/icons/buttons_main/search.png" width="20" height="20"
+                            title="Search Pogs">
+                    </div>
+                    <select id="selectSort">
+                        <hr />
+                        <option value="nameAZ">Sort by Name (a-z) &#8593;</option>
+                        <option value="nameZA">Sort by Name (z-a) &#8595;</option>
+                        <hr />
+                        <option value="rarityHf">Sort by Rarity (trash to unique) &#8593;</option>
+                        <option value="rarityLf">Sort by Rarity (unique to trash) &#8595;</option>
+                        <hr />
+                        <option value="svHf">Sort by Sell Value (high to low) &#8593;</option>
+                        <option value="svLf">Sort by Sell Value (low to high) &#8595;</option>
+                        <hr />
+                    </select>
+                    <button id="sellAll">Sell All</button>
                 </div>
-                <select id="selectSort">
-                    <hr />
-                    <option value="nameAZ">Sort by Name (a-z) &#8593;</option>
-                    <option value="nameZA">Sort by Name (z-a) &#8595;</option>
-                    <hr />
-                    <option value="rarityHf">Sort by Rarity (trash to unique) &#8593;</option>
-                    <option value="rarityLf">Sort by Rarity (unique to trash) &#8595;</option>
-                    <hr />
-                    <option value="svHf">Sort by Sell Value (high to low) &#8593;</option>
-                    <option value="svLf">Sort by Sell Value (low to high) &#8595;</option>
-                    <hr />
-                </select>
-                <button id="sellAll">Sell All</button>
-            </div>
-            <div id="colorKey" style="display: none;">
-                <div class="key-item">
-                    <span class="color-box trash"></span>
-                    <span class="color-label">Trash</span>
-                </div>
-                <div class="key-item">
-                    <span class="color-box common"></span>
-                    <span class="color-label">Common</span>
-                </div>
-                <div class="key-item">
-                    <span class="color-box uncommon"></span>
-                    <span class="color-label">Uncommon</span>
-                </div>
-                <div class="key-item">
-                    <span class="color-box rare"></span>
-                    <span class="color-label">Rare</span>
-                </div>
-                <div class="key-item">
-                    <span class="color-box mythic"></span>
-                    <span class="color-label">Mythic</span>
-                </div>
-                <div class="key-item">
-                    <span class="color-box unique"></span>
-                    <span class="color-label">Unique</span>
-                </div>
-                <div class="key-item">
-                    <span class="color-box otherworldly"></span>
-                    <span class="color-label">Otherworldly</span>
-                </div>
-            </div>
-            <div id="stats">
-                <div id="money">Money: $1000</div>
-                <h3 id="income"></h3>
-                <div id="XPinfo">
+                <div id="stats">
+                    <div id="money">Money: $1000</div>
+                    <h3 id="income"></h3>
                     <h4 id="XPTxt"></h4>
+                    <progress id="XPPB" value="0" max="100"></progress>
                 </div>
-                <progress id="XPPB" value="0" max="100"></progress>
-            </div>
             <div id="settings_tools_btns">
                 <img src="../static/icons/buttons_main/binder.png" title="View Collection" width="40" height="40" class="tools" id="binder">
-                <img src="../static/icons/buttons_main/color_key.png" title="View Color Key" width="40" height="40" class="tools" id="colors">
-                <img src="../static/icons/buttons_main/shop.png" title="View Shop" width="40" height="40" class="tools" id="shopBtn">
+               <!--Color Key-->
+                    <div id="keyCont">
+                        <img src="../static/icons/buttons_main/color_key.png" title="View Color Key" width="40"
+                            height="40" class="tools" id="colors">
+                        <div id="colorKey" style="display: none;">
+                            <div class="key-item">
+                                <span class="color-box trash"></span>
+                                <span class="color-label">Trash</span>
+                            </div>
+                            <div class="key-item">
+                                <span class="color-box common"></span>
+                                <span class="color-label">Common</span>
+                            </div>
+                            <div class="key-item">
+                                <span class="color-box uncommon"></span>
+                                <span class="color-label">Uncommon</span>
+                            </div>
+                            <div class="key-item">
+                                <span class="color-box rare"></span>
+                                <span class="color-label">Rare</span>
+                            </div>
+                            <div class="key-item">
+                                <span class="color-box mythic"></span>
+                                <span class="color-label">Mythic</span>
+                            </div>
+                            <div class="key-item">
+                                <span class="color-box unique"></span>
+                                <span class="color-label">Unique</span>
+                            </div>
+                            <div class="key-item">
+                                <span class="color-box otherworldly"></span>
+                                <span class="color-label">Otherworldly</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <img id="openCratesBtn" src="../static/icons/buttons_main/crate.png" width="30" height="30" title="Pog Crates">
-        <div id="cratesCont" style="display: none">
-            <div id="crateBtns">
-                <h4>Pog Crates</h4>
-                <div class="buttonSources">
-                    <div class="tooltip-chances">
-                        <button id="info1" class="infobtn">i</button>
-                        <span id="spani1" class="tooltip-text">
-                            Trash: 59%<br>
-                            Common: 20%<br>
-                            Uncommon: 15%<br>
-                            Rare: 0%<br>
-                            Mythic: 6%<br>
-                        </span>
+            <div id="cratesCont">
+                <div id="crateBtns">
+                    <h4>Pog Crates</h4>
+                    <div class="buttonSources">
+                        <div class="tooltip-chances">
+                            <button id="info1" class="infobtn">i</button>
+                            <span id="spani1" class="tooltip-text">
+                                Trash: 59%<br>
+                                Common: 20%<br>
+                                Uncommon: 15%<br>
+                                Rare: 0%<br>
+                                Mythic: 6%<br>
+                            </span>
+                        </div>
+                        <button id="crate1" class="crate">Trash Crate - $100</button>
                     </div>
-                    <button id="crate1" class="crate">Common Crate - $100</button>
-                    <div class="buymCont">
-                        <button id="crate1_b5" class="buym">+5</button>
-                        <button id="crate1_b10" class="buym">+10</button>
+                    <div class="buttonSources">
+                        <div class="tooltip-chances">
+                            <button id="info2" class="infobtn">i</button>
+                            <span id="spani2" class="tooltip-text">
+                                Trash: 0%<br>
+                                Common: 60%<br>
+                                Uncommon: 16%<br>
+                                Rare: 13%<br>
+                                Mythic: 11%<br>
+                            </span>
+                        </div>
+                        <button id="crate2" class="crate">Common Crate - $500</button>
                     </div>
-                </div>
-                <div class="buttonSources">
-                    <div class="tooltip-chances">
-                        <button id="info2" class="infobtn">i</button>
-                        <span id="spani2" class="tooltip-text">
-                            Trash: 0%<br>
-                            Common: 60%<br>
-                            Uncommon: 16%<br>
-                            Rare: 13%<br>
-                            Mythic: 11%<br>
-                        </span>
+                    <div class="buttonSources">
+                        <div class="tooltip-chances">
+                            <button id="info3" class="infobtn">i</button>
+                            <span id="spani3" class="tooltip-text">
+                                Trash: 0%<br>
+                                Common: 40%<br>
+                                Uncommon: 27%<br>
+                                Rare: 21%<br>
+                                Mythic: 12%<br>
+                            </span>
+                        </div>
+                        <button id="crate3" class="crate">Uncommon Crate - $1000</button>
                     </div>
-                    <button id="crate2" class="crate">Rare Crate - $500</button>
-                    <div class="buymCont">
-                        <button id="crate2_b5" class="buym">+5</button>
-                        <button id="crate2_b10" class="buym">+10</button>
+                    <div class="buttonSources">
+                        <div class="tooltip-chances">
+                            <button id="info4" class="infobtn">i</button>
+                            <span id="spani4" class="tooltip-text">
+                                Trash: 10%<br>
+                                Common: 25%<br>
+                                Uncommon: 20%<br>
+                                Rare: 30%<br>
+                                Mythic: 15%<br>
+                            </span>
+                        </div>
+                        <button id="crate4" class="crate">Rare Crate - $5000</button>
                     </div>
-                </div>
-                <div class="buttonSources">
-                    <div class="tooltip-chances">
-                        <button id="info3" class="infobtn">i</button>
-                        <span id="spani3" class="tooltip-text">
-                            Trash: 0%<br>
-                            Common: 40%<br>
-                            Uncommon: 27%<br>
-                            Rare: 21%<br>
-                            Mythic: 12%<br>
-                        </span>
-                    </div>
-                    <button id="crate3" class="crate">Epic Crate - $1000</button>
-                    <div class="buymCont">
-                        <button id="crate3_b5" class="buym">+5</button>
-                        <button id="crate3_b10" class="buym">+10</button>
-                    </div>
-                </div>
-                <div class="buttonSources">
-                    <div class="tooltip-chances">
-                        <button id="info4" class="infobtn">i</button>
-                        <span id="spani4" class="tooltip-text">
-                            Trash: 0%<br>
-                            Common: 50%<br>
-                            Uncommon: 0%<br>
-                            Rare: 50%<br>
-                            Mythic: 0%<br>
-                        </span>
-                    </div>
-                    <button id="crate4" class="crate">Legendary Crate - $5000</button>
-                    <div class="buymCont">
-                        <button id="crate4_b5" class="buym">+5</button>
-                        <button id="crate4_b10" class="buym">+10</button>
-                    </div>
-                </div>
-                <div class="buttonSources">
-                    <div class="tooltip-chances">
-                        <button id="info5" class="infobtn">i</button>
-                        <span id="spani5" class="tooltip-text">
-                            Trash: 0%<br>
-                            Common: 40%<br>
-                            Uncommon: 0%<br>
-                            Rare: 0%<br>
-                            Mythic: 60%<br>
-                            Unique: 11%
-                        </span>
-                    </div>
-                    <button id="crate5" class="crate">Mythical Crate - $7000</button>
-                    <div class="buymCont">
-                        <button id="crate5_b5" class="buym">+5</button>
-                        <button id="crate5_b10" class="buym">+10</button>
+                    <div class="buttonSources">
+                        <div class="tooltip-chances">
+                            <button id="info5" class="infobtn">i</button>
+                            <span id="spani5" class="tooltip-text">
+                                Trash: 0%<br>
+                                Common: 2.5%<br>
+                                Uncommon: 15%<br>
+                                Rare: 32%<br>
+                                Mythic: 50%<br>
+                                Unique: 0.5%
+                            </span>
+                        </div>
+                        <button id="crate5" class="crate">Mythic Crate - $7000</button>
                     </div>
                 </div>
             </div>

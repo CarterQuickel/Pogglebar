@@ -5,35 +5,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="../static/icons/title/Pogglebar_Favicon.png" />
-    <title>Chat Room</title>
+    <title>Trade Room</title>
     <link rel="stylesheet" href="../static/css/chatroom.css">
 </head>
 
 <body>
     <div id="chatroomBanner">
         <div class="leftstuff">
-            <div style="display: none" id="userdata"><%= JSON.stringify(userdata) %></div>
-            <h1 style="margin-left: 10px;">Chat Room</h1>
-            <div style="display: none" id="maxPogs"><%= JSON.stringify(maxPogs) %></div>
+            <h1 style="margin-left: 10px;">Trade Room</h1>
         </div>
-        <div class="rightstuff"></div>
-            <a href="/collection" id="circleButton"> < </a>
+        <div class="rightstuff">
+            <a href="/collection" id="circleButton">&lt;</a>
         </div>
     </div>
 
     <div id="messageCont"></div>
 
     <div id="chatContainer">
-        <form>
-            <input id="messageInput" autocomplete="off" placeholder="Type a message..." />
-            <button id="submitBtn" type="submit">Send</button>
+        <form id="tradeForm">
+            <select id="givingSelect" required>
+                <option value="">What I'm giving...</option>
+            </select>
+            
+            <select id="receivingSelect" required>
+                <option value="">What I want in exchange...</option>
+            </select>
+            
+            <input id="tradeMessage" placeholder="Optional message..." maxlength="200" />
+            <button id="postTrade" type="submit">Post Trade</button>
         </form>
     </div>
 
-    <!-- embed server userdata so client JS can read pfp -->
+    <!-- Embed data for client JS -->
     <div id="userdata" style="display:none"><%= JSON.stringify(userdata || {}) %></div>
+    <div id="pogList" style="display:none"><%= JSON.stringify(pogList || []) %></div>
 
-    <!-- socket.io client + chat script -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="/static/js/chat.js"></script>
 </body>
