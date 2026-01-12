@@ -16,7 +16,7 @@ async function main() {
     console.log(`
 Database CLI
 
-Usage:
+Commands:
   node db-cli.js init       - Initialize a fresh database with latest schema
   node db-cli.js migrate    - Run pending migrations on existing database
   node db-cli.js help       - Show this help message
@@ -35,25 +35,25 @@ Usage:
   try {
     switch (command.toLowerCase()) {
       case 'init':
-        console.log(`Initializing database at: ${DB_PATH}`);
+        console.log(`Initializing database at path: ${DB_PATH}`);
         await initDatabase(db);
-        console.log('✓ Database initialization complete');
+        console.log('✓ INITILIZATION COMPLETE');
         break;
 
       case 'migrate':
         console.log(`Running migrations on: ${DB_PATH}`);
         await runMigrations(db);
-        console.log('✓ All migrations complete');
+        console.log('✓ MIGRATIONS COMPLETE');
         break;
 
       case 'help':
         console.log(`
 Database CLI
 
-Usage:
-  node db-cli.js init       - Initialize a fresh database with latest schema
-  node db-cli.js migrate    - Run pending migrations on existing database
-  node db-cli.js help       - Show this help message
+Commands:
+    node db-cli.js init       - Initialize a fresh database with the newest table layout
+    node db-cli.js migrate    - Update the database to the newest table layout
+    node db-cli.js help       - Show this help message
         `);
         break;
 

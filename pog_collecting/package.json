@@ -3,6 +3,7 @@
   "start": "node app.js",
   "dev": "nodemon app.js",
   "init": "node data/db-cli.js init",
+  "help": "node data/db-cli.js help",
   "migrate": "node data/db-cli.js migrate"
   },
   "dependencies": {
