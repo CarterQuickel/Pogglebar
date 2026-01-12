@@ -1,3 +1,7 @@
+// Add this at the very top of your file
+let debugCounter = 0;
+
+
 // ===== ANIMATION SEQUENCES =====
 async function showAnimationForRarity(rarity, pogResult) {
     if (!isAnimationRunning) return; // Check if we should continue
@@ -163,8 +167,11 @@ function createStarShapedShootingStars(type, count) {
 }
 
 async function showClickToContinue(hasSpecial = false) {
+    const myId = ++debugCounter;
+    console.log(`🔍 showClickToContinue #${myId} starting`);
+
     const clickDiv = document.getElementById('clickToContinue');
-    
+
     if (hasSpecial) {
         clickDiv.innerHTML = `
             <p style="color: #ff00ff; font-size: 28px; text-shadow: 0 0 20px #ff00ff;">
@@ -176,16 +183,34 @@ async function showClickToContinue(hasSpecial = false) {
         clickDiv.innerHTML = '<p>Click anywhere to continue...</p>';
         clickDiv.style.animation = 'pulse 1.5s infinite';
     }
-    
+
     clickDiv.style.display = 'block';
-    
-    // Wait for click
+
     return new Promise(resolve => {
-        const handleClick = () => {
+        // If a previous handler exists, remove it to avoid cross-run leakage
+        if (currentContinueHandler) {
+            document.removeEventListener('click', currentContinueHandler);
+            currentContinueHandler = null;
+        }
+
+        const handleClick = (event) => {
+            const now = Date.now();
+            // If user just hit skip shortly before, ignore accidental immediate taps
+            if (lastSkipTimestamp && (now - lastSkipTimestamp) < 350) {
+                console.log(`⏱️ Ignored rapid click after skip (#${myId}), delta=${now - lastSkipTimestamp}ms`);
+                // don't resolve; keep handler active for the next click
+                return;
+            }
+
+            console.log(`✅ Continue #${myId} clicked on:`, event.target);
             clickDiv.style.display = 'none';
+            // remove and clear stored reference
             document.removeEventListener('click', handleClick);
+            if (currentContinueHandler === handleClick) currentContinueHandler = null;
             resolve();
         };
+
+        currentContinueHandler = handleClick;
         document.addEventListener('click', handleClick);
     });
 }
@@ -325,6 +350,10 @@ function addPogToInventory(pogResult) {
 // ===== SKIP ANIMATION SYSTEM =====
 let isAnimationRunning = false;
 let currentSkipHandler = null;
+// Tracks the active "click to continue" document handler so it can be removed on skip/cleanup
+let currentContinueHandler = null;
+// Timestamp of last skip — used to debounce accidental immediate clicks after skipping
+let lastSkipTimestamp = 0;
 
 function showSkipButton() {
     const skipBtn = document.getElementById('skipAnimation');
@@ -341,24 +370,44 @@ function hideSkipButton() {
 }
 
 function setupSkipButton(pullType, pogResults) {
+    const myId = ++debugCounter;
+    console.log(`🔍 setupSkipButton #${myId} called for ${pullType}`);
+    
     const skipBtn = document.getElementById('skipAnimation');
     
     if (currentSkipHandler) {
+        console.log(`🔍 Removing old skip handler #${myId}`);
         skipBtn.removeEventListener('click', currentSkipHandler);
     }
     
-    currentSkipHandler = () => skipAnimation(pullType, pogResults);
-    skipBtn.addEventListener('click', currentSkipHandler);
+    currentSkipHandler = (event) => {
+        console.log(`🚫 Skip handler #${myId} triggered`);
+        event.stopPropagation();
+        skipAnimation(pullType, pogResults);
+    };
     
+    skipBtn.addEventListener('click', currentSkipHandler);
     showSkipButton();
 }
 
+
+
 async function skipAnimation(pullType, pogResults) {
-    if (!isAnimationRunning) return;
+    if (!isAnimationRunning) {
+        console.log('🚫 Skip ignored - animation not running');
+        return;
+    }
     
-    console.log('Skipping animation for:', pullType);
+    console.log('🚫 SKIP TRIGGERED! pullType:', pullType);
     isAnimationRunning = false;
     hideSkipButton();
+    // Record skip time to avoid immediate subsequent clicks from resolving next prompt
+    lastSkipTimestamp = Date.now();
+    // If a click-to-continue handler is active, remove it so it doesn't fire later
+    if (currentContinueHandler) {
+        document.removeEventListener('click', currentContinueHandler);
+        currentContinueHandler = null;
+    }
     
     document.getElementById('gachaOverlay').style.display = 'block';
     
@@ -378,7 +427,43 @@ async function skipAnimation(pullType, pogResults) {
     cleanupGachaOverlay();
 }
 
+//Nuking event listeners 
+function clearAllEventListeners() {
+    console.log('🧨 Nuclear cleanup - removing ALL event listeners');
+    
+    // Clone and replace elements to remove all event listeners
+    const skipBtn = document.getElementById('skipAnimation');
+    const newSkipBtn = skipBtn.cloneNode(true);
+    skipBtn.parentNode.replaceChild(newSkipBtn, skipBtn);
+    
+    // Reset all variables
+    currentSkipHandler = null;
+    if (currentContinueHandler) {
+        document.removeEventListener('click', currentContinueHandler);
+        currentContinueHandler = null;
+    }
+    isAnimationRunning = false;
+    
+    console.log('🧨 Nuclear cleanup complete');
+}
+
+
 function cleanupGachaOverlay() {
+    console.log('🧹 Cleaning up overlay');
+    
+    // Remove all event listeners first
+    if (currentSkipHandler) {
+        const skipBtn = document.getElementById('skipAnimation');
+        skipBtn.removeEventListener('click', currentSkipHandler);
+        currentSkipHandler = null;
+    }
+    // Remove click-to-continue handler if present
+    if (currentContinueHandler) {
+        document.removeEventListener('click', currentContinueHandler);
+        currentContinueHandler = null;
+    }
+    
+    // Clean up DOM
     document.getElementById('gachaOverlay').style.display = 'none';
     document.getElementById('shootingStarsContainer').innerHTML = '';
     const centerReveal = document.getElementById('centerPogReveal');
@@ -386,14 +471,26 @@ function cleanupGachaOverlay() {
         centerReveal.style.display = 'none';
         centerReveal.innerHTML = '';
     }
+    
+    // Hide skip button
     hideSkipButton();
+    
+    // Reset animation state
     isAnimationRunning = false;
+    
+    console.log('🧹 Cleanup complete. isAnimationRunning:', isAnimationRunning);
 }
+
+
 
 // ===== MAIN ANIMATION FUNCTIONS =====
 async function openCrateWithAnimation(cost, index) {
+    clearAllEventListeners();
     if (!validateCrateOpening(cost, 1)) return;
-    if (isAnimationRunning) return;
+    if (isAnimationRunning) {
+        console.log('❌ Animation already running, blocking new animation');
+        return;
+    }
 
     const result = calculatePogResult(cost, index);
     if (!result) return;
@@ -402,6 +499,10 @@ async function openCrateWithAnimation(cost, index) {
     cratesOpened++;
     refreshInventory();
     
+    // IMPORTANT: Clean up any leftover state first
+    cleanupGachaOverlay();
+    
+    // THEN start new animation
     isAnimationRunning = true;
     setupSkipButton('single', result);
     
@@ -414,8 +515,12 @@ async function openCrateWithAnimation(cost, index) {
 }
 
 async function openMultipleCratesWithAnimation(cost, index, count) {
+    clearAllEventListeners();
     if (!validateCrateOpening(cost, count)) return;
-    if (isAnimationRunning) return;
+    if (isAnimationRunning) {
+        console.log('❌ Animation already running, blocking new animation');
+        return;
+    }
 
     const results = [];
     for (let i = 0; i < count; i++) {
@@ -432,6 +537,10 @@ async function openMultipleCratesWithAnimation(cost, index, count) {
     cratesOpened += count;
     refreshInventory();
 
+    // IMPORTANT: Clean up any leftover state first
+    cleanupGachaOverlay();
+    
+    // THEN start new animation
     isAnimationRunning = true;
     setupSkipButton('multi', results);
     
@@ -442,6 +551,7 @@ async function openMultipleCratesWithAnimation(cost, index, count) {
         cleanupGachaOverlay();
     }
 }
+
 
 // ===== ANIMATION SEQUENCES =====
 async function showAnimationForRarity(rarity, pogResult) {
@@ -592,8 +702,11 @@ function createStarShapedShootingStars(type, count) {
 }
 
 async function showClickToContinue(hasSpecial = false) {
+    const myId = ++debugCounter;
+    console.log(`🔍 showClickToContinue (dup) #${myId} starting`);
+
     const clickDiv = document.getElementById('clickToContinue');
-    
+
     if (hasSpecial) {
         clickDiv.innerHTML = `
             <p style="color: #ff00ff; font-size: 28px; text-shadow: 0 0 20px #ff00ff;">
@@ -605,18 +718,33 @@ async function showClickToContinue(hasSpecial = false) {
         clickDiv.innerHTML = '<p>Click anywhere to continue...</p>';
         clickDiv.style.animation = 'pulse 1.5s infinite';
     }
-    
+
     clickDiv.style.display = 'block';
-    
+
     return new Promise(resolve => {
-        const handleClick = () => {
+        if (currentContinueHandler) {
+            document.removeEventListener('click', currentContinueHandler);
+            currentContinueHandler = null;
+        }
+
+        const handleClick = (event) => {
+            const now = Date.now();
+            if (lastSkipTimestamp && (now - lastSkipTimestamp) < 350) {
+                console.log(`⏱️ Ignored rapid click after skip (dup) #${myId}, delta=${now - lastSkipTimestamp}ms`);
+                return;
+            }
+            console.log('🖱️ Continue click detected on:', event.target);
             clickDiv.style.display = 'none';
             document.removeEventListener('click', handleClick);
+            if (currentContinueHandler === handleClick) currentContinueHandler = null;
             resolve();
         };
+
+        currentContinueHandler = handleClick;
         document.addEventListener('click', handleClick);
     });
 }
+
 
 async function createMiniExplosion() {
     const container = document.getElementById('shootingStarsContainer');
