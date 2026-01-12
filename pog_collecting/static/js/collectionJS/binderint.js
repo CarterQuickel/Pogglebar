@@ -33,8 +33,8 @@ function viewCollection() {
         color = match ? match.color : "white";
         return `
         <div class="singleI" style="border: 4px solid ${unique ? "lightgray" : "black"}; background-color: ${owned ? (isBronze ? "#CD7F32" : "rgb(66, 51, 66)") : "black"}">
-            <h4 style="color: ${owned ? color : "white"}">${name}</h4>
-            <p style="font-size: 12px; margin-top: -10px">${pogcol}</p>
+            <h4 style="color: ${owned ? color : "white"}">${owned ? name : "???"}</h4>
+            <p style="font-size: 12px; margin-top: -10px">${owned ? pogcol : "???"}</p>
         </div>
     `
     }).join("");

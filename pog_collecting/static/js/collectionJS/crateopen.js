@@ -1087,12 +1087,4 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('crate5').addEventListener('click', () => 
         transaction(7000, 4) // Mythic Crate - $7000
     );
-  
-    // Crates container toggle
-    document.getElementById("openCratesBtn").addEventListener("click", () => {
-        const cratesContainer = document.getElementById("cratesCont");
-        const isVisible = cratesContainer.style.display === "block";
-        cratesContainer.style.display = isVisible ? "none" : "block";
-        enabledCrate = !isVisible;
-    });
 });
