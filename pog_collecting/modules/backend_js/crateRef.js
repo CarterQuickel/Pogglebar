@@ -17,10 +17,6 @@ const crateRef = [
                 chance: 0.15
             },
             {
-                name: "Rare",
-                chance: 0.0
-            },
-            {
                 name: "Mythic",
                 chance: 0.06
             },
@@ -32,7 +28,7 @@ const crateRef = [
         rarities: [
             {
                 name: "Trash",
-                chance: 0.0
+                chance: 0.13
             },
             {
                 name: "Common",
@@ -41,10 +37,6 @@ const crateRef = [
             {
                 name: "Uncommon",
                 chance: 0.16
-            },
-            {
-                name: "Rare",
-                chance: 0.13
             },
             {
                 name: "Mythic",
@@ -58,7 +50,7 @@ const crateRef = [
         rarities: [
             {
                 name: "Trash",
-                chance: 0.0
+                chance: 0.11
             },
             {
                 name: "Common",
@@ -68,70 +60,64 @@ const crateRef = [
                 name: "Uncommon",
                 chance: 0.27
             },
-            {
-                name: "Rare",
-                chance: 0.21
-            },
+
             {
                 name: "Mythic",
-                chance: 0.12
+                chance: 0.22
             },
         ]
     },
     {
-        name: "risky crate",
-        price: 10000,
-        rarities: [
-            {
-                name: "Trash",
-                chance: 0.0
-            },
-            {
-                name: "Common",
-                chance: 0.5
-            },
-            {
-                name: "Uncommon",
-                chance: 0.0
-            },
-            {
-                name: "Rare",
-                chance: 0.5
-            },
-            {
-                name: "Mythic",
-                chance: 0.0
-            }
-        ]
-    },
-    {
-        name: "godly crate",
+        name: "rare crate",
         price: 5000,
         rarities: [
             {
                 name: "Trash",
-                chance: 0.0
+                chance: 0.20
             },
             {
                 name: "Common",
-                chance: 0.38    // lowered a bit
+                chance: 0.25
             },
             {
                 name: "Uncommon",
-                chance: 0.0
-            },
-            {
-                name: "Rare",
-                chance: 0.0
+                chance: 0.25
             },
             {
                 name: "Mythic",
-                chance: 0.51    // adjusted
+                chance: 0.30
+            }
+        ]
+    },
+    {
+        name: "mythic crate",
+        price: 7000,
+        rarities: [
+            {
+                name: "Trash",
+                chance: 0.09933
+            },
+            {
+                name: "Common",
+                chance: 0.225   // lowered a bit
+            },
+            {
+                name: "Uncommon",
+                chance: 0.17    // unchanged
+            },
+            {
+                name: "Mythic",
+                chance: 0.5    // adjusted
             },
             {
                 name: "Unique",
-                chance: 0.11    // new tiny chance for Unique
+                chance: 0.005    // new tiny chance for Unique
+            },
+            {
+                name: "Otherwordly",
+                chance: 0.00067    // new tiny chance for Otherwordly
             }
+
         ]
     }
 ]

@@ -67,4 +67,8 @@ function refreshInventory() {
             ${canTrade ? `<button class="mergebtn" onclick="trade(${item.id}, ${item.locked})">Trade (1)</button>` : ""}
         </div>`;
     }).join("");
+// 67 mango
+    // Get tradeable items from inventory
+const tradeableItems = inventory.filter(item => item.rarity !== "Unique");
+
 }
