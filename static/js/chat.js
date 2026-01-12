@@ -81,7 +81,7 @@ function populateTradeDropdowns() {
             const option = document.createElement('option');
             option.value = pog.name;
             // Use the pog's specific color from pogList
-            option.style.color = pog.color || '#000';
+            option.style.color = '#000';
             option.style.fontWeight = 'bold';
             // Display both name and color
             option.textContent = `${pog.name} (${pog.color || 'No Color'})`;
@@ -134,10 +134,14 @@ function renderTrade(trade) {
         </div>
         ${trade.message ? `<div class="trade-message" style="color: ${textColor}">${escapeHtml(trade.message)}</div>` : ''}
         <div class="trade-details" style="color: ${textColor}">
+        <div id="givingBox">
             <strong>Giving:</strong> 
             <span style="color: ${givingItemColor}; font-weight: bold;">${escapeHtml(trade.giving_item_name)} (${givingItemColor})</span>
-            <strong> → Wants:</strong> 
+        </div>
+        <div id="gettingBox">
+            <strong>Wants:</strong> 
             <span style="color: ${receivingItemColor}; font-weight: bold;">${escapeHtml(trade.receiving_item_name)} (${receivingItemColor})</span>
+        </div>
         </div>
         ${canAccept && trade.name !== myName ? 
             `<button class="accept-trade-btn" onclick="acceptTrade('${trade.id}', '${trade.giving_item_name}', '${trade.receiving_item_name}', '${trade.userId}')">Accept Trade</button>` 

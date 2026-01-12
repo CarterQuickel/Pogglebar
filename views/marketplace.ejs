@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace</title>
+    <link rel="stylesheet" href="/static/css/marketplace.css">
+</head>
+<body>
+    <div id="marketplaceBanner">
+        <div class="leftstuff">
+            <h1 style="margin-left: 10px;">Marketplace</h1>
+        </div>
+        <div class="rightstuff">
+            <a href="/collection" id="circleButton">&lt;</a>
+        </div>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/static/js/marketplace.js"></script>
+<script id="userdata" type="application/json"><%= JSON.stringify(userdata) %></script>
+<script id="pogList" type="application/json"><%= JSON.stringify(pogList) %></script>
+</html>

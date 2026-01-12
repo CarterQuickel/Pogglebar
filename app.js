@@ -117,88 +117,15 @@ app.use('/static', express.static('static'));
 app.use(express.urlencoded({limit: '50mb', extended: true }));
 app.use(express.json({limit: '50mb'}));
 
-// user settings database
-const usdb = new sqlite3.Database('usersettings.sqlite');
-usdb.run(`CREATE TABLE IF NOT EXISTS userSettings (
-    uid INTEGER PRIMARY KEY AUTOINCREMENT,
-    fid INTEGER UNIQUE,
-    theme TEXT,
-    score INTEGER,
-    inventory TEXT,
-    Isize INTEGER,
-    xp INTEGER,
-    maxxp INTEGER,
-    level INTEGER,
-    income INTEGER,
-    totalSold INTEGER,
-    cratesOpened INTEGER,
-    pogamount TEXT,
-    achievements TEXT,
-    mergeCount INTEGER,
-    highestCombo INTEGER,
-    wish INTEGER,
-    crates TEXT,
-    pfp TEXT,
-    displayname TEXT UNIQUE
-)`);
+// user settings database (use repo-root `data` folder)
+const { runMigrations } = require('./data/migrations');
 
-//this is here to ensure the proper order
-usdb.serialize(() => {
-    // chat/trade table (persist messages and trades)
-    usdb.run(`CREATE TABLE IF NOT EXISTS chat (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        trade_type TEXT DEFAULT 'trade',
-        name TEXT,
-        msg TEXT,
-        time INTEGER,
-        pfp TEXT,
-        userId TEXT,
-        giving_item_name TEXT,
-        receiving_item_name TEXT,
-        trade_status TEXT DEFAULT 'pending',
-        accepter_name TEXT,
-        accepter_userId TEXT
-    )`, (err) => {
-        if (err) console.error("Create table error:", err);
-        else console.log("Chat table ready");
-    });
+const usdb = new sqlite3.Database('./data/usersettings.sqlite');
 
-    // Add columns to existing chat table if they don't exist
-    usdb.run(`ALTER TABLE chat ADD COLUMN trade_type TEXT DEFAULT 'trade'`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-            console.error('Error adding trade_type column:', err.message);
-        }
-    });
-
-    usdb.run(`ALTER TABLE chat ADD COLUMN giving_item_name TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-            console.error('Error adding giving_item_name column:', err.message);
-        }
-    });
-
-    usdb.run(`ALTER TABLE chat ADD COLUMN receiving_item_name TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-            console.error('Error adding receiving_item_name column:', err.message);
-        }
-    });
-
-    usdb.run(`ALTER TABLE chat ADD COLUMN trade_status TEXT DEFAULT 'pending'`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-            console.error('Error adding trade_status column:', err.message);
-        }
-    });
-
-    usdb.run(`ALTER TABLE chat ADD COLUMN accepter_name TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-            console.error('Error adding accepter_name column:', err.message);
-        }
-    });
-
-    usdb.run(`ALTER TABLE chat ADD COLUMN accepter_userId TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-            console.error('Error adding accepter_userId column:', err.message);
-        }
-    });
+// Run migrations on startup
+runMigrations(usdb).catch(err => {
+    console.error('Failed to run migrations:', err);
+    process.exit(1);
 });
 
 // pog database
@@ -445,6 +372,11 @@ app.get('/patch', (req, res) => {
 // trade room page
 app.get('/chatroom', (req, res) => {
     res.render('chatroom', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+});
+
+//marketplace page
+app.get('/marketplace', (req, res) => {
+    res.render('marketplace', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
 });
 
 app.get('/achievements', (req, res) => {
