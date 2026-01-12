@@ -228,14 +228,15 @@ async function createMiniExplosion() {
     return new Promise(resolve => setTimeout(resolve, 800));
 }
 
-// ===== HELPER FUNCTIONS =====
-function validateCrateOpening(cost, count = 1) {
+function validateCrateOpening(type, cost, count) {
+    if (type === "Money") {
+        if (money < cost) {
+            alert(`Not enough money to open ${count} crate${count > 1 ? 's' : ''}! (Need $${abbreviateNumber(cost-money)} more)`);
+            return false;
+        }
+    }
     if (inventory.length + count > Isize) {
         alert(`Not enough inventory space to open ${count} crate${count > 1 ? 's' : ''}!`);
-        return false;
-    }
-    if (money < cost * count) {
-        alert(`Not enough money to open ${count} crate${count > 1 ? 's' : ''}!`);
         return false;
     }
     if (inventory.length + count >= 999) {
@@ -312,11 +313,11 @@ function addPogToInventory(pogResult) {
 
     document.getElementById("descPanel").innerHTML = "";
     inventory.push(pogResult);
-
+    refreshInventory();
     xp += Math.floor(pogResult.income * (15 * level / 15));
     sorting();
     levelup();
-     console.log("🟡 AFTER adding pog, before save. Inventory size:", inventory.length);
+    console.log("🟡 AFTER adding pog, before save. Inventory size:", inventory.length);
     save();
     console.log("🔵 AFTER save completed. Inventory size:", inventory.length);
 }
@@ -398,7 +399,6 @@ async function openCrateWithAnimation(cost, index) {
     if (!result) return;
 
     addPogToInventory(result);
-    money -= cost;
     cratesOpened++;
     refreshInventory();
     
@@ -429,7 +429,6 @@ async function openMultipleCratesWithAnimation(cost, index, count) {
     );
 
     results.forEach(result => addPogToInventory(result));
-    money -= cost * count;
     cratesOpened += count;
     refreshInventory();
 
@@ -1074,55 +1073,21 @@ function createRarityBreakdown(results) {
 document.addEventListener('DOMContentLoaded', function() {
     // Single crate buttons
     document.getElementById('crate1').addEventListener('click', () => 
-        openCrateWithAnimation(100, 0) // Trash Crate - $100
+        transaction(100, 0) // Trash Crate - $100
     );
     document.getElementById('crate2').addEventListener('click', () => 
-        openCrateWithAnimation(500, 1) // Common Crate - $500
+        transaction(500, 1) // Common Crate - $500
     );
     document.getElementById('crate3').addEventListener('click', () => 
-        openCrateWithAnimation(1000, 2) // Uncommon Crate - $1000
+        transaction(1000, 2) // Uncommon Crate - $1000
     );
     document.getElementById('crate4').addEventListener('click', () => 
-        openCrateWithAnimation(5000, 3) // Rare Crate - $5000
+        transaction(5000, 3) // Rare Crate - $5000
     );
     document.getElementById('crate5').addEventListener('click', () => 
-        openCrateWithAnimation(7000, 4) // Mythic Crate - $7000
+        transaction(7000, 4) // Mythic Crate - $7000
     );
-
-    // Multi-crate buttons (+5)
-    document.getElementById('crate1_b5').addEventListener('click', () => 
-        openMultipleCratesWithAnimation(100, 0, 5)
-    );
-    document.getElementById('crate2_b5').addEventListener('click', () => 
-        openMultipleCratesWithAnimation(500, 1, 5)
-    );
-    document.getElementById('crate3_b5').addEventListener('click', () => 
-        openMultipleCratesWithAnimation(1000, 2, 5)
-    );
-    document.getElementById('crate4_b5').addEventListener('click', () => 
-        openMultipleCratesWithAnimation(5000, 3, 5)
-    );
-    document.getElementById('crate5_b5').addEventListener('click', () => 
-        openMultipleCratesWithAnimation(7000, 4, 5)
-    );
-
-    // Multi-crate buttons (+10)
-    document.getElementById('crate1_b10').addEventListener('click', () => 
-        openMultipleCratesWithAnimation(100, 0, 10)
-    );
-    document.getElementById('crate2_b10').addEventListener('click', () => 
-        openMultipleCratesWithAnimation(500, 1, 10)
-    );
-    document.getElementById('crate3_b10').addEventListener('click', () => 
-        openMultipleCratesWithAnimation(1000, 2, 10)
-    );
-    document.getElementById('crate4_b10').addEventListener('click', () => 
-        openMultipleCratesWithAnimation(5000, 3, 10)
-    );
-    document.getElementById('crate5_b10').addEventListener('click', () => 
-        openMultipleCratesWithAnimation(7000, 4, 10)
-    );
-
+  
     // Crates container toggle
     document.getElementById("openCratesBtn").addEventListener("click", () => {
         const cratesContainer = document.getElementById("cratesCont");

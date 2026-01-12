@@ -5,6 +5,7 @@ body {
     background: #f2f2f2;
     color: #111;
     -webkit-font-smoothing: antialiased;
+    user-select: none;
 }
 
 h1 {

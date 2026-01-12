@@ -20,12 +20,11 @@ function computeComboStats() {
         window.highestCombo = highestCombo;
     }
 
-
     perNameBonus = {};
     for (const [name, count] of Object.entries(counts)) {
         // combo only works if 3+; multiplier increases per item (5% per item) but capped at 2x
         const rawMult = count >= 3 ? 1 + (count * 0.05) : 1;
-        perNameBonus[name] = Math.min(2, rawMult);
+        perNameBonus[name] = Math.min(3, rawMult);
     }
     window.perNameBonus = perNameBonus; //we love global variables
 

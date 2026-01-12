@@ -12,11 +12,22 @@ const io = new Server(http);
 const digio = require('socket.io-client');
 require('dotenv').config()
 
+//debug
+process.on('uncaughtException', (err) => {
+    console.error('UNCAUGHT EXCEPTION:', err);
+});
+  
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('UNHANDLED REJECTION:', reason);
+});
+  
+process.on('exit', (code) => {
+    console.error('PROCESS EXITED WITH CODE:', code);
+});
+
 //modules
 const achievements = require("./modules/backend_js/trophyList.js")
-console.log(achievements);
 const crateRef = require("./modules/backend_js/crateRef.js")
-console.log(crateRef);
 
 // API key for Formbar API access
 const API_KEY = process.env.API_KEY;
@@ -435,7 +446,7 @@ app.get('/achievements', (req, res) => {
 
 app.get('/leaderboard', (req, res) => {
     usdb.all(
-        'SELECT * FROM userSettings ORDER BY score DESC LIMIT 10', [],
+        'SELECT * FROM userSettings ORDER BY score DESC LIMIT 100', [],
         (err, rows) => {
             if (err) {
                 console.error('DB select error:', err);
@@ -531,11 +542,21 @@ app.post('/datasave', (req, res) => {
 // the URL for the post must be the same as the one in the fetch request
 app.post('/api/digipogs/transfer', (req, res) => {
     // req.body gets the information sent from the client
+    const cost = req.body.price;
     const payload = req.body;
-    const cost = payload.price;
     const reason = payload.reason;
     const pin = payload.pin;
     const id = req.session.user.fid; // Formbar user ID of payer from session
+    
+    // carter and vincent ids for testing respectively
+    const isAdmin = id === 73 || id === 84 || id === 44;
+    
+    if (isAdmin) {
+        // For admins, return success without processing actual transaction
+        console.log('Admin transaction bypassed cost deduction.');
+        return res.json({ success: true, message: 'Admin transaction (no cost)', amount: 0 });
+    }
+    
     console.log(cost, reason, pin, id);
     const paydesc = {
         from: id, // Formbar user ID of payer
@@ -545,7 +566,7 @@ app.post('/api/digipogs/transfer', (req, res) => {
         // security pin for the payer's account
         pin: pin,
         pool: true
-    }
+    };
     // make a direct transfer request using fetch
     fetch(`${AUTH_URL}/api/digipogs/transfer`, {
         method: 'POST',

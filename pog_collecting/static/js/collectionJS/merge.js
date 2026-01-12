@@ -15,7 +15,7 @@ function merge(bronze, silver, gold, diamond, astral) {
     } else if (diamond) {
         inventory.push({ locked: false, pogid: 289, name: "Astral Pog", pogcol: "Astral", color: "lightgray", income: 1000000, rarity: "Unique", id: Date.now() + Math.floor(Math.random() * 10000), description: "A pog infused with the power of the stars.", creator: "Celestial Smith" });
     } else if (astral) {
-        inventory.push({ locked: false, pogid: 290, name: "God Pog", pogcol: "White", color: "lightgray", income: 694206741, rarity: "Otherworldly", id: Date.now() + Math.floor(Math.random() * 10000), description: "The ultimate pog, said to be created by the gods themselves.", creator: "Ancient Deity" });
+        inventory.push({ locked: false, pogid: 290, name: "God Pog", pogcol: "White", color: "black", income: 694206741, rarity: "Otherworldly", id: Date.now() + Math.floor(Math.random() * 10000), description: "The ultimate pog, said to be created by the gods themselves.", creator: "Ancient Deity" });
     }
     // only sell the amount needed
     for (let i = 0; i < inventory.length && sold < mergeAmount; i++) {
