@@ -55,3 +55,8 @@ document.getElementById("chatRoomButton").addEventListener("click", () => {
     save();
     window.location.href = "/chatroom";
 });
+
+document.getElementById("marketplaceButton").addEventListener("click", () => {
+    save();
+    window.location.href = "/marketplace";
+});

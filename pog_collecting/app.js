@@ -374,6 +374,11 @@ app.get('/chatroom', (req, res) => {
     res.render('chatroom', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
 });
 
+//marketplace page
+app.get('/marketplace', (req, res) => {
+    res.render('marketplace', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+});
+
 app.get('/achievements', (req, res) => {
     res.render('achievements', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
 });
