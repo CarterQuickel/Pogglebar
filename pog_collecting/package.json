@@ -1,9 +1,9 @@
 {
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "init": "node database/db-init.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "start": "node app.js",
+  "dev": "nodemon app.js",
+  "init": "node data/db-cli.js init",
+  "migrate": "node data/db-cli.js migrate"
   },
   "dependencies": {
     "cjs": "^0.0.11",
