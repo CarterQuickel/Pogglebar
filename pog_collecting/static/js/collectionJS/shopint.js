@@ -41,8 +41,9 @@ function determineCost(price, amount) {
         monies = false;
     }
     const scaling = ((1 + (cratesOpened / 5))**1.37);
+    const scaling_perc = (scaling * 100) - 100;
     const purchaseCost = monies ? price * amount * scaling : (price * amount) / 5; // money : digipogs
-    document.getElementById("crateprice").innerText = `Price: $${abbreviateNumber(purchaseCost)}`;
+    document.getElementById("crateprice").innerText = `Price: $${abbreviateNumber(purchaseCost)} (+${scaling_perc.toFixed(0)}%)`;
     defrealprice = purchaseCost;
     console.log(defrealprice);
     return purchaseCost;
