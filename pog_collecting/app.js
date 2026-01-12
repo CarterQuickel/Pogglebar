@@ -142,57 +142,63 @@ usdb.run(`CREATE TABLE IF NOT EXISTS userSettings (
     displayname TEXT UNIQUE
 )`);
 
-// chat/trade table (persist messages and trades)
-usdb.run(`CREATE TABLE IF NOT EXISTS chat (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    trade_type TEXT DEFAULT 'trade',
-    name TEXT,
-    msg TEXT,
-    time INTEGER,
-    pfp TEXT,
-    userId TEXT,
-    giving_item_name TEXT,
-    receiving_item_name TEXT,
-    trade_status TEXT DEFAULT 'pending',
-    accepter_name TEXT,
-    accepter_userId TEXT
-)`)
+//this is here to ensure the proper order
+usdb.serialize(() => {
+    // chat/trade table (persist messages and trades)
+    usdb.run(`CREATE TABLE IF NOT EXISTS chat (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        trade_type TEXT DEFAULT 'trade',
+        name TEXT,
+        msg TEXT,
+        time INTEGER,
+        pfp TEXT,
+        userId TEXT,
+        giving_item_name TEXT,
+        receiving_item_name TEXT,
+        trade_status TEXT DEFAULT 'pending',
+        accepter_name TEXT,
+        accepter_userId TEXT
+    )`, (err) => {
+        if (err) console.error("Create table error:", err);
+        else console.log("Chat table ready");
+    });
 
-// Add columns to existing chat table if they don't exist
-usdb.run(`ALTER TABLE chat ADD COLUMN trade_type TEXT DEFAULT 'trade'`, (err) => {
-    if (err && !err.message.includes('duplicate column')) {
-        console.error('Error adding trade_type column:', err.message);
-    }
-});
+    // Add columns to existing chat table if they don't exist
+    usdb.run(`ALTER TABLE chat ADD COLUMN trade_type TEXT DEFAULT 'trade'`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+            console.error('Error adding trade_type column:', err.message);
+        }
+    });
 
-usdb.run(`ALTER TABLE chat ADD COLUMN giving_item_name TEXT`, (err) => {
-    if (err && !err.message.includes('duplicate column')) {
-        console.error('Error adding giving_item_name column:', err.message);
-    }
-});
+    usdb.run(`ALTER TABLE chat ADD COLUMN giving_item_name TEXT`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+            console.error('Error adding giving_item_name column:', err.message);
+        }
+    });
 
-usdb.run(`ALTER TABLE chat ADD COLUMN receiving_item_name TEXT`, (err) => {
-    if (err && !err.message.includes('duplicate column')) {
-        console.error('Error adding receiving_item_name column:', err.message);
-    }
-});
+    usdb.run(`ALTER TABLE chat ADD COLUMN receiving_item_name TEXT`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+            console.error('Error adding receiving_item_name column:', err.message);
+        }
+    });
 
-usdb.run(`ALTER TABLE chat ADD COLUMN trade_status TEXT DEFAULT 'pending'`, (err) => {
-    if (err && !err.message.includes('duplicate column')) {
-        console.error('Error adding trade_status column:', err.message);
-    }
-});
+    usdb.run(`ALTER TABLE chat ADD COLUMN trade_status TEXT DEFAULT 'pending'`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+            console.error('Error adding trade_status column:', err.message);
+        }
+    });
 
-usdb.run(`ALTER TABLE chat ADD COLUMN accepter_name TEXT`, (err) => {
-    if (err && !err.message.includes('duplicate column')) {
-        console.error('Error adding accepter_name column:', err.message);
-    }
-});
+    usdb.run(`ALTER TABLE chat ADD COLUMN accepter_name TEXT`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+            console.error('Error adding accepter_name column:', err.message);
+        }
+    });
 
-usdb.run(`ALTER TABLE chat ADD COLUMN accepter_userId TEXT`, (err) => {
-    if (err && !err.message.includes('duplicate column')) {
-        console.error('Error adding accepter_userId column:', err.message);
-    }
+    usdb.run(`ALTER TABLE chat ADD COLUMN accepter_userId TEXT`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+            console.error('Error adding accepter_userId column:', err.message);
+        }
+    });
 });
 
 // pog database
@@ -203,6 +209,7 @@ const pogs = new sqlite3.Database("pogipedia/db/pog.db", (err) => {
         console.log("Connected to pog database.");
     }
 });
+
 
 let pogCount = 0;
 //show many pogs there are
