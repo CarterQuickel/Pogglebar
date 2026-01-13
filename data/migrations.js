@@ -43,7 +43,7 @@ async function runMigrations(db) {
     for (const file of files) {
       if (!file.endsWith('.js')) continue;
       if (applied.includes(file)) {
-        console.log(`✓ Already applied: ${file}`);
+        console.log(`Already applied: ${file}`);
         continue;
       }
 
@@ -59,9 +59,8 @@ async function runMigrations(db) {
             else resolve();
           });
         });
-        console.log(`✓ Applied: ${file}`);
       } catch (err) {
-        console.error(`✗ Failed: ${file}`, err);
+        console.error(`Failed to get: ${file}`, err);
         throw err;
       }
     }

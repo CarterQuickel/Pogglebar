@@ -10,7 +10,7 @@ const http = require('http').createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(http);
 const digio = require('socket.io-client');
-require('dotenv').config()
+require('dotenv').config();
 
 //debug
 process.on('uncaughtException', (err) => {
@@ -337,7 +337,7 @@ app.get('/', isAuthenticated, (req, res) => {
                     theme: 'light',
                     score: 0,
                     inventory: [],
-                    Isize: 5,
+                    Isize: 10,
                     xp: 0,
                     maxxp: 30,
                     level: 1,
