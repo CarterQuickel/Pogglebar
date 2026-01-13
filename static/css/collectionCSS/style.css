@@ -1,5 +1,5 @@
 body {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin-top: 80px;
     user-select: none;
     color: white;
@@ -10,7 +10,7 @@ h1 {
 }
 
 h3 {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 #leftmost {
@@ -20,7 +20,7 @@ h3 {
 }
 
 #money {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-style: bold;
     font-size: 35px;
 }
@@ -28,13 +28,13 @@ h3 {
  
 #income {
     margin-top: 0;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-style: bold;
     font-size: 20px;
 }
 
 h4 {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin-top: 10px;
 }
 

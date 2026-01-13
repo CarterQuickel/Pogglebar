@@ -10,7 +10,7 @@
     border: transparent;
     border-radius: 10px;
     padding: 5px;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-style: bold;
     font-size: 15px;
     z-index: 50;
@@ -24,7 +24,7 @@
     border-radius: 10%;
     width: 70px;
     height: 25px;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-style: bold;
     font-size: 15px;
     cursor: pointer;
@@ -40,7 +40,7 @@
     border: transparent;
     border-radius: 10px;
     padding: 5px;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-style: bold;
     font-size: 15px;
     background-color: rgb(112, 48, 165);
