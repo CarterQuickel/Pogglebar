@@ -15,3 +15,6 @@ if (userdata.theme === "light") {
 
 const socket = io(); 
 const myName = userdata.displayName || userdata.displayname || 'Guest';
+const pogContainer = document.getElementById('pogContainer');
+
+// Function to create pog elements

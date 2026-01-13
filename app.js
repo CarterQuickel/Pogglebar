@@ -579,8 +579,8 @@ app.post('/api/user/sync-inventory', express.json(), (req, res) => {
 });
 
 //listens
-http.listen(3000, () => {
-    console.log('Server started on port 3000');
+http.listen(process.env.PORT || 3000, () => {
+    console.log(`Server started on port ${process.env.PORT || 3000}`);
 });
 
 //trade room stuff
