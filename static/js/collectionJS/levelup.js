@@ -9,6 +9,7 @@ function levelup() {
         xp -= maxXP;
         level++;
         maxXP = Math.floor(maxXP * 1.4);
+        Isize += 5;
         if (window.checkAllAchievements) window.checkAllAchievements();
     }
 }

@@ -28,6 +28,7 @@ process.on('exit', (code) => {
 //modules
 const achievements = require("./modules/backend_js/trophyList.js")
 const crateRef = require("./modules/backend_js/crateRef.js")
+const { initializeUserState, RARITY_COLORS } = require('./modules/backend_js/userState');
 
 // API key for Formbar API access
 const API_KEY = process.env.API_KEY;
@@ -576,6 +577,17 @@ app.post('/api/user/sync-inventory', express.json(), (req, res) => {
         // optionally update other derived session fields here
         return res.json({ ok: true, changes: this.changes });
     });
+});
+
+// API route to get user state
+app.get('/api/user-state', (req, res) => {
+  const displayName = req.session.user.displayName;
+  usdb.get('SELECT * FROM userSettings WHERE displayname = ?', [displayName], (err, row) => {
+    if (err || !row) return res.status(500).json({ error: 'User not found' });
+    
+    const userState = initializeUserState(row);
+    res.json({ userState, rarityColors: RARITY_COLORS });
+  });
 });
 
 //listens
