@@ -4,3 +4,4 @@
 /usersettings.sqlite
 /.sqlite
 *.sqlite
+/.vscode
