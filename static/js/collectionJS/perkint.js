@@ -14,16 +14,23 @@ async function viewPerks() {
         const response = await fetch('/api/perks');
         const data = await response.json();
         const perks = data.perks;
-
+        const sortedPerks = [...perks].sort((a, b) => a.notches - b.notches)
         const itemsHTML = document.getElementById("perkCards");
-        const itemView = perks.map((item) => {
+        const itemView = sortedPerks.map((item) => {
             const name = item.name;
             const description = item.description;
+            let notches = "";
+            for (let i = 0; i < item.notches; i++) {
+                notches += "⬣";
+            }
             return `
             <div class="perk_card">
                 <div class="inner_card">
-                    <h3>${name}</h3>
-                    <p>${description}</p>
+                    <div class="card_padding">
+                        <h3>${name}</h3>
+                        <p>${description}</p>
+                        <p class="notches">${notches}</p>
+                    </div>
                 </div>
             </div>
         `
