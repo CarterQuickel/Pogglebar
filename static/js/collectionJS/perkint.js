@@ -19,6 +19,25 @@ async function viewPerks() {
         const itemView = sortedPerks.map((item) => {
             const name = item.name;
             const description = item.description;
+            const type = item.type
+            let typeIcon = ""
+            switch (type) {
+                case "attack":
+                    typeIcon += "⚔";
+                    break;
+                case "defense":
+                    typeIcon += "🛡️";
+                    break;
+                case "element":
+                    typeIcon += "🔥";
+                    break;
+                case "support":
+                    typeIcon += "💊";
+                    break;
+                case "utility":
+                    typeIcon += "⚙";
+                    break;
+            }
             let notches = "";
             for (let i = 0; i < item.notches; i++) {
                 notches += "⬣";
@@ -29,6 +48,7 @@ async function viewPerks() {
                     <div class="card_padding">
                         <h3>${name}</h3>
                         <p>${description}</p>
+                        <p>${typeIcon}</p>
                         <p class="notches">${notches}</p>
                     </div>
                 </div>
