@@ -14,7 +14,7 @@ function update() {
     document.getElementById("income").innerText = `($${abbreviateNumber(getTotalIncome())}/s)`;
 
     //update pog / pog
-    document.getElementById("pogCount").innerText = `Pogs Discovered: ${Math.round((pogAmount.length / maxBinder) * 100)}% (${pogAmount.length} / ${maxBinder})`;
+    document.getElementById("pogCount").innerText = `${Math.round((pogAmount.length / maxBinder) * 100)}%`;
 
     //update pogs color
     document.getElementById("pogCount").style.color = pogAmount.length >= maxBinder ? "gold" : "white";
@@ -53,10 +53,17 @@ function updateMoney() {
 //update progress bar
 setInterval(updatePB, 100)
 function updatePB() {
-    const XPPB = document.getElementById("XPPB")
+    const XPPB = document.getElementById("XPPB");
     XPPB.value = xp;
     XPPB.max = maxXP;
 }
+
+//update binder bar
+setInterval(() => {
+    const bindb = document.getElementById("binderBar");
+    bindb.value = pogAmount.length;
+    bindb.max = maxBinder;
+}, 100);
 
 document.getElementById("XPTxt").addEventListener("mouseenter", () => {
     xpHover = true;

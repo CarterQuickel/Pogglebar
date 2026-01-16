@@ -10,7 +10,7 @@ const http = require('http').createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(http);
 const digio = require('socket.io-client');
-require('dotenv').config()
+require('dotenv').config();
 
 //debug
 process.on('uncaughtException', (err) => {
@@ -28,6 +28,12 @@ process.on('exit', (code) => {
 //modules
 const achievements = require("./modules/backend_js/trophyList.js")
 const crateRef = require("./modules/backend_js/crateRef.js")
+const { initializeUserState, RARITY_COLORS } = require('./modules/backend_js/userState.js');
+const { perks } = require('./modules/backend_js/tb_declar/perk_card.js');
+app.get('/api/perks', (req, res) => {
+  res.json({ perks });
+  console.log("Perks API accessed");
+});
 
 // API key for Formbar API access
 const API_KEY = process.env.API_KEY;
@@ -337,7 +343,7 @@ app.get('/', isAuthenticated, (req, res) => {
                     theme: 'light',
                     score: 0,
                     inventory: [],
-                    Isize: 5,
+                    Isize: 10,
                     xp: 0,
                     maxxp: 30,
                     level: 1,
@@ -374,10 +380,56 @@ app.get('/chatroom', (req, res) => {
     res.render('chatroom', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
 });
 
-//marketplace page
+
+//marketplace
 app.get('/marketplace', (req, res) => {
-    res.render('marketplace', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+    console.log('=== MARKETPLACE ROUTE DEBUG ===');
+    console.log('req.session exists:', !!req.session);
+    console.log('req.session.user exists:', !!req.session.user);
+    console.log('req.session.user:', req.session.user);
+    console.log('req.session.user.inventory:', req.session.user?.inventory);
+    console.log('req.session.user.displayName:', req.session.user?.displayName);
+    
+    // Ensure we send the freshest userdata (including inventory) by loading from DB when possible
+    const displayName = req.session.user && (req.session.user.displayName || req.session.user.displayname);
+    console.log('displayName extracted:', displayName);
+    
+    if (!displayName) {
+        console.log('No displayName found, rendering with session data only');
+        console.log('Session userdata being sent:', req.session.user);
+        return res.render('marketplace', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+    }
+
+    console.log('Querying database for user:', displayName);
+    usdb.get('SELECT * FROM userSettings WHERE displayname = ?', [displayName], (err, row) => {
+        console.log('Database query result - err:', err);
+        console.log('Database query result - row exists:', !!row);
+        
+        if (!err && row) {
+            console.log('Database row inventory (raw):', row.inventory);
+            try {
+                const inv = JSON.parse(row.inventory || '[]');
+                console.log('Parsed inventory from DB:', inv);
+                console.log('Parsed inventory length:', inv.length);
+                
+                req.session.user = req.session.user || {};
+                req.session.user.inventory = Array.isArray(inv) ? inv : [];
+                console.log('Updated session inventory:', req.session.user.inventory);
+            } catch (e) {
+                console.log('Error parsing inventory from DB:', e);
+                // leave session inventory as-is if parse fails
+            }
+        } else {
+            console.log('No database row found or error occurred');
+        }
+
+        console.log('Final userdata being sent to template:', req.session.user);
+        console.log('================================');
+        return res.render('marketplace', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+    });
 });
+
+
 
 app.get('/achievements', (req, res) => {
     res.render('achievements', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
@@ -407,7 +459,8 @@ app.get('/api/leaderboard', (req, res) => {
 
 // API endpoint to get recent trades
 app.get('/api/trades/recent', (req, res) => {
-    usdb.all('SELECT * FROM chat WHERE trade_type = ? ORDER BY id DESC LIMIT 50', ['trade'], (err, rows) => {
+    // Return only pending trade offers so completed/accepted ones don't reappear
+    usdb.all('SELECT * FROM chat WHERE trade_type = ? AND trade_status = ? ORDER BY id DESC LIMIT 50', ['trade', 'pending'], (err, rows) => {
         if (err) {
             console.error('API trades error', err);
             return res.status(500).json({ error: 'db' });
@@ -415,6 +468,18 @@ app.get('/api/trades/recent', (req, res) => {
         res.json(rows || []);
     });
 });
+
+// Add this with your other API endpoints
+app.get('/api/auctions/active', (req, res) => {
+    usdb.all('SELECT * FROM market WHERE AuctionStatus = ? ORDER BY createdAt DESC LIMIT 50', ['active'], (err, rows) => {
+        if (err) {
+            console.error('API auctions error', err);
+            return res.status(500).json({ error: 'db' });
+        }
+        res.json(rows || []);
+    });
+});
+
 
 // save data route
 app.post('/datasave', (req, res) => {
@@ -578,19 +643,216 @@ app.post('/api/user/sync-inventory', express.json(), (req, res) => {
     });
 });
 
+// API route to get user state
+app.get('/api/user-state', (req, res) => {
+  const displayName = req.session.user.displayName;
+  usdb.get('SELECT * FROM userSettings WHERE displayname = ?', [displayName], (err, row) => {
+    if (err || !row) return res.status(500).json({ error: 'User not found' });
+    
+    const userState = initializeUserState(row);
+    res.json({ userState, rarityColors: RARITY_COLORS });
+  });
+});
+
 //listens
 http.listen(process.env.PORT || 3000, () => {
-    console.log('Server started on port 3000');
+    console.log(`Server started on port ${process.env.PORT || 3000}`);
 });
 
 //trade room stuff
 io.on('connection', (socket) => {
-    // Send recent trade history to the connecting client
-    usdb.all('SELECT * FROM chat WHERE trade_type = ? ORDER BY id DESC LIMIT 50', ['trade'], (err, rows) => {
+    // Send recent trade history to the connecting client (only pending offers)
+    usdb.all('SELECT * FROM chat WHERE trade_type = ? AND trade_status = ? ORDER BY id DESC LIMIT 50', ['trade', 'pending'], (err, rows) => {
         if (!err && Array.isArray(rows)) {
             socket.emit('trade history', rows.reverse());
         }
     });
+
+    //marketplace stuff
+    // Add these inside your io.on('connection', (socket) => { ... }) section
+
+// Handle auction errors
+socket.on('auction error', (error) => {
+    console.error('Auction error:', error);
+});
+
+// Send existing auctions to connecting client
+usdb.all('SELECT * FROM market WHERE AuctionStatus = ? ORDER BY createdAt DESC LIMIT 50', ['active'], (err, rows) => {
+    if (!err && Array.isArray(rows)) {
+        socket.emit('auction history', rows);
+    }
+});
+
+
+// Handle auction creation
+socket.on('create auction', (data) => {
+    const sellerId = data.sellerId;
+    const sellerName = data.sellerName;
+    const sellerPfp = data.sellerPfp;
+    const pogName = data.pogName;
+    const startPrice = data.startPrice;
+    const maxAcceptedBid = data.maxAcceptedBid;
+    const minBidIncrement = data.minBidIncrement;
+    const auctionTime = data.auctionTime;
+    const createdAt = Date.now();
+
+    // Validate that user owns the pog
+    getUserInventory(sellerId, (err, inventory) => {
+        if (err) {
+            socket.emit('auction error', { message: 'Could not verify inventory' });
+            return;
+        }
+
+        const hasPog = inventory.some(item => item.name === pogName && item.rarity !== "Unique");
+        if (!hasPog) {
+            socket.emit('auction error', { message: 'You do not own this pog or it cannot be auctioned' });
+            return;
+        }
+
+        // Create auction in database
+        usdb.run(`INSERT INTO market (user_id, name, pfp, pog, startPrice, maxAcceptedBid, minBidIncrement, createdAt, AuctionTime, AuctionStatus) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [sellerId, sellerName, sellerPfp, pogName, startPrice, maxAcceptedBid, minBidIncrement, createdAt, auctionTime, 'active'],
+            function(err) {
+                if (err) {
+                    console.error('Error creating auction:', err);
+                    socket.emit('auction error', { message: 'Failed to create auction' });
+                    return;
+                }
+
+                const newAuction = {
+                    user_id: sellerId,
+                    name: sellerName,
+                    pfp: sellerPfp,
+                    pog: pogName,
+                    startPrice: startPrice,
+                    maxAcceptedBid: maxAcceptedBid,
+                    minBidIncrement: minBidIncrement,
+                    createdAt: createdAt,
+                    AuctionTime: auctionTime,
+                    AuctionStatus: 'active',
+                    winner_id: null,
+                    winner_name: null,
+                    winner_pfp: null,
+                    winner_bid: null,
+                    bid_history: '[]'
+                };
+
+                // Broadcast new auction to all clients
+                io.emit('auction created', newAuction);
+                console.log(`Auction created: ${sellerName} auctioning ${pogName}`);
+            }
+        );
+    });
+});
+
+// Handle bid placement
+socket.on('place bid', (data) => {
+    const sellerId = data.sellerId;
+    const pogName = data.pogName;
+    const bidAmount = data.bidAmount;
+    const bidderName = data.bidderName;
+    const bidderPfp = data.bidderPfp;
+    const bidderId = data.bidderId;
+
+    // Get current auction
+    usdb.get('SELECT * FROM market WHERE user_id = ? AND pog = ? AND AuctionStatus = ?', 
+        [sellerId, pogName, 'active'], (err, auction) => {
+            if (err || !auction) {
+                socket.emit('bid error', { message: 'Auction not found or no longer active' });
+                return;
+            }
+
+            // Check if auction has expired
+            const endTime = auction.createdAt + (auction.AuctionTime * 60 * 1000);
+            if (Date.now() > endTime) {
+                socket.emit('bid error', { message: 'This auction has expired' });
+                return;
+            }
+
+            // Validate bid amount
+            const currentBid = auction.winner_bid || auction.startPrice;
+            const minimumBid = currentBid + auction.minBidIncrement;
+            
+            if (bidAmount < minimumBid) {
+                socket.emit('bid error', { message: `Bid must be at least $${minimumBid}` });
+                return;
+            }
+
+            // Check if this is a "Buy It Now" bid
+            if (bidAmount >= auction.maxAcceptedBid) {
+                // Complete auction immediately
+                completeAuction(auction, bidderId, bidderName, bidderPfp, auction.maxAcceptedBid);
+                return;
+            }
+
+            // Update auction with new bid
+            const bidHistory = JSON.parse(auction.bid_history || '[]');
+            bidHistory.push({
+                bidder: bidderName,
+                amount: bidAmount,
+                time: Date.now()
+            });
+
+            usdb.run(`UPDATE market SET winner_id = ?, winner_name = ?, winner_pfp = ?, winner_bid = ?, bid_history = ? 
+                      WHERE user_id = ? AND pog = ?`,
+                [bidderId, bidderName, bidderPfp, bidAmount, JSON.stringify(bidHistory), sellerId, pogName],
+                function(err) {
+                    if (err) {
+                        console.error('Error updating bid:', err);
+                        socket.emit('bid error', { message: 'Failed to place bid' });
+                        return;
+                    }
+
+                    // Get updated auction and broadcast
+                    usdb.get('SELECT * FROM market WHERE user_id = ? AND pog = ?', [sellerId, pogName], (err, updatedAuction) => {
+                        if (!err && updatedAuction) {
+                            io.emit('bid placed', updatedAuction);
+                            console.log(`Bid placed: ${bidderName} bid $${bidAmount} on ${pogName}`);
+                        }
+                    });
+                }
+            );
+        }
+    );
+});
+
+// Handle "Buy It Now"
+socket.on('buy it now', (data) => {
+    const sellerId = data.sellerId;
+    const pogName = data.pogName;
+    const price = data.price;
+    const buyerName = data.buyerName;
+    const buyerPfp = data.buyerPfp;
+    const buyerId = data.buyerId;
+
+    // Get current auction
+    usdb.get('SELECT * FROM market WHERE user_id = ? AND pog = ? AND AuctionStatus = ?', 
+        [sellerId, pogName, 'active'], (err, auction) => {
+            if (err || !auction) {
+                socket.emit('buy error', { message: 'Auction not found or no longer active' });
+                return;
+            }
+
+            // Check if auction has expired
+            const endTime = auction.createdAt + (auction.AuctionTime * 60 * 1000);
+            if (Date.now() > endTime) {
+                socket.emit('buy error', { message: 'This auction has expired' });
+                return;
+            }
+
+            // Verify price matches maxAcceptedBid
+            if (price !== auction.maxAcceptedBid) {
+                socket.emit('buy error', { message: 'Invalid buy it now price' });
+                return;
+            }
+
+            // Complete auction
+            completeAuction(auction, buyerId, buyerName, buyerPfp, price);
+        }
+    );
+});
+
 
     // Handle new trade offers
     socket.on('trade offer', (data) => {
@@ -769,3 +1031,30 @@ io.on('connection', (socket) => {
     });
 });
 
+// Add this helper function in your app.js
+function completeAuction(auction, winnerId, winnerName, winnerPfp, finalBid) {
+    // Update auction to completed
+    usdb.run(`UPDATE market SET AuctionStatus = ?, winner_id = ?, winner_name = ?, winner_pfp = ?, winner_bid = ? 
+              WHERE user_id = ? AND pog = ?`,
+        ['completed', winnerId, winnerName, winnerPfp, finalBid, auction.user_id, auction.pog],
+        function(err) {
+            if (err) {
+                console.error('Error completing auction:', err);
+                return;
+            }
+
+            const completedAuction = {
+                ...auction,
+                AuctionStatus: 'completed',
+                winner_id: winnerId,
+                winner_name: winnerName,
+                winner_pfp: winnerPfp,
+                winner_bid: finalBid
+            };
+
+            // Broadcast completion to all clients
+            io.emit('auction completed', completedAuction);
+            console.log(`Auction completed: ${winnerName} won ${auction.pog} for $${finalBid}`);
+        }
+    );
+}
