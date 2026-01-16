@@ -9,7 +9,7 @@
 }
 
 .perkCont {
-    background-color: #000000;
+    background-color: #0d0d0e;
     position: fixed;
     width: 100%;
     height: 100%;
@@ -18,6 +18,17 @@
     border: transparent;
     text-align: center;
     color: White;
+}
+
+#perkCards {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    overflow-y: auto;
+    height: 80vh;
 }
 
 #closePerks {
@@ -57,7 +68,11 @@
     height: 340px;
     border-radius: 16px;
     background: var(--gold);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+    transition: all 0.1s ease;
+}
+
+.perk_card:hover {
+    scale: 1.1;
 }
 
 .inner_card {
@@ -78,4 +93,19 @@
   box-shadow:
     0 0 6px rgba(212,175,55,0.6),
     inset 0 0 6px rgba(212,175,55,0.6);
+}
+
+.card_padding {
+    padding: 20px;
+    color: white;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.notches {
+    position: absolute;
+    margin-top: 296px;
+    scale: 1.4;
 }

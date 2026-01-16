@@ -3,6 +3,7 @@ body {
     margin-top: 80px;
     user-select: none;
     color: white;
+    overflow-y: hidden;
 }
 
 h1 {

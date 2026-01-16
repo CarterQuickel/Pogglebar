@@ -54,5 +54,13 @@ const elements = [
         dot: 4,
         slow: 0,
         status: "fear"
+    },
+    {
+        name: "physical",
+        base_dg: 5,
+        ehr: 0.3,
+        dot: 0,
+        slow: 0,
+        status: "bleed"
     }
 ];
