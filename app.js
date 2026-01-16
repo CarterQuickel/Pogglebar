@@ -10,7 +10,7 @@ const http = require('http').createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(http);
 const digio = require('socket.io-client');
-require('dotenv').config()
+require('dotenv').config();
 
 //debug
 process.on('uncaughtException', (err) => {
@@ -28,6 +28,12 @@ process.on('exit', (code) => {
 //modules
 const achievements = require("./modules/backend_js/trophyList.js")
 const crateRef = require("./modules/backend_js/crateRef.js")
+const { initializeUserState, RARITY_COLORS } = require('./modules/backend_js/userState.js');
+const { perks } = require('./modules/backend_js/tb_declar/perk_card.js');
+app.get('/api/perks', (req, res) => {
+  res.json({ perks });
+  console.log("Perks API accessed");
+});
 
 // API key for Formbar API access
 const API_KEY = process.env.API_KEY;
@@ -337,7 +343,7 @@ app.get('/', isAuthenticated, (req, res) => {
                     theme: 'light',
                     score: 0,
                     inventory: [],
-                    Isize: 5,
+                    Isize: 10,
                     xp: 0,
                     maxxp: 30,
                     level: 1,
@@ -635,6 +641,17 @@ app.post('/api/user/sync-inventory', express.json(), (req, res) => {
         // optionally update other derived session fields here
         return res.json({ ok: true, changes: this.changes });
     });
+});
+
+// API route to get user state
+app.get('/api/user-state', (req, res) => {
+  const displayName = req.session.user.displayName;
+  usdb.get('SELECT * FROM userSettings WHERE displayname = ?', [displayName], (err, row) => {
+    if (err || !row) return res.status(500).json({ error: 'User not found' });
+    
+    const userState = initializeUserState(row);
+    res.json({ userState, rarityColors: RARITY_COLORS });
+  });
 });
 
 //listens

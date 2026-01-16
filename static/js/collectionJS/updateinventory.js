@@ -25,6 +25,8 @@ function refreshInventory() {
     const diamondCount = inventory.filter(item => item.name === "Diamond Pog").length;
     const astralCount = inventory.filter(item => item.name === "Astral Pog").length;
 
+    const emptySlot = Isize - inventory.length;
+
     // set inventory html
     // .filter is used to get the search and .includes to check if the item name includes the searched text
     inventoryDiv.innerHTML = inventory.filter(item => item.name.toLowerCase().includes(itemSearched)).map((item, index) => {
@@ -67,8 +69,10 @@ function refreshInventory() {
             ${canTrade ? `<button class="mergebtn" onclick="trade(${item.id}, ${item.locked})">Trade (1)</button>` : ""}
         </div>`;
     }).join("");
-// 67 mango
-    // Get tradeable items from inventory
+inventoryDiv.innerHTML = inventoryDiv.innerHTML +
+    // add empty slots
+    Array.from({ length: emptySlot }, (_, i) => `<div class="emptySlot"></div>`).join("");
+// Get tradeable items from inventory
 const tradeableItems = inventory.filter(item => item.rarity !== "Unique");
 
 }
