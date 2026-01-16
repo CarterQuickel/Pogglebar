@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../static/css/collectionCSS/tooltip.css">
     <link rel="stylesheet" href="../static/css/collectionCSS/banner.css">
     <link rel="stylesheet" href="../static/css/collectionCSS/binder.css">
+    <link rel="stylesheet" href="../static/css/collectionCSS/perkB.css">
 </head>
 
 <body>
@@ -63,10 +64,21 @@
     <!--Binder-->
     <div id="binderBanner" style="display:none;">
         <div class="binderCont">
-            <h1 style="font-size: 60px; margin-top: -10px;">Collection</h1>
-            <h3 id="pogCount" style="margin-top: -45px;">Pogs: 0 / 0</h3>
-            <div id="binderItems"></div>
+            <h1 style="font-size: 60px; margin-top: -10px; margin-bottom: 0px;">Collection</h1>
             <button id="closeBinder">Close</button>
+            <div id="binderProgress">
+                <h3 id="pogCount">Pogs: 0 / 0</h3>
+                <progress id="binderBar"></progress>
+            </div>
+            <div id="binderItems"></div>
+        </div>
+    </div>
+    <!--Perks-->
+    <div id="perkBanner" style="display:none;">
+        <div class="perkCont">
+            <h1 style="font-size: 60px; margin-top: -10px;">Perks</h1>
+            <div id="perkCards"></div>
+            <button id="closePerks">Close</button>
         </div>
     </div>
     <!--Profile Pic Container-->
@@ -100,9 +112,9 @@
         </div>
         <div style="right: 0; top: 0;" class="rightstuff">
             <button id="useWish">Wish (0/7)</button>
-            <img src="../static/icons/buttons_main/chat.png" title="Chatroom" width="40" height="40" id="chatRoomButton"
+            <img src="../static/icons/buttons_main/chat.png" title="Trade Room" width="40" height="40" id="chatRoomButton"
                 class="imgbtn">
-            <img src="../static/icons/buttons_main/shop.png" title="Chatroom" width="40" height="40" id="marketplaceButton"
+            <img src="../static/icons/buttons_main/shop.png" title="Marketplace" width="40" height="40" id="marketplaceButton"
                 class="imgbtn">
             <img src="../static/icons/buttons_main/patches.png" title="Patch Notes" width="40" height="40"
                 id="patchNotesButton" class="imgbtn">
@@ -156,6 +168,7 @@
                 </div>
             <div id="settings_tools_btns">
                 <img src="../static/icons/buttons_main/binder.png" title="View Collection" width="40" height="40" class="tools" id="binder">
+                <img src="../static/icons/buttons_main/perk.png" title="View Perks" width="40" height="40" class="tools" id="perkB">
                <!--Color Key-->
                     <div id="keyCont">
                         <img src="../static/icons/buttons_main/color_key.png" title="View Color Key" width="40"
@@ -195,7 +208,6 @@
             </div>
             <div id="cratesCont">
                 <div id="crateBtns">
-                    <h4>Pog Crates</h4>
                     <div class="buttonSources">
                         <div class="tooltip-chances">
                             <button id="info1" class="infobtn">i</button>
@@ -318,6 +330,7 @@
 <script src="../static/js/collectionJS/crateopen.js"></script>
 <script src="../static/js/collectionJS/shopint.js"></script>
 <script src="../static/js/collectionJS/binderint.js"></script>
+<script src="../static/js/collectionJS/perkint.js"></script>
 <script src="../static/js/collectionJS/wish.js"></script>
 <script src="../static/js/collectionJS/pfp.js"></script>
 <!--don't put anything here-->

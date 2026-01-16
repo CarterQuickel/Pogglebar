@@ -28,7 +28,12 @@ process.on('exit', (code) => {
 //modules
 const achievements = require("./modules/backend_js/trophyList.js")
 const crateRef = require("./modules/backend_js/crateRef.js")
-const { initializeUserState, RARITY_COLORS } = require('./modules/backend_js/userState');
+const { initializeUserState, RARITY_COLORS } = require('./modules/backend_js/userState.js');
+const { perks } = require('./modules/backend_js/tb_declar/perk_card.js');
+app.get('/api/perks', (req, res) => {
+  res.json({ perks });
+  console.log("Perks API accessed");
+});
 
 // API key for Formbar API access
 const API_KEY = process.env.API_KEY;

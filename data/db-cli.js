@@ -17,9 +17,9 @@ async function main() {
 Database CLI
 
 Commands:
-  node db-cli.js init       - Initialize a fresh database with latest schema
-  node db-cli.js migrate    - Run pending migrations on existing database
-  node db-cli.js help       - Show this help message
+  node data/db-cli.js init       - Initialize a fresh database with latest schema
+  node data/db-cli.js migrate    - Run pending migrations on existing database
+  node data/db-cli.js help       - Show this help message
     `);
     process.exit(0);
   }
