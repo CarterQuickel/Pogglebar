@@ -1,5 +1,5 @@
 // In your migrations file or create a new one
-const createAuctionTable = (db) => {
+module.exports = (db) => {
   return new Promise((resolve, reject) => {
     db.run(`CREATE TABLE IF NOT EXISTS market (
         user_id INTEGER NOT NULL,
