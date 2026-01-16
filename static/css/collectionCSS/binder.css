@@ -20,6 +20,23 @@
     color: White;
 }
 
+#binderProgress {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+#binderBar::-webkit-progress-value {
+    background: linear-gradient(
+    90deg,
+    #ea9c0b,
+    #f3ff08
+  );
+  transition: none;
+}
+
 .singleI {
     background-color: rgb(66, 51, 66);
     padding: 15px;
