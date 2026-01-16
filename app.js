@@ -374,10 +374,56 @@ app.get('/chatroom', (req, res) => {
     res.render('chatroom', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
 });
 
-//marketplace page
+
+//marketplace
 app.get('/marketplace', (req, res) => {
-    res.render('marketplace', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+    console.log('=== MARKETPLACE ROUTE DEBUG ===');
+    console.log('req.session exists:', !!req.session);
+    console.log('req.session.user exists:', !!req.session.user);
+    console.log('req.session.user:', req.session.user);
+    console.log('req.session.user.inventory:', req.session.user?.inventory);
+    console.log('req.session.user.displayName:', req.session.user?.displayName);
+    
+    // Ensure we send the freshest userdata (including inventory) by loading from DB when possible
+    const displayName = req.session.user && (req.session.user.displayName || req.session.user.displayname);
+    console.log('displayName extracted:', displayName);
+    
+    if (!displayName) {
+        console.log('No displayName found, rendering with session data only');
+        console.log('Session userdata being sent:', req.session.user);
+        return res.render('marketplace', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+    }
+
+    console.log('Querying database for user:', displayName);
+    usdb.get('SELECT * FROM userSettings WHERE displayname = ?', [displayName], (err, row) => {
+        console.log('Database query result - err:', err);
+        console.log('Database query result - row exists:', !!row);
+        
+        if (!err && row) {
+            console.log('Database row inventory (raw):', row.inventory);
+            try {
+                const inv = JSON.parse(row.inventory || '[]');
+                console.log('Parsed inventory from DB:', inv);
+                console.log('Parsed inventory length:', inv.length);
+                
+                req.session.user = req.session.user || {};
+                req.session.user.inventory = Array.isArray(inv) ? inv : [];
+                console.log('Updated session inventory:', req.session.user.inventory);
+            } catch (e) {
+                console.log('Error parsing inventory from DB:', e);
+                // leave session inventory as-is if parse fails
+            }
+        } else {
+            console.log('No database row found or error occurred');
+        }
+
+        console.log('Final userdata being sent to template:', req.session.user);
+        console.log('================================');
+        return res.render('marketplace', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
+    });
 });
+
+
 
 app.get('/achievements', (req, res) => {
     res.render('achievements', { userdata: req.session.user, maxPogs: pogCount, pogList: results });
@@ -407,7 +453,8 @@ app.get('/api/leaderboard', (req, res) => {
 
 // API endpoint to get recent trades
 app.get('/api/trades/recent', (req, res) => {
-    usdb.all('SELECT * FROM chat WHERE trade_type = ? ORDER BY id DESC LIMIT 50', ['trade'], (err, rows) => {
+    // Return only pending trade offers so completed/accepted ones don't reappear
+    usdb.all('SELECT * FROM chat WHERE trade_type = ? AND trade_status = ? ORDER BY id DESC LIMIT 50', ['trade', 'pending'], (err, rows) => {
         if (err) {
             console.error('API trades error', err);
             return res.status(500).json({ error: 'db' });
@@ -597,8 +644,8 @@ http.listen(process.env.PORT || 3000, () => {
 
 //trade room stuff
 io.on('connection', (socket) => {
-    // Send recent trade history to the connecting client
-    usdb.all('SELECT * FROM chat WHERE trade_type = ? ORDER BY id DESC LIMIT 50', ['trade'], (err, rows) => {
+    // Send recent trade history to the connecting client (only pending offers)
+    usdb.all('SELECT * FROM chat WHERE trade_type = ? AND trade_status = ? ORDER BY id DESC LIMIT 50', ['trade', 'pending'], (err, rows) => {
         if (!err && Array.isArray(rows)) {
             socket.emit('trade history', rows.reverse());
         }

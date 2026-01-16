@@ -97,6 +97,9 @@ function renderTrade(trade) {
     
     const wrapper = document.createElement('div');
     wrapper.className = 'trade-card';
+    // Tag the card so we can find/remove it later when the trade completes
+    const tradeId = trade.id || trade.tradeId || trade.trade_id || '';
+    if (tradeId) wrapper.setAttribute('data-trade-id', tradeId);
     const time = trade.time ? new Date(Number(trade.time)) : new Date();
     const timeStr = time.toLocaleTimeString();
     
@@ -148,8 +151,13 @@ function renderTrade(trade) {
             : ''}
     `;
 
-    messageCont.appendChild(wrapper);
-    messageCont.scrollTop = messageCont.scrollHeight;
+    if (messageCont) {
+        messageCont.appendChild(wrapper);
+        messageCont.scrollTop = messageCont.scrollHeight;
+    } else {
+        // Fallback: append to body so it isn't lost (shouldn't normally happen)
+        document.body.appendChild(wrapper);
+    }
 
     // Ensure wrapper background/text follow theme
     if (isLight) {
@@ -191,6 +199,15 @@ socket.on('trade accepted', (data) => {
     if (data.success) {
         alert(`Trade completed! You received: ${data.received_item}`);
         // Refresh the page to update inventory
+        // Remove the trade card from the UI if a tradeId was provided
+        try {
+            if (data.tradeId) {
+                const card = document.querySelector(`[data-trade-id="${data.tradeId}"]`);
+                if (card) card.remove();
+            }
+        } catch (err) { console.warn('Could not remove accepted trade card:', err); }
+
+        // Then reload to ensure full sync
         window.location.reload();
     } else {
         alert(`Trade failed: ${data.message}`);
@@ -224,6 +241,13 @@ socket.on('trade accepted', (data) => {
         console.log('Trade accepted:', data.message || '', data.received_item || '');
         // auto-save if save() is available
         if (typeof save === 'function') save();
+        // Remove the trade card from the UI as well if tradeId provided
+        try {
+            if (data.tradeId) {
+                const card = document.querySelector(`[data-trade-id="${data.tradeId}"]`);
+                if (card) card.remove();
+            }
+        } catch (err) { console.warn('Could not remove accepted trade card (inventory handler):', err); }
     } else {
         alert('Trade failed: ' + (data.message || 'unknown'));
     }
@@ -248,6 +272,17 @@ socket.on('trade completed', (payload) => {
             if (typeof userdata === 'object') userdata.inventory = payload.updatedAccepterInventory;
             if (typeof refreshInventory === 'function') refreshInventory();
             if (typeof refreshTradeDropdowns === 'function') refreshTradeDropdowns();
+        }
+        // If the server included a tradeId, remove the corresponding trade card from the UI
+        if (payload.tradeId) {
+            try {
+                const completedCard = document.querySelector(`[data-trade-id="${payload.tradeId}"]`);
+                if (completedCard) {
+                    completedCard.remove();
+                }
+            } catch (err) {
+                console.warn('Could not remove trade card for payload.tradeId', payload.tradeId, err);
+            }
         }
     } catch (err) {
         console.error('Error applying trade completed inventory:', err);
@@ -285,13 +320,25 @@ socket.on('trade accepted', (info) => {
 
 socket.on('trade completed', (tradeId) => {
     // Remove the completed trade from display
-    const tradeCards = document.querySelectorAll('.trade-card');
-    tradeCards.forEach(card => {
-        if (card.innerHTML.includes(`onclick="acceptTrade('${tradeId}'`)) {
-            card.style.opacity = '0.5';
-            card.innerHTML += '<div style="text-align: center; color: green; font-weight: bold;">TRADE COMPLETED</div>';
+    if (!tradeId) return;
+    try {
+        // Prefer direct lookup by data attribute
+        const card = document.querySelector(`[data-trade-id="${tradeId}"]`);
+        if (card) {
+            card.remove();
+            return;
         }
-    });
+
+        // Fallback: search for onclick marker
+        const tradeCards = document.querySelectorAll('.trade-card');
+        tradeCards.forEach(card => {
+            if (card.innerHTML.includes(`acceptTrade('${tradeId}'`)) {
+                card.remove();
+            }
+        });
+    } catch (err) {
+        console.error('Error removing completed trade card:', err);
+    }
 });
 
 // Trade form submission
