@@ -41,7 +41,7 @@ const perks = [
     },
     {
         name: "Unveil",
-        description: "Killing a target grants back 6% of the killer's max health.",
+        description: "Killing a target grants back 6% of unit's max health.",
         notches: 4
     },
     {
@@ -61,7 +61,7 @@ const perks = [
     },
     {
         name: "Inflictor's Bane",
-        description: "Over time effects deal an extra 30% damage per turn.",
+        description: "Over-time effects deal an extra 30% damage per turn.",
         notches: 3
     },
     {
@@ -71,16 +71,16 @@ const perks = [
     },
     {
         name: "Thorns",
-        description: "Damage received reflects 20% of your defense back to the attacker.",
+        description: "Damage received reflects 20% of unit's defense back to the attacker.",
         notches: 4
     },
     {
-        name: "Burden",
+        name: "Heaviest Grudge",
         description: "An enemy's skill attacks will cast a random element unto them.",
         notches: 6
     },
     {
-        name: "Weighed Down",
+        name: "Walking Nuke",
         description: "Attack stat is set to 0, but all attacks inflict AOE damage over time.",
         notches: 6
     },
@@ -110,9 +110,54 @@ const perks = [
         notches: 0
     },
     {
-        name: "",
-        description: "",
-        notches: 0
+        name: "Half-hearted",
+        description: "Only have 50% the maximum health, but skill attacks do 30% more damage.",
+        notches: 5
+    },
+    {
+        name: "Avenge the Fallen",
+        description: "Basic attacks do +4% damage for every ally defeated.",
+        notches: 5
+    },
+    {
+        name: "Weighed Down",
+        description: "Slow effects increased by 16% and unit gains 50% slow resistance.",
+        notches: 4
+    },
+    {
+        name: "Walking Dead",
+        description: "When unit is killed, they will be revived once with 30% health.",
+        notches: 6
+    },
+    {
+        name: "Swift as the Night",
+        description: "Speed increased by 18%.",
+        notches: 4
+    },
+    {
+        name: "Overcharge",
+        description: "Excessive healing given to this unit will convert into increased damage in their next attack.",
+        notches: 5
+    },
+    {
+        name: "Health+",
+        description: "Health increased by 4%.",
+        notches: 1
+    },
+    {
+        name: "Strong Spammer",
+        description: "Ultimate cost decreased by 8% each time it's used.",
+        notches: 3
+    },
+    {
+        name: "Strategic Skill",
+        description: "Every other turn, unit is immune to skill attacks but takes 3x damage from basic attacks.",
+        notches: 5
+    },
+    {
+        name: "Bringing it Down",
+        description: "An enemy killing this unit will also be killed next turn if the killer's health was less than 50%.",
+        notches: 6
     }
 ];
 
