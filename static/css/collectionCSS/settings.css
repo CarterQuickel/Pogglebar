@@ -4,7 +4,7 @@
     margin-top: 8px;
     top: 100px;
     right: 20px;
-    background-color: #7d6381;
+    background: linear-gradient(145deg, #0d131a, #05080c);
     width: 400px;
     padding-bottom: 10px;
     min-height: auto;
@@ -127,10 +127,8 @@
 }
 
 #sortcont {
-    background-color: #3e1e42;
     margin: 10px;
     padding: 10px;
-    border: transparent;
     border-radius: 10px;
 }
 
@@ -211,29 +209,10 @@ option {
 }
 
 #stats {
-    border: transparent;
     margin: 10px;
     padding: 10px;
     border-radius: 10px;
-    background-color: #3e1e42;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-#sellAll {
-    border: transparent;
-    border-radius: 20px;
-    padding: 5px;
-    width: 200px;
-    height: 25px;
-    margin-top: 15px;
-    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    background-color: #659c54;
-    cursor: pointer;
-    transition: all 0.1s ease;
-}
-
-#sellAll:hover {
-    background-color: #568548;
 }

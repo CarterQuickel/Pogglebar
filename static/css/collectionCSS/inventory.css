@@ -9,7 +9,7 @@
 }
 
 #inventory {
-    background-color: #33122e;
+    background: linear-gradient(145deg, #0d131a, #05080c);
     border-radius: 6px;
     padding: 10px;
     width: 100%;
@@ -41,20 +41,47 @@
     z-index: 99;
 }
 
-#space {
+#topCont {
     position: absolute;
     top: 15px;
     text-align: left;
     left: 0;
     transform: scale(1.4);
     transform-origin: left center;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+#space {
     background: rgba(0, 0, 0, 0.75);
     color: white;
     padding: 4px 8px;
     border-radius: 6px;
     font-size: 14px;
     pointer-events: none;
-    z-index: 10;
+}
+
+#sellAll {
+    padding: 5px;
+    width: 200px;
+    height: 25px;
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    background: linear-gradient(145deg, #0d131a, #05080c);
+    color: #f7d242;
+    border: 2px solid #f7d242;
+    box-shadow: inset 0 0 12px rgba(255, 247, 0, 0.623);
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.1s ease;
+}
+
+#sellAll:hover {
+    scale: 1.05;
 }
 
 .mergebtn {
@@ -237,7 +264,7 @@ hr {
 
 #descPanel {
     border-radius: 5px;
-    background-color: #7d6381;
+    background: linear-gradient(145deg, #0d131a, #05080c);
     padding: 10px;
     transition: ease-in-out 0.3s;
     min-height: 300px;

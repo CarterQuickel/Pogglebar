@@ -1,18 +1,20 @@
 <div id="overlay" style="display: none;">
         <div id="transConf">
-            <h5>Purchase Item?</h5>
-            <h5 id="crateprice"></h5>
+            <h5>Purchase Item</h5>
+            <div id="prices_cont">
+                <div id="crateprice"></div>
+            </div>
             <div id="dropdowns">
-                <div>
+                <div class="selection_cont">
                     <label>Currency</label>
-                    <select id="balanceSelect" class="selector">
-                        <option value="money">Legacy Money</option>
+                    <select id="balanceSelect" class="shop_selector">
+                        <option value="money">Money</option>
                         <option value="digi">Digipogs</option>
                     </select>
                 </div>
-                <div>
+                <div class="selection_cont">
                     <label>Quantity</label>
-                    <select id="amountSelect" class="selector">
+                    <select id="amountSelect" class="shop_selector">
                         <option value="1">1 Crate</option>
                         <option value="5">5 Crates</option>
                         <option value="10">10 Crates</option>
@@ -24,7 +26,9 @@
                 <label>PIN</label>
                 <input id="pinField" type="password" />
             </div>
-            <button id="purchaseBtn">Purchase</button>
-            <button id="cancelBtn">Cancel</button>
+            <div id="buy_btns">
+                <button id="cancelBtn">Cancel</button>
+                <button id="purchaseBtn">Purchase</button>
+            </div>
         </div>
     </div>
