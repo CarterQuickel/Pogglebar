@@ -6,6 +6,10 @@ body {
     overflow-y: hidden;
 }
 
+img {
+    -webkit-user-drag: none;
+}
+
 h1 {
     color: whitesmoke;
 }
