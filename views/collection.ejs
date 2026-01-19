@@ -7,7 +7,6 @@
     <link rel="icon" type="image/png" href="../static/icons/title/Pogglebar_Favicon.png" />
     <title>Pogglebar</title>
     <link rel="stylesheet" href="../static/css/collectionCSS/style.css">
-    <link rel="stylesheet" href="../static/css/collectionCSS/redirects.css">
     <link rel="stylesheet" href="../static/css/collectionCSS/xp.css">
     <link rel="stylesheet" href="../static/css/collectionCSS/pfp.css">
     <link rel="stylesheet" href="../static/css/collectionCSS/crate.css">
@@ -87,8 +86,13 @@
             </div>
         </div>
         <!--Banner Buttons-->
-        <%- include("collectionEJS/banner_rightstuff.ejs") %>
+        <div style="right: 0; top: 0;" class="rightstuff">
+            <button id="useWish">Wish (0/7)</button>
+            <img id="darkmode" class="imgbtn" src="../static/icons/buttons_main/sun.png" width="40" height="40">
+            <img src="../static/icons/buttons_main/lines.png" width="40" height="40" id="burger_btn" class="imgbtn">
+        </div>
     </div>
+    <%- include("collectionEJS/banner_rightstuff.ejs") %>
     <div id="centerlayout" style="text-align: center;">
         <!--Description-->
         <div id="descPanel">

@@ -34,6 +34,42 @@ function save() {
         });
 }
 
+function hidePanelAni(ele) {
+    ele.classList.remove("showPanel");
+    void ele.offsetHeight; // force reflow
+    ele.classList.add("hidePanel");
+    ele.style.pointerEvents = "none";
+    ele.addEventListener("animationend", (e) => {
+        if (e.animationName !== "close_red") return;
+        ele.style.display = "none";
+        ele.classList.remove("hidePanel");
+    }, { once: true });
+}
+
+
+
+//Show redirect panel
+function showPanelAni(ele) {
+    ele.style.display = "flex";
+    ele.classList.remove("hidePanel");
+    ele.style.pointerEvents = "none";
+    ele.classList.add("showPanel");
+    ele.addEventListener("animationend", () => {
+        ele.style.pointerEvents = "all";
+    }, { once: true });
+}
+
+//Redirect interaction
+document.getElementById("burger_btn").addEventListener("click", () => {
+    const panel = document.getElementById("redirect_panel")
+    const isVisible = panel.style.display === "flex";
+    if (isVisible) {
+        hidePanelAni(panel);
+    } else {
+        showPanelAni(panel)
+    }
+});
+
 // save game
 document.getElementById("patchNotesButton").addEventListener("click", () => {
     achievements[4][0].status = true;

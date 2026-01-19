@@ -1,7 +1,7 @@
 /* Base Crate Style */
 :root {
-  --neon: #f7d242;
-  --neon-soft: rgba(244, 255, 43, 0.35);
+  --neon: #9d42f7;
+  --neon-soft: rgba(198, 43, 255, 0.35);
   --bg-dark: #0b0f14;
 }
 
@@ -74,7 +74,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(145deg, #0d131a, #05080c);
+    background: #0d131a;
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 20px;

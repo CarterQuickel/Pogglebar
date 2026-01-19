@@ -45,9 +45,9 @@
     font-size: 16px;
     padding: 5px;
     width: 150px;
-    color: #f7d242;
-    border: 2px solid #f7d242;
-    box-shadow: inset 0 0 12px rgba(255, 247, 0, 0.623);
+    color: #9d42f7;
+    border: 2px solid #9d42f7;
+    box-shadow: inset 0 0 12px rgba(106, 0, 255, 0.623);
     background-color: transparent;
     border-radius: 30px;
     background-repeat: no-repeat;
@@ -84,9 +84,9 @@ label {
 
 #purchaseBtn {
     background-color: transparent;
-    color: #f7d242;
-    border: 2px solid #f7d242;
-    box-shadow: inset 0 0 12px rgba(255, 247, 0, 0.623);
+    color: #9d42f7;
+    border: 2px solid #9d42f7;
+    box-shadow: inset 0 0 12px rgba(106, 0, 255, 0.623);
     border-radius: 45px;
     width: 100px;
     padding: 8px;
