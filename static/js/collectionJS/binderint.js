@@ -9,6 +9,15 @@ document.getElementById("closeBinder").addEventListener("click", () => {
     binder.style.display = "none";
 });
 
+const chars = document.querySelectorAll(".singleI")
+function charView() {
+    console.log("yes")
+}
+
+chars.forEach(button => {
+    button.addEventListener("click", charView());
+});
+
 function viewCollection() {
     maxBinder = 0;
     const itemsHTML = document.getElementById("binderItems")

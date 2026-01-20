@@ -33,6 +33,6 @@ document.getElementById("filepfp").addEventListener("change", () => {
     }
 });
 
-document.getElementById("userPic").addEventListener("click", () => {
+document.getElementById("userCont").addEventListener("click", () => {
     document.getElementById("pfpChanger").style.display = "block";
 });
