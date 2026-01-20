@@ -1,3 +1,5 @@
+const { type } = require("node:os");
+
 const perks = [
     {
         name: "Critcal Strike",
@@ -190,7 +192,20 @@ const perks = [
         description: "An enemy killing this unit will also be killed next turn if the killer's health was less than 50%.",
         type: "attack",
         notches: 6
+    },
+    {
+        name: "Chain Reaction",
+        description: "All skills/ultimates deal 15% more damage to adjacent targets.",
+        type: "attack",
+        notches: 6
     }
 ];
 
 module.exports = { perks };
+
+/* 
+name: "",
+description: "",
+type: "",
+notches: 
+        */
