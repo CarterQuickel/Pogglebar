@@ -12,8 +12,9 @@
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    justify-content: center;
+    justify-content: space-between;
     width: 100%;
+    gap: 20px;
     height: calc(100% - 150px); /* leaves room for header/buttons */
 }
 
@@ -46,12 +47,10 @@
 }
 
 .singleI{
-    background-color: rgb(66, 51, 66);
     padding: 15px;
     border-radius: 120px;
     width: 120px;
     height: 120px;
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -79,6 +78,8 @@
 
 #viewed .singleI {
     scale: 3;
+    flex: 3;
+    pointer-events: none;
 }
 
 #pognotv {
@@ -107,6 +108,7 @@
 
 #statBlock {
     display: flex;
+    flex: 1;
     flex-direction: column;
     align-items: center;
     left: 0;
@@ -133,7 +135,7 @@
 }
 
 #pogView {
-    flex: 1;
+    flex: 3;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -144,8 +146,9 @@
     right: 0;
     display: flex;
     text-align: center;
-    height: 100%;
     margin-right: 100px;
+    height: 80vh;
+    flex: 1;
 }
 
 #binderDots {
@@ -162,13 +165,7 @@
     height: 10px;
     border-radius: 50%;
     background: #555;
-    cursor: pointer;
     transition: transform 0.1s ease, background 0.1s ease;
-}
-
-.binderDot:hover {
-    transform: scale(1.4);
-    background: #aaa;
 }
 
 .binderDot.active {
@@ -177,11 +174,11 @@
 }
 
 #binderItems {
-    width: 700px;
-    height: 90%;
+    width: 30vw;
+    height: 70vh;
 
     display: grid;
-    grid-template-columns: repeat(4, 160px);
+    grid-template-columns: repeat(auto-fill, 160px);
     gap: 20px;
 
     justify-content: center;

@@ -14,25 +14,24 @@ function setupBinderDots() {
     const binder = document.getElementById("binderItems");
     const dots = document.getElementById("binderDots");
     dots.innerHTML = "";
-    const items = [...binder.children];
+    const items = [...binder.children].filter(child => {
+        const style = window.getComputedStyle(child);
+        return style.display === "flex";
+    });
     if (!items.length) return;
     const gridStyles = getComputedStyle(binder);
-    const columns = gridStyles.gridTemplateColumns.split(" ").length;
+    const colValue = gridStyles.gridTemplateColumns;
+    const columns = (colValue && colValue !== 'none') ? colValue.split(" ").length : 1;
     const rowCount = Math.ceil(items.length / columns);
+    const averageRowHeight = binder.scrollHeight / rowCount;
     const maxScroll = binder.scrollHeight - binder.clientHeight;
     for (let i = 0; i < rowCount; i++) {
         const dot = document.createElement("div");
         dot.className = "binderDot";
-        dot.onclick = () => {
-            const progress = i / (rowCount - 1 || 1);
-            binder.scrollTo({
-                top: maxScroll * progress,
-                behavior: "smooth"
-            });
-        };
         dots.appendChild(dot);
     }
     setupActiveDotTracking(binder, dots, rowCount, maxScroll);
+    setTimeout(() => binder.dispatchEvent(new Event('scroll')), 50);
 }
 
 function setupActiveDotTracking(binder, dots, rowCount, maxScroll) {
@@ -71,12 +70,12 @@ function viewCollection() {
         return `
         <div class="singleI" 
             data-name="${name}" 
-             data-color="${pogcol}" 
-             data-rarity="${rarity}"
-             data-owned="${owned}" 
-             data-unique="${unique}" 
-             data-isbronze="${isBronze}"
-        style="border: 4px solid ${unique ? "lightgray" : "black"}; background-color: ${owned ? (isBronze ? "#CD7F32" : "rgb(66, 51, 66)") : "black"}">
+            data-color="${pogcol}" 
+            data-rarity="${rarity}"
+            data-owned="${owned}" 
+            data-unique="${unique}" 
+            data-isbronze="${isBronze}"
+        style="display: ${owned ? "flex" : "none"}; border: 4px solid ${unique ? "lightgray" : "black"}; background-color: ${owned ? (isBronze ? "#CD7F32" : "rgb(66, 51, 66)") : "black"}">
             <h4 style="color: ${owned ? color : "white"}">${owned ? name : "???"}</h4>
             <p style="font-size: 12px; margin-top: -10px">${owned ? pogcol : "???"}</p>
         </div>
@@ -121,8 +120,8 @@ function charView() {
     const single = document.querySelector("#viewed .singleI");
     const notv = document.getElementById("pognotv");
     notv.innerHTML = `${notchView}`
-    single.querySelector("h4").textContent = owned ? name : "???";
+    single.querySelector("h4").textContent = name;
     single.style.border = `4px solid ${unique ? "lightgray" : "black"}`;
-    single.style.backgroundColor = owned ? (isBronze ? "#CD7F32" : "rgb(66, 51, 66)") : "black";
+    single.style.backgroundColor = isBronze ? "#CD7F32" : "rgb(66, 51, 66)";
     single.querySelector("h4").style.color = color;
 }
