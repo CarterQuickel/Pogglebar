@@ -46,8 +46,6 @@ function hidePanelAni(ele) {
     }, { once: true });
 }
 
-
-
 //Show redirect panel
 function showPanelAni(ele) {
     ele.style.display = "flex";

@@ -9,14 +9,42 @@ document.getElementById("closeBinder").addEventListener("click", () => {
     binder.style.display = "none";
 });
 
-const chars = document.querySelectorAll(".singleI")
-function charView() {
-    console.log("yes")
+//navigation dots
+function setupBinderDots() {
+    const binder = document.getElementById("binderItems");
+    const dots = document.getElementById("binderDots");
+    dots.innerHTML = "";
+    const items = [...binder.children];
+    if (!items.length) return;
+    const gridStyles = getComputedStyle(binder);
+    const columns = gridStyles.gridTemplateColumns.split(" ").length;
+    const rowCount = Math.ceil(items.length / columns);
+    const maxScroll = binder.scrollHeight - binder.clientHeight;
+    for (let i = 0; i < rowCount; i++) {
+        const dot = document.createElement("div");
+        dot.className = "binderDot";
+        dot.onclick = () => {
+            const progress = i / (rowCount - 1 || 1);
+            binder.scrollTo({
+                top: maxScroll * progress,
+                behavior: "smooth"
+            });
+        };
+        dots.appendChild(dot);
+    }
+    setupActiveDotTracking(binder, dots, rowCount, maxScroll);
 }
 
-chars.forEach(button => {
-    button.addEventListener("click", charView());
-});
+function setupActiveDotTracking(binder, dots, rowCount, maxScroll) {
+    const dotEls = dots.querySelectorAll(".binderDot");
+    binder.addEventListener("scroll", () => {
+        const progress = binder.scrollTop / maxScroll;
+        const activeRow = Math.round(progress * (rowCount - 1));
+        dotEls.forEach((dot, i) => {
+            dot.classList.toggle("active", i === activeRow);
+        });
+    });
+}
 
 function viewCollection() {
     maxBinder = 0;
@@ -41,11 +69,36 @@ function viewCollection() {
         // rarity color
         color = match ? match.color : "white";
         return `
-        <div class="singleI" style="border: 4px solid ${unique ? "lightgray" : "black"}; background-color: ${owned ? (isBronze ? "#CD7F32" : "rgb(66, 51, 66)") : "black"}">
+        <div class="singleI" 
+            data-name="${name}" 
+             data-color="${pogcol}" 
+             data-rarity="${rarity}"
+             data-owned="${owned}" 
+             data-unique="${unique}" 
+             data-isbronze="${isBronze}"
+        style="border: 4px solid ${unique ? "lightgray" : "black"}; background-color: ${owned ? (isBronze ? "#CD7F32" : "rgb(66, 51, 66)") : "black"}">
             <h4 style="color: ${owned ? color : "white"}">${owned ? name : "???"}</h4>
             <p style="font-size: 12px; margin-top: -10px">${owned ? pogcol : "???"}</p>
         </div>
     `
     }).join("");
     itemsHTML.innerHTML = itemView
+    setupBinderDots();
+    //click events
+    document.querySelectorAll(".singleI").forEach(el => {
+        el.addEventListener("click", charView);
+    });
+}
+
+function charView() {
+    const viewpog = document.getElementById("viewed");
+    const name = this.dataset.name;
+    const color = this.querySelector("h4").style.color;
+    const owned = this.dataset.owned === "true";
+    const unique = this.dataset.unique === "true";
+    const isBronze = this.dataset.isbronze === "true";
+    viewpog.innerHTML = 
+    `<div id="viewed" style="border: 4px solid ${unique ? "lightgray" : "black"}; background-color: ${owned ? (isBronze ? "#CD7F32" : "rgb(66, 51, 66)") : "black"}">
+        <h4 style="color: ${owned ? color : "white"}">${owned ? name : "???"}</h4>
+    </div>`
 }

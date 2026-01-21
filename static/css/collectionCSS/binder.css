@@ -8,13 +8,21 @@
     z-index: 5001;
 }
 
+#bindFlex {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+    height: calc(100% - 150px); /* leaves room for header/buttons */
+}
+
 .binderCont {
     background: #0d131a;
     position: fixed;
     width: 100%;
     height: 100%;
     font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    padding: 20px;
     border: transparent;
     text-align: center;
     color: White;
@@ -37,7 +45,7 @@
   transition: none;
 }
 
-.singleI {
+.singleI{
     background-color: rgb(66, 51, 66);
     padding: 15px;
     border-radius: 120px;
@@ -69,6 +77,35 @@
     scale: 1.1;
 }
 
+#viewed {
+    padding: 15px;
+    border-radius: 120px;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid black;
+    box-shadow:
+        /* 1. Outer shadow to ground the object on the page */
+        0 10px 20px rgba(0, 0, 0, 0.3),
+        /* 2. Inner dark shadow: creates the 'drop' from the border rim */
+        inset 0 6px 12px rgba(0, 0, 0, 0.5),
+        /* 3. Inner light highlight: creates a 'lip' on the opposite edge */
+        inset 0 -2px 8px rgba(255, 255, 255, 0.2);
+    background:
+        /* The "3D Printed" Streaks Layer */
+        repeating-radial-gradient(circle at 50% 50%,
+            rgba(0, 0, 0, 0.08) 0px,
+            rgba(0, 0, 0, 0.08) 1px,
+            transparent 1px,
+            transparent 3px);
+    background-color: rgb(66, 51, 66);
+    transition: all 0.1s ease;
+    scale: 3;
+}
+
 #closeBinder {
     margin-top: 20px;
     background-color: rgb(255, 233, 233);
@@ -87,13 +124,99 @@
     background-color: rgb(112, 106, 106);
 }
 
-#binderItems {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 130px));
-    gap: 45px;
+#statBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    left: 0;
+    gap: 20px;
+    width: 600px;
+    height: 90%;
+    padding: 20px;
+    margin-left: 100px;
+}
+
+#statBlock button {
+    width: 180px;
+    height: 275px;
+    font-size: 80px;
+    font-weight: bold;
+}
+
+#statBlock div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
     justify-content: center;
-    justify-items: center;
-    height: 80%;
+    align-content: center;
+}
+
+#pogView {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#binderItemsWrapper {
+    position: relative;
+    right: 0;
+    display: flex;
+    text-align: center;
+    height: 100%;
+    margin-right: 100px;
+}
+
+#binderDots {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    margin-left: 10px;
+    padding: 10px 5px;
+}
+
+.binderDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #555;
+    cursor: pointer;
+    transition: transform 0.1s ease, background 0.1s ease;
+}
+
+.binderDot:hover {
+    transform: scale(1.4);
+    background: #aaa;
+}
+
+.binderDot.active {
+    background: #ffffff;
+    box-shadow: 0 0 6px #ffffff;
+}
+
+#binderItems {
+    width: 700px;
+    height: 90%;
+
+    display: grid;
+    grid-template-columns: repeat(4, 160px);
+    gap: 20px;
+
+    justify-content: center;
+    align-content: start;
+
     overflow-y: auto;
     overflow-x: hidden;
+
+    background: #1f1f3a;
+    padding: 20px;
+    border-radius: 20px;
+
+    margin-left: auto;
+}
+
+#binderItems::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
