@@ -91,14 +91,38 @@ function viewCollection() {
 }
 
 function charView() {
-    const viewpog = document.getElementById("viewed");
     const name = this.dataset.name;
     const color = this.querySelector("h4").style.color;
+    let notch = 0
+    switch (color) {
+        case "red":
+            notch += 4;
+            break;
+        case "yellow":
+            notch += 5;
+            break;
+        case "lime":
+            notch += 6;
+            break;
+        case "fuchsia":
+            notch += 7;
+            break;
+        case "lightgray":
+            notch += 8;
+            break;
+    }
+    let notchView = ""
+    for (i = 0; i < notch; i++){
+        notchView += "⬣"
+    }
     const owned = this.dataset.owned === "true";
     const unique = this.dataset.unique === "true";
     const isBronze = this.dataset.isbronze === "true";
-    viewpog.innerHTML = 
-    `<div id="viewed" style="border: 4px solid ${unique ? "lightgray" : "black"}; background-color: ${owned ? (isBronze ? "#CD7F32" : "rgb(66, 51, 66)") : "black"}">
-        <h4 style="color: ${owned ? color : "white"}">${owned ? name : "???"}</h4>
-    </div>`
+    const single = document.querySelector("#viewed .singleI");
+    const notv = document.getElementById("pognotv");
+    notv.innerHTML = `${notchView}`
+    single.querySelector("h4").textContent = owned ? name : "???";
+    single.style.border = `4px solid ${unique ? "lightgray" : "black"}`;
+    single.style.backgroundColor = owned ? (isBronze ? "#CD7F32" : "rgb(66, 51, 66)") : "black";
+    single.querySelector("h4").style.color = color;
 }

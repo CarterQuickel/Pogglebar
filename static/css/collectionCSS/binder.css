@@ -77,33 +77,14 @@
     scale: 1.1;
 }
 
-#viewed {
-    padding: 15px;
-    border-radius: 120px;
-    width: 120px;
-    height: 120px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 4px solid black;
-    box-shadow:
-        /* 1. Outer shadow to ground the object on the page */
-        0 10px 20px rgba(0, 0, 0, 0.3),
-        /* 2. Inner dark shadow: creates the 'drop' from the border rim */
-        inset 0 6px 12px rgba(0, 0, 0, 0.5),
-        /* 3. Inner light highlight: creates a 'lip' on the opposite edge */
-        inset 0 -2px 8px rgba(255, 255, 255, 0.2);
-    background:
-        /* The "3D Printed" Streaks Layer */
-        repeating-radial-gradient(circle at 50% 50%,
-            rgba(0, 0, 0, 0.08) 0px,
-            rgba(0, 0, 0, 0.08) 1px,
-            transparent 1px,
-            transparent 3px);
-    background-color: rgb(66, 51, 66);
-    transition: all 0.1s ease;
+#viewed .singleI {
     scale: 3;
+}
+
+#pognotv {
+    position: absolute;
+    bottom: 0;
+    text-shadow: 0 0 5px white;
 }
 
 #closeBinder {
