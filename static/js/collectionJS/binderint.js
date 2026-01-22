@@ -114,7 +114,6 @@ function charView() {
     for (i = 0; i < notch; i++){
         notchView += "⬣"
     }
-    const owned = this.dataset.owned === "true";
     const unique = this.dataset.unique === "true";
     const isBronze = this.dataset.isbronze === "true";
     const single = document.querySelector("#viewed .singleI");

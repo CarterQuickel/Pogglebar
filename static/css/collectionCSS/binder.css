@@ -121,11 +121,21 @@
     margin-left: 100px;
 }
 
-#statBlock button {
+.perkSlot {
     width: 180px;
+    color: rgba(0, 0, 0, 0.651);
     height: 275px;
     font-size: 80px;
     font-weight: bold;
+    border-radius: 8px;
+    background: radial-gradient(rgba(32, 32, 32, 0.8), rgba(0, 0, 0, 0.8));
+    box-shadow: 0 0 10px black;
+    border: transparent;
+    transition: all 0.1s ease;
+}
+
+.perkSlot:hover {
+    scale: 1.1;
 }
 
 #statBlock div {

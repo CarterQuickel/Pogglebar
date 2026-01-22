@@ -1,11 +1,10 @@
 #perkBanner {
     position: fixed;
-    inset: 0; /* top:0; right:0; bottom:0; left:0 */
-    background-color: rgba(0, 0, 0, 0.5);
+    inset: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 5001;
+    z-index: 1001;
 }
 
 .perkCont {
@@ -18,6 +17,7 @@
     border: transparent;
     text-align: center;
     color: White;
+    box-shadow: 0 0 5px black;
 }
 
 #perkCards {
@@ -29,6 +29,8 @@
     margin-top: 20px;
     overflow-y: auto;
     height: 80vh;
+    perspective: 1000px;
+    background: #0d131a
 }
 
 #closePerks {
@@ -69,6 +71,7 @@
     border-radius: 16px;
     background: var(--gold);
     transition: all 0.1s ease;
+    transform-style: preserve-3d;
 }
 
 .perk_card:hover {
@@ -93,6 +96,7 @@
   box-shadow:
     0 0 6px rgba(212,175,55,0.6),
     inset 0 0 6px rgba(212,175,55,0.6);
+    pointer-events: none;
 }
 
 .card_padding {
