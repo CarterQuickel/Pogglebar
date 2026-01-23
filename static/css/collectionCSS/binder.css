@@ -1,7 +1,6 @@
 #binderBanner {
     position: fixed;
     inset: 0; /* top:0; right:0; bottom:0; left:0 */
-    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,7 +18,6 @@
 }
 
 .binderCont {
-    background: #0d131a;
     position: fixed;
     width: 100%;
     height: 100%;
@@ -28,6 +26,51 @@
     text-align: center;
     color: White;
     box-sizing: border-box;
+    background:
+        radial-gradient(circle at 30% 40%, rgba(80, 53, 168, 0.15), transparent 60%),
+        radial-gradient(circle at 70% 60%, rgba(165, 52, 129, 0.12), transparent 55%),
+        radial-gradient(circle at center, #080b0f 0%, #090a0f 70%);
+    overflow: hidden;
+}
+
+/* Base star style */
+.stars, .stars2, .stars3 {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: transparent;
+    animation: moveStars linear infinite;
+}
+
+/* Small stars */
+.stars {
+    box-shadow: 
+      200px 300px #fff, 400px 800px #fff, 900px 100px #fff,
+      1200px 600px #fff, 1600px 200px #fff;
+    animation-duration: 50s;
+}
+
+/* Medium stars */
+.stars2 {
+    width: 10px;
+    height: 10px;
+    box-shadow: 
+      100px 500px #fff, 700px 900px #fff, 1300px 300px #fff;
+    animation-duration: 100s;
+}
+
+/* Large stars */
+.stars3 {
+    width: 7px;
+    height: 7px;
+    box-shadow: 
+      300px 700px #fff, 1100px 400px #fff;
+    animation-duration: 150s;
+}
+
+@keyframes moveStars {
+    from { transform: translateY(0); }
+    to { transform: translateY(-2000px); }
 }
 
 #binderProgress {
@@ -58,7 +101,7 @@
     border: 4px solid black;
     box-shadow:
         /* 1. Outer shadow to ground the object on the page */
-        0 10px 20px rgba(0, 0, 0, 0.3),
+        0 0 5px black,
         /* 2. Inner dark shadow: creates the 'drop' from the border rim */
         inset 0 6px 12px rgba(0, 0, 0, 0.5),
         /* 3. Inner light highlight: creates a 'lip' on the opposite edge */
@@ -71,6 +114,7 @@
             transparent 1px,
             transparent 3px);
     transition: all 0.1s ease;
+    cursor: pointer;
 }
 
 .singleI:hover {
@@ -108,6 +152,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    gap: 20px;
 }
 
 .statBar {
@@ -138,18 +183,54 @@
     background: rgba(0, 0, 0, 0.473);
     border: transparent;
     transition: all 0.1s ease;
+    cursor: pointer;
 }
 
 .perkSlot:hover {
     scale: 1.1;
 }
 
+.attCont {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.377);
+    padding: 10px 15px 10px 15px;
+    border-radius: 50px;
+    height: 35px;
+    gap: 8px;
+}
+
+.attCont img {
+    background-color: black;
+    border-radius: 50px;
+    padding: 10px;
+    overflow: visible;
+    display: block;
+}
+
+#attRow {
+    display: grid;
+    grid-template-columns: auto;
+    gap: 15px;
+}
+
+#infst {
+    padding: 10px;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.473);
+    font-weight: bold;
+    flex-direction: column;
+    width: 100%;
+}
+
 #statBlock div {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
     justify-content: center;
     align-content: center;
+}
+
+#perkCardCont {
+    gap: 20px;
 }
 
 #pogView {
@@ -210,6 +291,7 @@
     border-radius: 20px;
 
     margin-left: auto;
+    box-shadow: inset 0 0 10px black;
 }
 
 #binderItems::-webkit-scrollbar {

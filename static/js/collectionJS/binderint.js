@@ -52,6 +52,9 @@ function viewCollection() {
     const sortedResults = [...pogList].sort((a, b) => rarityOrder[a.rarity] - rarityOrder[b.rarity]);
     const itemView = sortedResults.map((item) => {
         const name = item.name;
+        const desc = item.description;
+        const creator = item.creator;
+        const class_name = "Support";
         maxBinder++
         const rarity = item.rarity;
         const pogcol = item.color;
@@ -69,6 +72,9 @@ function viewCollection() {
         color = match ? match.color : "white";
         return `
         <div class="singleI" 
+            data-desc="${desc}"
+            data-creator="${creator}"
+            data-class_name="${class_name}"
             data-name="${name}" 
             data-color="${pogcol}" 
             data-rarity="${rarity}"
@@ -127,12 +133,21 @@ function charView() {
 }
 
 function statView() {
+    document.getElementById("statBlock").style.visibility = "visible";
     const hp = document.getElementById("HP_PB");
     const atk = document.getElementById("ATK_PB");
     const def = document.getElementById("DEF_PB");
     const spd = document.getElementById("SPD_PB");
-    hp.value = Math.floor(Math.random() * 101);
-    atk.value = Math.floor(Math.random() * 101);
-    def.value = Math.floor(Math.random() * 101);
-    spd.value = Math.floor(Math.random() * 101);
+    hp.value = Math.floor(Math.random() * 101) + 10;
+    atk.value = Math.floor(Math.random() * 101) + 5;
+    def.value = Math.floor(Math.random() * 101) + 5;
+    spd.value = Math.floor(Math.random() * 101) + 5;
+    const descP = document.getElementById("descStat");
+    descP.innerHTML = this.dataset.desc;
+    const creatP = document.getElementById("creatorStat");
+    creatP.innerHTML = this.dataset.creator;
+    const classP = document.getElementById("classStat");
+    classP.innerHTML = this.dataset.class_name;
+    const rarP = document.getElementById("rarStat");
+    rarP.innerHTML = this.dataset.rarity;
 }

@@ -64,6 +64,7 @@
     font-size: 15px;
     cursor: pointer;
     scale: 1.3;
+    filter: opacity(0.8);
 }
 
 .closeOv:hover {
