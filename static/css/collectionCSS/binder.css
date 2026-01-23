@@ -23,10 +23,11 @@
     position: fixed;
     width: 100%;
     height: 100%;
-    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    padding: 20px;
     border: transparent;
     text-align: center;
     color: White;
+    box-sizing: border-box;
 }
 
 #binderProgress {
@@ -88,24 +89,6 @@
     position: absolute;
     bottom: 0;
     text-shadow: 0 0 5px white;
-}
-
-#closeBinder {
-    margin-top: 20px;
-    background-color: rgb(255, 233, 233);
-    border: transparent;
-    border-radius: 10px;
-    width: 70px;
-    height: 25px;
-    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-style: bold;
-    font-size: 15px;
-    cursor: pointer;
-    scale: 1.3;
-}
-
-#closeBinder:hover {
-    background-color: rgb(112, 106, 106);
 }
 
 #statBlock {
