@@ -86,6 +86,7 @@ function viewCollection() {
     //click events
     document.querySelectorAll(".singleI").forEach(el => {
         el.addEventListener("click", charView);
+        el.addEventListener("click", statView);
     });
 }
 
@@ -123,4 +124,15 @@ function charView() {
     single.style.border = `4px solid ${unique ? "lightgray" : "black"}`;
     single.style.backgroundColor = isBronze ? "#CD7F32" : "rgb(66, 51, 66)";
     single.querySelector("h4").style.color = color;
+}
+
+function statView() {
+    const hp = document.getElementById("HP_PB");
+    const atk = document.getElementById("ATK_PB");
+    const def = document.getElementById("DEF_PB");
+    const spd = document.getElementById("SPD_PB");
+    hp.value = Math.floor(Math.random() * 101);
+    atk.value = Math.floor(Math.random() * 101);
+    def.value = Math.floor(Math.random() * 101);
+    spd.value = Math.floor(Math.random() * 101);
 }

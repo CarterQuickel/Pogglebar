@@ -117,8 +117,7 @@
     width: 120px;
     padding: 8px;
     text-align: center;
-    
-    font-style: bold;
+    font-weight: bold;
     font-size: 17px;
     cursor: pointer;
     scale: 0.8;
