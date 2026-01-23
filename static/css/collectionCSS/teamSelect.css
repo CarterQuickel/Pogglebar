@@ -1,9 +1,225 @@
+#teamSelectOverlay {
+	display: none; /* controlled by JS */
+	position: fixed;
+	inset: 0;
+	background: radial-gradient(#0b1020, #02040a);
+	z-index: 9999;
+}
+
 #teamSelect {
-    position: fixed;
-    inset: 0; /* top:0; right:0; bottom:0; left:0 */
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 5001;
+	position: relative;
+	max-width: 920px;
+	margin: 6vh auto;
+	background: linear-gradient(180deg, #3b1537 0%, #2a0f26 100%);
+	border-radius: 14px;
+	padding: 28px 22px;
+	box-shadow: 0 18px 50px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.02);
+	color: #ffffff;
+}
+
+#teamSelect h1 {
+	margin: 0 0 16px 0;
+	font-size: 26px;
+	text-align: center;
+}
+
+/* Grid of 4 MC cards, left-to-right */
+.mc-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 18px;
+	align-items: stretch;
+	padding: 6px 6px 2px 6px;
+}
+
+.mc-card {
+	background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.08));
+	backdrop-filter: blur(6px);
+	border: 1px solid rgba(255,255,255,0.03);
+	border-radius: 12px;
+	min-height: 170px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
+	padding: 22px 14px;
+	transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.mc-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+
+.mc-card .mc-content {
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	font-weight: 600;
+	color: #f5e6ff;
+}
+
+/* The plus button centered in the card */
+.mc-select {
+	width: 64px;
+	height: 64px;
+	border-radius: 999px;
+	border: none;
+	background: linear-gradient(180deg,#7b2fb5,#4b0f7a);
+	color: white;
+	font-size: 28px;
+	line-height: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+	transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.mc-select:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(0,0,0,0.45); }
+
+.mc-select:focus { outline: 3px solid rgba(123,47,181,0.25); }
+
+@media (max-width: 900px) {
+	.mc-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 520px) {
+	.mc-grid { grid-template-columns: 1fr; gap: 10px; }
+	.mc-select { width: 56px; height: 56px; font-size: 24px; }
+}
+
+.slot {
+	position: relative;
+	width: 120px;
+	height: 120px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.circle {
+	position: relative;
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+	/* thicker white ring with soft outer glow */
+	border: 5px solid rgba(255,255,255,0.98);
+	background: radial-gradient(circle at 42% 32%, rgba(0,0,0,0.06), rgba(0,0,0,0.20) 45%);
+	box-shadow:
+		0 12px 30px rgba(0,0,0,0.65),
+		0 0 20px rgba(255,255,255,0.06),
+		inset 0 6px 18px rgba(0,0,0,0.45);
+	transition: transform 160ms ease, box-shadow 160ms ease, border-color 120ms ease;
+}
+
+.circle::before { display: none; }
+
+.plus {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.plus .h {
+	position: absolute;
+	width: 44px;
+	height: 4px;
+	background: rgba(255,255,255,0.98);
+	border-radius: 2px;
+}
+
+.plus .v {
+	position: absolute;
+	width: 4px;
+	height: 44px;
+	background: rgba(255,255,255,0.98);
+	border-radius: 2px;
+}
+
+.slot:hover .circle {
+	transform: translateY(-6px) scale(1.02);
+	border-color: rgba(255,255,255,1);
+	box-shadow:
+		0 22px 56px rgba(0,0,0,0.7),
+		0 0 28px rgba(255,255,255,0.06),
+		inset 0 0 20px rgba(255,255,255,0.02);
+}
+
+.slot:hover .plus span {
+	background: white;
+}
+
+/* Show a centered crosshair inside the mc-select button */
+.mc-select { display:flex; align-items:center; justify-content:center; position: absolute; inset: 0; background: transparent; border: none; }
+.mc-select .h {
+	width: 34px;
+	height: 4px;
+	background: #ffffff;
+	border-radius: 2px;
+	display: block;
+}
+.mc-select .v {
+	width: 4px;
+	height: 34px;
+	background: #ffffff;
+	border-radius: 2px;
+	display: block;
+	margin-left: -2px; /* overlap center */
+}
+.mc-select .h, .mc-select .v { opacity: 1; }
+
+/* Place the clickable select button over the circle and make the plus visible */
+.slot .mc-select {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+}
+
+.slot .mc-select:focus { outline: 3px solid rgba(255,255,255,0.12); border-radius: 999px; }
+
+/* Smaller sizes on narrow screens */
+@media (max-width: 520px) {
+	.circle { width: 86px; height: 86px; border-width: 2px; }
+	.plus .h { width: 34px; height: 3px; }
+	.plus .v { width: 3px; height: 34px; }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(120, 160, 255, 0.15),
+      inset 0 0 12px rgba(120, 160, 255, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 28px rgba(120, 160, 255, 0.25),
+      inset 0 0 16px rgba(120, 160, 255, 0.2);
+  }
+}
+
+.circle {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+/* Selected state for card */
+.mc-card.mc-selected {
+	outline: 3px solid rgba(123,47,181,0.18);
+	transform: translateY(-6px);
+}
+
+/* Slot number */
+.slot-number {
+	position: absolute;
+	top: 10px;
+	left: 12px;
+	color: rgba(240,240,255,0.9);
+	font-weight: 700;
 }

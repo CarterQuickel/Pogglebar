@@ -1,5 +1,56 @@
-<div style="display: none;">
+<div id="teamSelectOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999;">
     <div id="teamSelect">
+        <button id="teamSelectClose" style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; color: #fff; font-size: 18px; cursor: pointer;">✕</button>
         <h1>Select Your Team</h1>
+
+        <div class="mc-grid" role="list">
+            <!-- MC1 card -->
+            <div class="mc-card" id="MC1" data-slot="1" role="listitem">
+                <div class="slot-number">01</div>
+                <div class="slot">
+                    <div class="circle"></div>
+                    <button class="mc-select" data-mc="1" aria-label="Select MC 1">
+                        <span class="h"></span>
+                        <span class="v"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- MC2 card -->
+            <div class="mc-card" id="MC2" data-slot="2" role="listitem">
+                <div class="slot-number">02</div>
+                <div class="slot">
+                    <div class="circle"></div>
+                    <button class="mc-select" data-mc="2" aria-label="Select MC 2">
+                        <span class="h"></span>
+                        <span class="v"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- MC3 card -->
+            <div class="mc-card" id="MC3" data-slot="3" role="listitem">
+                <div class="slot-number">03</div>
+                <div class="slot">
+                    <div class="circle"></div>
+                    <button class="mc-select" data-mc="3" aria-label="Select MC 3">
+                        <span class="h"></span>
+                        <span class="v"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- MC4 card -->
+            <div class="mc-card" id="MC4" data-slot="4" role="listitem">
+                <div class="slot-number">04</div>
+                <div class="slot">
+                    <div class="circle"></div>
+                    <button class="mc-select" data-mc="4" aria-label="Select MC 4">
+                        <span class="h"></span>
+                        <span class="v"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-    </div>
+</div>
