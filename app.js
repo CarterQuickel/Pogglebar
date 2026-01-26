@@ -286,7 +286,7 @@ app.get('/', isAuthenticated, (req, res) => {
         req.session.user = {
             fid: req.session.token?.id || 0,
             displayName: req.session.token?.displayName || "guest",
-            theme: req.session.user.theme || 'light',
+            theme: req.session.user.theme || 'dark',
             score: req.session.user.score || 0,
             inventory: req.session.user.inventory || [],
             Isize: req.session.user.Isize || 3,
@@ -340,7 +340,7 @@ app.get('/', isAuthenticated, (req, res) => {
                 req.session.user = {
                     fid: id,
                     displayName: displayName,
-                    theme: 'light',
+                    theme: 'dark',
                     score: 0,
                     inventory: [],
                     Isize: 10,
@@ -484,7 +484,7 @@ app.get('/api/auctions/active', (req, res) => {
 // save data route
 app.post('/datasave', (req, res) => {
     const userSave = {
-        theme: req.body.lightMode ? 'light' : 'dark',
+        theme: req.body.lightMode ? 'dark' : 'dark',
         score: req.body.money,
         inventory: req.body.inventory,
         Isize: req.body.Isize,
@@ -598,7 +598,7 @@ app.get('/login', (req, res) => {
         req.session.user = {
             displayName: tokenData.displayName,
             fid: tokenData.fid,
-            theme: tokenData.theme || 'light',
+            theme: tokenData.theme || 'dark',
             score: tokenData.score || 0,
             inventory: tokenData.inventory || [],
             Isize: tokenData.Isize || 3,

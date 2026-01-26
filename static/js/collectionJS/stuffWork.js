@@ -118,7 +118,7 @@ document.getElementById("colors").addEventListener("click", () => {
 })
 
 //report
-document.getElementById("help").addEventListener("click", () => {
+document.getElementById("helpButton").addEventListener("click", () => {
     window.open("https://github.com/CarterQuickel/Pogglebar/issues", "_blank");
 });
 
