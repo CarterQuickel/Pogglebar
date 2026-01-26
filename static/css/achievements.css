@@ -3,8 +3,20 @@ body, h1, h2, h3, h4, h5 {
 }
 
 body {
-    margin-top: 135px;
     user-select: none;
+    background:
+        radial-gradient(circle at 30% 40%, rgba(80, 53, 168, 0.15), transparent 60%),
+        radial-gradient(circle at 70% 60%, rgba(165, 52, 129, 0.12), transparent 55%),
+        radial-gradient(circle at center, #080b0f 0%, #090a0f 70%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* ===== Root + Reset ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
@@ -19,54 +31,55 @@ li {
     list-style: none;
 }
 
+/* ===== Top Banner ===== */
 #achievementsBanner {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    width: 100%;
+    z-index: 10;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #de5aff;
-    padding: 10px 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    height: 80px;
+
+    height: 100px;
+    padding: 0 20px;
+
+    background: linear-gradient(90deg, #6b3df0, #9d42f7);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
-.leftstuff {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    color: white;
-    margin-left: 20px;
+#achievementsBanner h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 1px;
 }
 
+/* Back button */
 #circleButton {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 75px;
-    width: 50px;
-    height: 50px;
-    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    text-align: center;
-    line-height: 50px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: black;
+
+    background: rgba(0, 0, 0, 0.25);
+    color: white;
     text-decoration: none;
-    background-color: white;
-    cursor: pointer;
+    font-size: 22px;
+
+    transition: transform 0.15s ease, background 0.15s ease;
 }
 
 #circleButton:hover {
-    background-color: #e0e0e0;
+    background: rgba(0, 0, 0, 0.4);
+    transform: scale(1.08);
 }
 
 #achievementsList {
-    background-color: #7d6381;
+    background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
+    border: 1px solid rgba(255, 255, 255, 0.094);
     color: #fff;
     border-radius: 10px;
     padding: 20px;
@@ -78,29 +91,49 @@ li {
 }
 
 .achievement {
-    background-color: #594769;
+    background-color: #0000003a;
     border-radius: 8px;
     padding: 15px;
     text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.1s ease;
     border: transparent 2px solid;
+    box-shadow: 0 0 5px black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 306px; /* default height for achievements */
+}
+
+.achievement:hover {
+    scale: 1.05;
 }
 
 .achievement .icon {
     font-size: 5rem;
     margin-bottom: 10px;
+    scale: 1.8;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; /* Gill Sans MT has a bad ? character */
     display: block;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid rgba(0, 0, 0, 0.482);
+    color: rgba(0, 0, 0, 0.482);
+    border-radius: 50%;
 }
 
 .achievement .name {
-    font-size: 2.5rem;
+    font-size: 2.3rem;
     font-weight: bold;
     margin-bottom: 5px;
 }
 
 .achievement .description {
-    color: e0e0e0;
-    font-size: 1.7rem;
+    font-size: 1.4rem;
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .achievement .reward {
@@ -114,10 +147,17 @@ li {
     font-weight: bold;
 }
 
+#buttonBar {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
 #buttonBar button {
     background-color: #594769; /* Dark purple background */
     color: #fff; /* White text */
-    border: none; /* Remove default border */
+    border: transparent 2px solid; /* Remove default border */
     border-radius: 8px; /* Rounded corners */
     padding: 10px 20px; /* Add padding for better spacing */
     font-size: 1.2rem; /* Slightly larger font size */

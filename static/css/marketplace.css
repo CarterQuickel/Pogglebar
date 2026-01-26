@@ -3,8 +3,20 @@ body, h1, h2, h3, h4, h5 {
 }
 
 body {
-    margin-top: 135px;
     user-select: none;
+    background:
+        radial-gradient(circle at 30% 40%, rgba(80, 53, 168, 0.15), transparent 60%),
+        radial-gradient(circle at 70% 60%, rgba(165, 52, 129, 0.12), transparent 55%),
+        radial-gradient(circle at center, #080b0f 0%, #090a0f 70%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* ===== Root + Reset ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
@@ -20,41 +32,42 @@ li {
 }
 
 #marketplaceBanner {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    width: 100%;
+    z-index: 10;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #de5aff;
-    padding: 10px 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    height: 80px;
+
+    height: 100px;
+    padding: 0 20px;
+
+    background: linear-gradient(90deg, #6b3df0, #9d42f7);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
+/* Back button */
 #circleButton {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 75px;
-    width: 50px;
-    height: 50px;
-    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    text-align: center;
-    line-height: 50px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: black;
+
+    background: rgba(0, 0, 0, 0.25);
+    color: white;
     text-decoration: none;
-    background-color: white;
-    cursor: pointer;
+    font-size: 22px;
+
+    transition: transform 0.15s ease, background 0.15s ease;
 }
 
 #circleButton:hover {
-    background-color: #e0e0e0;
+    background: rgba(0, 0, 0, 0.4);
+    transform: scale(1.08);
 }
 
 .winner-pfp {

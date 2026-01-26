@@ -42,30 +42,26 @@
     <table class="board" style="width: 50%; margin: auto; border-collapse: collapse; color: white;">
         <thead>
             <tr>
-                <th style="border: 1px solid white; padding: 8px;">Rank</th>
-                <th style="border: 1px solid white; padding: 8px;">User</th>
-                <th style="border: 1px solid white; padding: 8px;">Score ($)</th>
-                <th style="border: 1px solid white; padding: 8px;">Level</th>
-                <th style="border: 1px solid white; padding: 8px;">Details</th>
+                <th>Rank</th>
+                <th>User</th>
+                <th>Score</th>
+                <th>Level</th>
             </tr>
         </thead>
         <tbody>
             <% scores.forEach((score, index)=> { %>
-                <tr>
-                    <td style="border: 1px solid white; padding: 8px; text-align: center;">
+                <tr class="infobtn" data-index="<%= index %>">
+                    <td style="padding: 8px; text-align: center;">
                         <%= index + 1 %>
                     </td>
-                    <td style="border: 1px solid white; padding: 8px; text-align: center;">
+                    <td style="padding: 8px; text-align: center;">
                         <%= score.displayname %>
                     </td>
-                    <td style="border: 1px solid white; padding: 8px; text-align: center;">
+                    <td style="padding: 8px; text-align: center;">
                         <%= score.score %>
                     </td>
-                    <td style="border: 1px solid white; padding: 8px; text-align: center;">
+                    <td style="padding: 8px; text-align: center;">
                         <%= score.level %>
-                    </td>
-                    <td style="border: 1px solid white; padding: 8px; text-align: center;">
-                        <button class="infobtn" data-index="<%= index %>">Player Info</button>
                     </td>
                 </tr>
                 <% }) %>

@@ -2,122 +2,162 @@ body, h1, h2, h3, h4, h5 {
     font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-/* General Body Styling */
-body {
+/* ===== Root + Reset ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
     padding: 0;
-    margin-top: 150px; /* Match the margin-top from collection */
-    background-color: #f4f4f9; /* Light background for better contrast */
-    color: #333; /* Darker text for readability */
+}
+
+body {
+    background:
+        radial-gradient(circle at 30% 40%, rgba(80, 53, 168, 0.15), transparent 60%),
+        radial-gradient(circle at 70% 60%, rgba(165, 52, 129, 0.12), transparent 55%),
+        radial-gradient(circle at center, #080b0f 0%, #090a0f 70%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #e6e6f0;
+    overflow-x: hidden;
     user-select: none;
 }
 
-/* Patch Banner Styling */
+/* ===== Top Banner ===== */
 #patchBanner {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    width: 100vw;
+    z-index: 10;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #de5aff;
-    padding: 10px 20px; /* Add padding for better spacing */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    height: 80px;
+
+    height: 100px;
+    padding: 0 20px;
+
+    background: linear-gradient(90deg, #6b3df0, #9d42f7);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
-#userCont {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: -30px;
+#patchBanner h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 1px;
 }
 
-#userPic {
-    border-radius: 50%;
-    margin-top: -10px;
-    margin-left: 30px;
-}
-
-.weeks {
-    font-size: 1.25rem; 
-    background-color: #7d6381;
-    color: #fff;
-    border-radius: 10px;
-    padding: 20px; 
-    margin: 20px auto;
-    width: 95vw;
-    box-sizing: border-box;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-}
-
-.weeks h2 {
-    margin-top: 0;
-    font-size: 1.5rem; 
-    color: #f4f4f9; 
-}
-
-.weeks ul {
-    padding-left: 20px;
-}
-
-.weeks li {
-    margin-bottom: 10px;
-    line-height: 1.6; 
-}
-
-/* Left Section of the Banner */
-.leftstuff {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    color: white;
-    margin-left: 20px; /* Add spacing from the left edge */
-}
-
-.rightstuff {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Add spacing between buttons */
-    margin-right: 20px; /* Add spacing from the right edge */
-}
-
-button {
-    background-color: #a1a1a1;
-    border: 4px solid black;
-    border-radius: 10px;
-    padding: 10px 20px;
-    
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: gray;
-}
-
-/* Circular Button Styling */
+/* Back button */
 #circleButton {
-    position: absolute;
-    top: 50%; /* Center vertically */
-    transform: translateY(-50%); /* Adjust for proper centering */
-    right: 75px; /* Position the button on the right */
-    width: 50px; /* Circular button size */
-    height: 50px;
-    border: none; /* Remove border */
-    border-radius: 50%; /* Makes the button circular */
-    text-align: center;
-    line-height: 50px; /* Centers the text vertically */
-    font-size: 1.5rem; /* Larger font size */
-    font-weight: bold;
-    color: black; /* Black text for contrast */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.25);
+    color: white;
     text-decoration: none;
-    background-color: white; /* White background */
-    cursor: pointer;
+    font-size: 22px;
+
+    transition: transform 0.15s ease, background 0.15s ease;
 }
 
 #circleButton:hover {
-    background-color: #e0e0e0; /* Slightly darker on hover */
+    background: rgba(0, 0, 0, 0.4);
+    transform: scale(1.08);
+}
+
+/* ===== Patch Notes Container ===== */
+#notes {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ===== Individual Week Cards ===== */
+.weeks {
+    background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
+    border: 1px solid rgba(255, 255, 255, 0.094);
+    border-radius: 18px;
+    padding: 24px 26px;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 10px 25px rgba(0, 0, 0, 0.4);
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ===== Headings ===== */
+.weeks h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #c9b9ff;
+    margin-bottom: 4px;
+}
+
+.weeks h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #9fa0ff;
+    margin-bottom: 16px;
+    opacity: 0.9;
+}
+
+/* ===== Patch List ===== */
+.weeks ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.weeks li {
+    position: relative;
+    padding-left: 22px;
+    line-height: 1.45;
+
+    color: #e2e2f0;
+    font-size: 15px;
+}
+
+/* Bullet indicator */
+.weeks li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    color: #9d42f7;
+    font-size: 16px;
+}
+
+/* ===== Big Update Highlight ===== */
+.weeks h2:contains("Big Update"),
+.weeks h2 {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    #patchBanner h1 {
+        font-size: 24px;
+    }
+
+    .weeks {
+        padding: 20px;
+    }
+
+    .weeks h1 {
+        font-size: 22px;
+    }
+
+    .weeks li {
+        font-size: 14px;
+    }
 }
