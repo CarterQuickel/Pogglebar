@@ -1,3 +1,20 @@
+// this is here so the upgrade slot button refreshes everytime a new pog is added to the DOM
+function calcSlot(amount) {
+    const slotPrice = 25;
+    defprice = slotPrice * amount;
+    return defprice;
+}
+function bindBuySlot() {
+    const btn = document.getElementById("buySlot");
+    if (!btn) return;
+
+    btn.addEventListener("click", () => {
+        document.getElementById("slotOver").style.display = "block";
+        const slotPrice = calcSlot(1);
+        document.getElementById("slotprice").innerText = `Price: $${abbreviateNumber(slotPrice)}`;
+    });
+}
+
 //update inventory
 function refreshInventory() {
     const inventoryDiv = document.getElementById("inventory");
@@ -71,8 +88,10 @@ function refreshInventory() {
     }).join("");
 inventoryDiv.innerHTML = inventoryDiv.innerHTML +
     // add empty slots
-    Array.from({ length: emptySlot }, (_, i) => `<div class="emptySlot"></div>`).join("");
+    Array.from({ length: emptySlot }, (_, i) => `<div class="emptySlot"></div>`).join("") +
+    //add buy slot button
+    `<div id="buySlot">+</div>`;
 // Get tradeable items from inventory
 const tradeableItems = inventory.filter(item => item.rarity !== "Unique");
-
+bindBuySlot();
 }

@@ -17,7 +17,7 @@
   text-transform: uppercase;
   overflow: hidden;
   border-radius: 10px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.1s ease;
   box-shadow: inset 0 0 12px rgba(149, 0, 255, 0.623);
   font-weight: bold;
   width: 350px;
@@ -30,6 +30,7 @@
 /* Hover creates anticipation */
 .crate:hover {
     top: -2px;
+    filter: brightness(1.3);
 }
 
 /* The tactile "Pressed" state */

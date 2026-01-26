@@ -1,34 +1,57 @@
-<div id="overlay" style="display: none;">
-        <div id="transConf">
-            <h5>Purchase Item</h5>
-            <div id="prices_cont">
-                <div id="crateprice"></div>
+<!--Crate Shop-->
+<div class="shopBackdrop" id="overlay" style="display: none;">
+    <div id="transConf" class="transContain">
+        <h5>Purchase Item</h5>
+        <div class="prices_cont">
+            <div id="crateprice" class="cost_display"></div>
+        </div>
+        <div id="dropdowns">
+            <div class="selection_cont">
+                <label>Currency</label>
+                <select id="balanceSelect" class="shop_selector">
+                    <option value="money">Money</option>
+                    <option value="digi">Digipogs</option>
+                </select>
             </div>
-            <div id="dropdowns">
-                <div class="selection_cont">
-                    <label>Currency</label>
-                    <select id="balanceSelect" class="shop_selector">
-                        <option value="money">Money</option>
-                        <option value="digi">Digipogs</option>
-                    </select>
-                </div>
-                <div class="selection_cont">
-                    <label>Quantity</label>
-                    <select id="amountSelect" class="shop_selector">
-                        <option value="1">1 Crate</option>
-                        <option value="5">5 Crates</option>
-                        <option value="10">10 Crates</option>
-                    </select>
-                </div>
-            </div>
-            <div id="pin" style="display: none;">
-                <br>
-                <label>PIN</label>
-                <input id="pinField" type="password" />
-            </div>
-            <div id="buy_btns">
-                <button id="cancelBtn">Cancel</button>
-                <button id="purchaseBtn">Purchase</button>
+            <div class="selection_cont">
+                <label>Quantity</label>
+                <select id="amountSelect" class="shop_selector">
+                    <option value="1">1 Crate</option>
+                    <option value="5">5 Crates</option>
+                    <option value="10">10 Crates</option>
+                </select>
             </div>
         </div>
+        <div id="pin_crate" class="pinCont" style="display: none;">
+            <br>
+            <label>PIN</label>
+            <input id="pinField_crate" class="inputfield" type="password" />
+        </div>
+        <div class="buy_btns">
+            <button id="cancelBtn_C" class="cancelTrans">Cancel</button>
+            <button id="purchaseBtn_C" class="confirmTrans">Purchase</button>
+        </div>
     </div>
+</div>
+<!--Slot Shop-->
+<div class="shopBackdrop" id="slotOver" style="display: none;">
+    <div id="slotConf" class="transContain">
+        <h5>Purchase Slots</h5>
+        <div class="prices_cont">
+            <div id="slotprice" class="cost_display"></div>
+        </div>
+            <div class="selection_cont" style="margin-top: 20px;">
+                <label>Quantity</label>
+                <input id="slotAmount" type="number" class="inputfield" min="1" value="1"/>
+            </div>
+        <div id="pin_slot" class="pinCont">
+            <br>
+            <label>PIN</label>
+            <input id="pinField_slot" class="inputfield" type="password" />
+        </div>
+        <div class="buy_btns">
+            <button id="cancelBtn_S" class="cancelTrans">Cancel</button>
+            <button id="purchaseBtn_S" class="confirmTrans">Purchase</button>
+        </div>
+    </div>
+</div>
