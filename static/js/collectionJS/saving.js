@@ -7,7 +7,7 @@ function save() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            lightMode: lightMode,
+            lightMode: "dark",
             money: money,
             inventory: inventory,
             Isize: Isize,
@@ -45,8 +45,6 @@ function hidePanelAni(ele) {
         ele.classList.remove("hidePanel");
     }, { once: true });
 }
-
-
 
 //Show redirect panel
 function showPanelAni(ele) {

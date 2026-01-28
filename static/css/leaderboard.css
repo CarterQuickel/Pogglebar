@@ -1,19 +1,29 @@
+body, h1, h2, h3, h4, h5 {
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
 body {
-    font-family:'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    margin-top: 135px;
     user-select: none;
+    background:
+        radial-gradient(circle at 30% 40%, rgba(80, 53, 168, 0.15), transparent 60%),
+        radial-gradient(circle at 70% 60%, rgba(165, 52, 129, 0.12), transparent 55%),
+        radial-gradient(circle at center, #080b0f 0%, #090a0f 70%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* ===== Root + Reset ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
     color: whitesmoke;
 }
 
-h3 {
-    font-family:'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-}
-
 h4 {
-    font-family:'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin-top: 15px;
 }
 
@@ -22,17 +32,19 @@ li {
 }
 
 #leadBanner {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    width: 100%;
+    z-index: 10;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #de5aff;
-    padding: 10px 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 80px;
+
+    height: 100px;
+    padding: 0 20px;
+
+    background: linear-gradient(90deg, #6b3df0, #9d42f7);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
 .leftstuff {
@@ -43,33 +55,38 @@ li {
     margin-left: 20px;
 }
 
+/* Back button */
 #circleButton {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 75px;
-    width: 50px;
-    height: 50px;
-    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    text-align: center;
-    line-height: 50px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: black;
+
+    background: rgba(0, 0, 0, 0.25);
+    color: white;
     text-decoration: none;
-    background-color: white;
-    cursor: pointer;
+    font-size: 22px;
+
+    transition: transform 0.15s ease, background 0.15s ease;
 }
 
 #circleButton:hover {
-    background-color: #e0e0e0;
+    background: rgba(0, 0, 0, 0.4);
+    transform: scale(1.08);
 }
 
 /* Table Container */
 .board {
     margin: 200px auto 60px auto;
-    background: rgb(158, 84, 158);
+    background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
+    border: 1px solid rgba(255, 255, 255, 0.094);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    font-size: 1.3rem;
 }
 
 /* Table Header */
@@ -80,7 +97,6 @@ li {
 .board th {
     padding: 15px;
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-    font-size: 1.1rem;
     text-transform: uppercase;
 }
 
@@ -89,23 +105,10 @@ li {
     padding: 12px;
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 1rem;
 }
 
 .board tr:hover {
     background: rgba(255, 255, 255, 0.08);
-}
-
-.infobtn {
-    width: 120px;
-    border: 1px solid black;
-    border-radius: 6px;
-    background-color: rgba(255, 255, 255, 0); /* transparent */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.infobtn:hover {
-    background-color: rgba(187, 126, 187, 0.733)
 }
 
 #flexcont {
@@ -113,10 +116,17 @@ li {
     justify-content: center;
 }
 
+.details-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
 #details {
     color: rgb(255, 255, 255);
-    background-color: rgb(187, 126, 187);
-    border: transparent;
+    background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
+    border: 1px solid rgba(255, 255, 255, 0.094);
     border-radius: 12px;
     padding: 20px;
     width: 500px;
@@ -131,6 +141,12 @@ li {
     left: 50%; /* Place the left edge at 50% of the parent's width (for horizontal centering) */
     transform: translate(-50%, -50%);
     box-shadow: 0 0 5px black;
+}
+
+#details p {
+    font-size: 16px;
+    margin: 5px 0;
+    color: rgba(255, 255, 255, 0.562);
 }
 
 #hideBtn {

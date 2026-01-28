@@ -52,9 +52,7 @@ function renderCollection () {
             // Darken and replace content for hidden achievements
             achievementElement.style.backgroundColor = "#333";
             achievementElement.innerHTML = `
-                <span class="icon">?</span><br>
-                <span class="name">???</span><br>
-                <span class="description">???</span><br>
+                <span class="icon">?</span>
             `;
         } else if (achievement.status) {
             // Render unlocked achievements with glowing effect
@@ -91,9 +89,7 @@ function renderLevel () {
             // Darken and replace content for hidden achievements
             achievementElement.style.backgroundColor = "#333";
             achievementElement.innerHTML = `
-                <span class="icon">?</span><br>
-                <span class="name">???</span><br>
-                <span class="description">???</span><br>
+                <span class="icon">?</span>
             `;
         } else if (achievement.status) {
             // Render unlocked achievements with glowing effect
@@ -129,9 +125,7 @@ function renderProgression () {
             // Darken and replace content for hidden achievements
             achievementElement.style.backgroundColor = "#333";
             achievementElement.innerHTML = `
-                <span class="icon">?</span><br>
-                <span class="name">???</span><br>
-                <span class="description">???</span><br>
+                <span class="icon">?</span>
             `;
         } else if (achievement.status) {
             // Render unlocked achievements with glowing effect
@@ -167,9 +161,7 @@ function renderEconomy () {
             // Darken and replace content for hidden achievements
             achievementElement.style.backgroundColor = "#333";
             achievementElement.innerHTML = `
-                <span class="icon">?</span><br>
-                <span class="name">???</span><br>
-                <span class="description">???</span><br>
+                <span class="icon">?</span>
             `;
         } else if (achievement.status) {
             // Render unlocked achievements with glowing effect
@@ -205,9 +197,8 @@ function renderUnique() {
             // Darken and replace content for hidden achievements
             achievementElement.style.backgroundColor = "#333";
             achievementElement.innerHTML = `
-                <span class="icon">?</span><br>
-                <span class="name">???</span><br>
-                <span class="description">???</span><br>
+                <span class="icon">?</span>
+                
             `;
         } else if (achievement.status) {
             // Render unlocked achievements with glowing effect

@@ -36,22 +36,17 @@
     <!--Shop-->
     <%- include("collectionEJS/shop.ejs") %>
     <!--Binder-->
-    <div id="binderBanner" style="display:none;">
-        <div class="binderCont">
-            <h1 style="font-size: 60px; margin-top: -10px; margin-bottom: 0px;">Collection</h1>
-            <button id="closeBinder">Close</button>
-            <div id="binderProgress">
-                <h3 id="pogCount">Pogs: 0 / 0</h3>
-                <progress id="binderBar"></progress>
-            </div>
-            <div id="binderItems"></div>
-        </div>
-    </div>
+    <%- include("collectionEJS/binder.ejs") %>
     <!--Perks-->
     <div id="perkBanner" style="display:none;">
         <div class="perkCont">
-            <h1 style="font-size: 60px; margin-top: -10px; margin-bottom: 0px;">Perks</h1>
-            <button id="closePerks">Close</button>
+            <div class="overlayBan">
+                <h1 style="font-size: 60px; margin-top: -10px; margin-bottom: 0px;">Perks</h1>
+                <!--you can reference this center when you need to center something-->
+                <div class="center">
+                    <button class="closeOv" id="closePerks">X</button>
+                </div>
+            </div>
             <div id="perkCards"></div>
         </div>
     </div>
@@ -72,12 +67,6 @@
                     <img src="../static/icons/buttons_main/play.png" width="15" height="15">
                 </button>
             </div>
-            <div id="userCont">
-                <img id="userPic" width="20" height="20" src="static/icons/pfp/defaultpfp.png" />
-                <h4 style="color: white">
-                    <%= userdata.displayName %>
-            </div>
-            </h4>
             <div style="display: none" id="userdata">
                 <%- JSON.stringify(userdata) %>
             </div>
@@ -91,7 +80,6 @@
         <!--Banner Buttons-->
         <div style="right: 0; top: 0;" class="rightstuff">
             <button id="useWish">Wish (0/7)</button>
-            <img id="darkmode" class="imgbtn" src="../static/icons/buttons_main/sun.png" width="40" height="40">
             <img src="../static/icons/buttons_main/lines.png" width="40" height="40" id="burger_btn" class="imgbtn">
         </div>
     </div>
@@ -131,9 +119,8 @@
 <script src="../static/js/shop.js"></script>
 <script src="../static/js/collectionJS/saving.js"></script>
 <script src="../static/js/collectionJS/combo.js"></script>
-<script src="../static/js/collectionJS/lightmode.js"></script>
 <script src="../static/js/collectionJS/sellitem.js"></script>
-<script src="../static/js/collectionJS/stuffWork.js"></script>
+<script src="../static/js/collectionJS/declarations.js"></script>
 <!--as long as they aren't dependent on each other, there is no needed order-->
 <script src="../static/js/collectionJS/levelup.js"></script>
 <script src="../static/js/collectionJS/income.js"></script>
