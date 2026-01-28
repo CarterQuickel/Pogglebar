@@ -553,7 +553,7 @@ app.post('/api/digipogs/transfer', (req, res) => {
     const id = req.session.user.fid; // Formbar user ID of payer from session
     
     // carter and vincent ids for testing respectively
-    const isAdmin = id === 73 || id === 84 || id === 44;
+    const isAdmin = id === 73 || id === 84 || id === 44 || id === 87;
     
     if (isAdmin) {
         // For admins, return success without processing actual transaction
