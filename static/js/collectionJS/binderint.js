@@ -55,6 +55,7 @@ function viewCollection() {
         const desc = item.description;
         const creator = item.creator;
         const class_name = "Support";
+        const elem = "Fire";
         maxBinder++
         const rarity = item.rarity;
         const pogcol = item.color;
@@ -72,6 +73,7 @@ function viewCollection() {
         color = match ? match.color : "white";
         return `
         <div class="singleI" 
+            data-elem="${elem}"
             data-desc="${desc}"
             data-creator="${creator}"
             data-class_name="${class_name}"
@@ -150,4 +152,6 @@ function statView() {
     classP.innerHTML = this.dataset.class_name;
     const rarP = document.getElementById("rarStat");
     rarP.innerHTML = this.dataset.rarity;
+    const elemP = document.getElementById("elemStat");
+    elemP.innerHTML = this.dataset.elem;
 }
