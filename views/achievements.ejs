@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,25 @@
     <title>Achievements</title>
     <link rel="stylesheet" href="../static/css/achievements.css">
 </head>
+
 <body>
     <div id="achievementsBanner">
         <div class="leftstuff">
-            <div style="display: none" id="userdata"><%= JSON.stringify(userdata) %></div>
+            <div style="display: none" id="userdata">
+                <%= JSON.stringify(userdata) %>
+            </div>
             <h1 style="margin-left: 10px;">Achievements</h1>
-            <div style="display: none" id="maxPogs"><%= JSON.stringify(maxPogs) %></div>
+            <div style="display: none" id="maxPogs">
+                <%= JSON.stringify(maxPogs) %>
+            </div>
+            <div style="display: none" id="pogList">
+                <%= JSON.stringify(pogList) %>
+            </div>
         </div>
         <div class="rightstuff"></div>
-            <a href="/collection" id="circleButton"> < </a>
-        </div>
+        <a href="/collection" id="circleButton">
+            < </a>
+    </div>
     </div>
     <div id="buttonBar">
         <button id="collection" onclick="renderCollection()">Collection</button>
@@ -25,10 +35,21 @@
         <button id="economy" onclick="renderEconomy()">Economy</button>
         <button id="unique" onclick="renderUnique()">Unique</button><br>
     </div>
+    <div id="contain">
+        <div class="progressCont">
+            <div id="progress"></div>
+            <button class="circle">1</button>
+            <button class="circle">2</button>
+            <button class="circle">3</button>
+            <button class="circle">4</button>
+            <button class="circle">5</button>
+        </div>
+    </div>
     <div id="achievementsList">
         (i) Click on a panel to show specific achievements
     </div>
     <script src="../static/js/collectionJS/declarations.js"></script>
     <script src="../static/js/achievements.js"></script>
 </body>
+
 </html>

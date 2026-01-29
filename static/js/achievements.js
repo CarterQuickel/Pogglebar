@@ -837,7 +837,7 @@ function refreshAchievementsView() {
     } catch (e) {
     }
 }
- 
+
  
 function processAchievementQueue() {
     if (sliderBusy) return;

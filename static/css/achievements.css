@@ -175,3 +175,57 @@ li {
     background-color: #4a4a4a; /* Darker shade when clicked */
     transform: translateY(0); /* Reset lift effect */
 }
+
+#contain {
+    display: flex;
+    margin: 20px auto;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+:root {
+    --line-border-fill: red;
+    --line-border-empty: gray;
+}
+
+.progressCont {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+    position: relative;
+}
+
+.progressCont::before {
+    content: "";
+    position: absolute;
+    background-color: #ddd;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    z-index: 1;
+    height: 4px;
+    width: 100%;
+}
+
+#progress {
+    background-color: var(--line-border-empty);
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 4px;
+    width: 0%;
+    z-index: 1;
+    transition: 0.4s ease;
+}
+
+.circle {
+    background-color: #ddd;
+    border: transparent 2px solid;
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    z-index: 1;
+    transition: 0.4s ease;
+}
