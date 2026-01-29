@@ -48,8 +48,6 @@
 	transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
-.mc-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-
 .mc-card .mc-content {
 	position: absolute;
 	top: 12px;
@@ -75,8 +73,6 @@
 	box-shadow: 0 8px 20px rgba(0,0,0,0.35);
 	transition: transform 120ms ease, box-shadow 120ms ease;
 }
-
-.mc-select:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(0,0,0,0.45); }
 
 .mc-select:focus { outline: 3px solid rgba(123,47,181,0.25); }
 
@@ -148,29 +144,6 @@
 		inset 0 0 20px rgba(255,255,255,0.02);
 }
 
-.slot:hover .plus span {
-	background: white;
-}
-
-/* Show a centered crosshair inside the mc-select button */
-.mc-select { display:flex; align-items:center; justify-content:center; position: absolute; inset: 0; background: transparent; border: none; }
-.mc-select .h {
-	width: 34px;
-	height: 4px;
-	background: #ffffff;
-	border-radius: 2px;
-	display: block;
-}
-.mc-select .v {
-	width: 4px;
-	height: 34px;
-	background: #ffffff;
-	border-radius: 2px;
-	display: block;
-	margin-left: -2px; /* overlap center */
-}
-.mc-select .h, .mc-select .v { opacity: 1; }
-
 /* Place the clickable select button over the circle and make the plus visible */
 .slot .mc-select {
 	position: absolute;
@@ -209,11 +182,6 @@
   animation: pulse 3s ease-in-out infinite;
 }
 
-/* Selected state for card */
-.mc-card.mc-selected {
-	outline: 3px solid rgba(123,47,181,0.18);
-	transform: translateY(-6px);
-}
 
 /* Slot number */
 .slot-number {
@@ -222,4 +190,147 @@
 	left: 12px;
 	color: rgba(240,240,255,0.9);
 	font-weight: 700;
+}
+
+/* Selection window layout: left sidebar with boxed names */
+#MCselectWindow {
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 86vw;
+	max-width: 980px;
+	height: 62vh;
+	background: linear-gradient(180deg, rgba(10,8,15,0.96), rgba(6,6,10,0.98));
+	border-radius: 10px;
+	display: flex;
+	gap: 18px;
+	padding: 14px;
+	z-index: 10001;
+	box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+}
+
+/* Left side bigger rectangle (sidebar) */
+.team-sidebar, #allCharacters {
+	background: rgba(255,255,255,0.02);
+	border: 1px solid rgba(255,255,255,0.03);
+	border-radius: 8px;
+	padding: 12px;
+	overflow: auto;
+}
+
+.team-sidebar {
+	width: 280px; /* the bigger rectangle on the left */
+	min-width: 220px;
+	display: flex;
+	flex-direction: column;
+}
+
+/* The right content area (optional) */
+.team-main {
+	flex: 1 1 auto;
+	min-width: 320px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+/* Each pog name in its own small box inside the sidebar */
+.team-pog-card {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 10px;
+	margin-bottom: 10px;
+	background: rgba(0,0,0,0.18);
+	border-radius: 6px;
+	border: 1px solid rgba(255,255,255,0.03);
+	cursor: pointer;
+	transition: transform 120ms ease, background 120ms ease;
+}
+
+.team-pog-card:hover {
+	transform: translateX(6px);
+	background: rgba(255,255,255,0.03);
+}
+
+.team-pog-color {
+	width: 28px;
+	height: 28px;
+	border-radius: 4px;
+	flex: 0 0 28px;
+	box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+}
+
+.team-pog-name {
+	background: rgba(255,255,255,0.04);
+	padding: 6px 8px;
+	border-radius: 6px;
+	font-weight: 600;
+	color: #f7f3ff;
+}
+
+.team-no-pogs { color: rgba(255,255,255,0.65); padding: 8px; }
+
+.assigned-pog {
+	padding: 6px 10px;
+	border-radius: 6px;
+	background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.12));
+	color: #fff;
+	font-weight: 600;
+}
+
+/* Selected pogs strip (above the inventory) */
+.team-selected {
+	width: 100%;
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	padding: 10px 12px;
+	margin-bottom: 8px;
+	min-height: 56px;
+	background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));
+	border: 1px solid rgba(255,255,255,0.03);
+	border-radius: 8px;
+	overflow-x: auto;
+}
+
+.team-selected .selected-card {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	background: rgba(0,0,0,0.18);
+	border-radius: 6px;
+	color: #fff;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.team-selected .selected-card .color-dot {
+	width: 12px;
+	height: 12px;
+	border-radius: 3px;
+	flex: 0 0 12px;
+}
+
+/* Loadout bar styles */
+#loadoutBar { margin-top: 12px; }
+.loadout-btn {
+	background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.12));
+	color: #fff;
+	border: 1px solid rgba(255,255,255,0.04);
+	padding: 8px 12px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 700;
+}
+.loadout-btn .hint { display: block; font-weight: 400; opacity: 0.8; font-size: 11px; }
+.loadout-btn:hover { transform: translateY(-3px); }
+.loadout-btn.active { box-shadow: 0 8px 30px rgba(75,15,120,0.25); border-color: rgba(123,47,181,0.6); }
+
+@media (max-width: 900px) {
+	#MCselectWindow { width: 94vw; height: 72vh; flex-direction: column; }
+	.team-sidebar { width: 100%; min-width: auto; order: 2; }
+	.team-main { order: 1; }
 }
