@@ -220,6 +220,15 @@ li {
     transition: 0.4s ease;
 }
 
+#circles {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    gap: 30px;
+}
+
 .circle {
     background-color: #ddd;
     border: transparent 2px solid;
@@ -228,4 +237,20 @@ li {
     border-radius: 50%;
     z-index: 1;
     transition: 0.4s ease;
+    font-weight: bold;
+}
+
+#infoBanner {
+    background-color: #1a1d2e;
+    border: 1px solid rgba(255, 255, 255, 0.094);
+    color: #fff;
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+    position: fixed;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    z-index: 20;
 }
