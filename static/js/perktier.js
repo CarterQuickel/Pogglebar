@@ -17,14 +17,14 @@ function updateProgress(tierNum) {
     const start = document.createElement('div');
     start.className = 'circle';
     start.style = 
-    'display: inline-flex; justify-content: center; align-items: center; color: black;';
+    'display: inline-flex; justify-content: center; align-items: center;';
     circles.appendChild(start);
     for (let i = 0; i < tierNum; i++) {
         const circleClone = document.createElement('div');
         circleClone.className = 'circle';
         circleClone.innerHTML = i + 1;
         circleClone.style = 
-        'display: inline-flex; justify-content: center; align-items: center; color: black;';
+        'display: inline-flex; justify-content: center; align-items: center;';
         circleClone.dataset.tier = i + 1; // Store tier number
         circles.appendChild(circleClone);
     }
@@ -56,7 +56,11 @@ document.addEventListener('mousemove', (e) => {
 
 // Call updateProgress with the desired tier number
 updateProgress(22);
-const achEarned = achievements.filter(ach => ach.status === true).length;
-console.log(achievements[0].length);
-console.log("Achievements earned:", achEarned);
-setProgress(achEarned * 50);
+let earned = 
+    achievements[0].filter(ach => ach.status === true).length + 
+    achievements[1].filter(ach => ach.status === true).length + 
+    achievements[2].filter(ach => ach.status === true).length + 
+    achievements[3].filter(ach => ach.status === true).length + 
+    achievements[4].filter(ach => ach.status === true).length
+console.log("Achievements earned:", earned);
+setProgress(earned * 50);

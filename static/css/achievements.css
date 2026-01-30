@@ -185,8 +185,7 @@ li {
 }
 
 :root {
-    --line-border-fill: red;
-    --line-border-empty: gray;
+    --line-border-fill: #6b3df0;
 }
 
 .progressCont {
@@ -209,7 +208,7 @@ li {
 }
 
 #progress {
-    background-color: var(--line-border-empty);
+    background-color: var(--line-border-fill);
     position: absolute;
     top: 50%;
     left: 0;
@@ -230,8 +229,9 @@ li {
 }
 
 .circle {
-    background-color: #ddd;
-    border: transparent 2px solid;
+    background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
+    border: 1px solid rgba(255, 255, 255, 0.094);
+    color: #fff;
     height: 30px;
     width: 30px;
     border-radius: 50%;
