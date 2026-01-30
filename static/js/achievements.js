@@ -28,14 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(econFunc, 1000);
     setInterval(uniqueFunc, 1000);
 });
- 
- 
- 
- 
+
 const achievements = window.achievements || (typeof userdata !== 'undefined' && userdata.achievements) || [];
- 
- 
- 
+
 // category variable
 let cate = "";
  
