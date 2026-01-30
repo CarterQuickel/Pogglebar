@@ -221,10 +221,35 @@
                 card.appendChild(txt);
                 selContainer.appendChild(card);
             });
+            // Update save button state when selected strip changes
+            try { updateSaveButtonState(); } catch (e) { /* ignore if not ready */ }
         }
 
-        // Loadout persistence (client-side using localStorage)
+        function canSaveTeamArray(arr) {
+            if (!Array.isArray(arr)) return false;
+            const assignedCount = arr.reduce((c, it) => c + (it ? 1 : 0), 0);
+            return assignedCount === 4;
+        }
+
+        function updateSaveButtonState() {
+            const btn = document.getElementById('saveTeamBtn');
+            if (!btn) return;
+            try {
+                const cur = getCurrentTeamArray();
+                const ok = canSaveTeamArray(cur);
+                btn.disabled = !ok;
+                btn.setAttribute('aria-disabled', (!ok).toString());
+                btn.classList.toggle('disabled', !ok);
+            } catch (e) { /* ignore */ }
+        }
+
+    // Loadout persistence (client-side using localStorage)
         const LOADOUT_KEY = 'pog_team_loadouts_v1';
+
+    // currently selected loadout index (defaults to 0 = Loadout 1). Exposed to window for other scripts/tests
+    let selectedLoadoutIndex = 0;
+    window.currentTeam = window.currentTeam || null;
+    window.currentLoadoutIndex = typeof window.currentLoadoutIndex === 'number' ? window.currentLoadoutIndex : 0;
 
         function getSavedLoadouts() {
             try {
@@ -239,12 +264,48 @@
         }
 
         function saveLoadout(index, teamArray) {
+            // require exactly 4 assigned members before saving
+            if (!Array.isArray(teamArray)) {
+                showNotice('Invalid team data. Save aborted.');
+                return;
+            }
+            const assignedCount = teamArray.reduce((c, it) => c + (it ? 1 : 0), 0);
+            if (assignedCount < 4) {
+                showNotice('You must assign 4 pogs before saving a loadout.');
+                return;
+            }
+
             const cur = getSavedLoadouts();
             cur[index] = teamArray;
             localStorage.setItem(LOADOUT_KEY, JSON.stringify(cur));
+            // update selection and current team pointer
+            selectedLoadoutIndex = index;
+            window.currentTeam = teamArray;
+            window.currentLoadoutIndex = index;
             updateLoadoutButtons();
             showNotice('Saved loadout ' + (index + 1));
+
+            // Best-effort: persist loadouts to server so they survive across devices.
+            // Failure is non-fatal; we'll keep localStorage as the single-source for fast client UI.
+            if (window.fetch) {
+                try {
+                    fetch('/api/user/team', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ loadouts: cur, selected: selectedLoadoutIndex })
+                    }).then(resp => {
+                        if (!resp.ok) console.warn('teamSelect: server save failed', resp.status);
+                    }).catch(err => {
+                        console.warn('teamSelect: error saving loadouts to server', err);
+                    });
+                } catch (e) { /* ignore */ }
+            }
+
+            // keep UI save button state in sync
+            try { updateSaveButtonState(); } catch (e) { /* ignore */ }
         }
+
 
         function loadLoadout(index) {
             const cur = getSavedLoadouts();
@@ -255,6 +316,11 @@
             }
             // data expected to be array of {id,name}
             setTeam(data);
+            // mark selected and expose current
+            selectedLoadoutIndex = index;
+            window.currentTeam = data;
+            window.currentLoadoutIndex = index;
+            updateLoadoutButtons();
             showNotice('Loaded loadout ' + (index + 1));
         }
 
@@ -264,6 +330,7 @@
             btns.forEach((b, i) => {
                 const data = arr[i];
                 b.classList.toggle('active', !!data);
+                b.classList.toggle('selected', selectedLoadoutIndex === i);
                 // update label to show first member or 'Empty'
                 const label = data && data.length ? (data.map(d => d.name).slice(0,2).join(', ')) : 'Empty';
                 b.innerHTML = `Loadout ${i+1}<br><small class="hint">${label}</small>`;
@@ -306,6 +373,7 @@
             // after updating slots, sync UI
             renderSelectedStrip();
             renderInventory();
+            try { updateSaveButtonState(); } catch (e) { /* ignore */ }
         }
 
         // Wire loadout buttons (click to load, Shift+click to save current team)
@@ -316,16 +384,91 @@
                 const btn = e.target.closest('.loadout-btn');
                 if (!btn) return;
                 const idx = Number(btn.dataset.index || btn.getAttribute('data-index'));
+
+                // Always mark the clicked loadout as the currently selected loadout
+                selectedLoadoutIndex = idx;
+                window.currentLoadoutIndex = idx;
+                updateLoadoutButtons();
+
                 if (e.shiftKey) {
-                    // save current
+                    // Shift+click = save current team into this loadout
                     const cur = getCurrentTeamArray();
                     saveLoadout(idx, cur);
+                    return;
+                }
+
+                // Click (no shift): always apply the loadout to the team UI.
+                const cur = getSavedLoadouts();
+                const data = cur[idx];
+                if (data && Array.isArray(data)) {
+                    // load saved team into slots
+                    setTeam(data);
+                    selectedLoadoutIndex = idx;
+                    window.currentTeam = data;
+                    window.currentLoadoutIndex = idx;
+                    updateLoadoutButtons();
+                    showNotice('Loaded loadout ' + (idx + 1));
                 } else {
-                    loadLoadout(idx);
+                    // empty loadout: clear team slots (restore empty)
+                    const empty = [null, null, null, null];
+                    setTeam(empty);
+                    selectedLoadoutIndex = idx;
+                    window.currentTeam = empty;
+                    window.currentLoadoutIndex = idx;
+                    updateLoadoutButtons();
+                    showNotice('Cleared to empty loadout ' + (idx + 1));
                 }
             });
             updateLoadoutButtons();
+
+            // wire explicit Save Team button
+            const saveBtn = document.getElementById('saveTeamBtn');
+            if (saveBtn) {
+                // ensure initial enabled/disabled state
+                updateSaveButtonState();
+                saveBtn.addEventListener('click', function () {
+                    // default to loadout 1 if somehow no selection exists
+                    if (selectedLoadoutIndex === null || typeof selectedLoadoutIndex === 'undefined') selectedLoadoutIndex = 0;
+                    const cur = getCurrentTeamArray();
+                    if (!canSaveTeamArray(cur)) {
+                        showNotice('You must assign 4 pogs before saving a loadout.');
+                        updateSaveButtonState();
+                        return;
+                    }
+                    saveLoadout(selectedLoadoutIndex, cur);
+                });
+            }
         }
+
+        // Attempt to fetch saved loadouts from server on init and reconcile with localStorage.
+        function fetchServerLoadouts() {
+            if (!window.fetch) return;
+            try {
+                fetch('/api/user/team', { credentials: 'same-origin' }).then(r => {
+                    if (!r.ok) return null;
+                    return r.json();
+                }).then(data => {
+                    if (!data) return;
+                    const serverLoadouts = Array.isArray(data.loadouts) ? data.loadouts : null;
+                    const serverSelected = (typeof data.selected === 'number') ? data.selected : null;
+                    if (serverLoadouts) {
+                        // Normalize and persist to localStorage so client code uses server values
+                        const normalized = serverLoadouts.map(s => s || null);
+                        while (normalized.length < 4) normalized.push(null);
+                            localStorage.setItem(LOADOUT_KEY, JSON.stringify(normalized.slice(0,4)));
+                            // only overwrite selectedLoadoutIndex if server provided a valid number
+                            if (typeof serverSelected === 'number' && !isNaN(serverSelected)) {
+                                selectedLoadoutIndex = serverSelected;
+                                window.currentLoadoutIndex = selectedLoadoutIndex;
+                            }
+                            updateLoadoutButtons();
+                    }
+                }).catch(err => { /* network error: ignore and keep localStorage */ });
+            } catch (e) { /* ignore */ }
+        }
+
+        // call it once on setup to prefer server-stored loadouts when available
+        fetchServerLoadouts();
 
         // Current slot being assigned
         let currentSlotEl = null;
@@ -401,6 +544,8 @@
             renderInventory();
             // update selected strip
             renderSelectedStrip();
+            // update save button enablement
+            try { updateSaveButtonState(); } catch (e) { /* ignore */ }
         }
 
         // Wire mc-card click handlers

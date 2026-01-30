@@ -45,11 +45,12 @@
             </div>
         </div>
         <!-- Loadout bar: click to load, Shift+click to save current team into slot -->
-        <div id="loadoutBar" style="display:flex; gap:8px; justify-content:center; margin-top:14px;">
-            <button class="loadout-btn" data-index="0">Loadout 1<br><small class="hint">(Shift+Click to Save)</small></button>
-            <button class="loadout-btn" data-index="1">Loadout 2<br><small class="hint">(Shift+Click to Save)</small></button>
-            <button class="loadout-btn" data-index="2">Loadout 3<br><small class="hint">(Shift+Click to Save)</small></button>
-            <button class="loadout-btn" data-index="3">Loadout 4<br><small class="hint">(Shift+Click to Save)</small></button>
+        <div id="loadoutBar" style="display:flex; gap:8px; justify-content:center; margin-top:14px; align-items:center;">
+            <button class="loadout-btn" data-index="0">Loadout 1<br></button>
+            <button class="loadout-btn" data-index="1">Loadout 2<br></button>
+            <button class="loadout-btn" data-index="2">Loadout 3<br></button>
+            <button class="loadout-btn" data-index="3">Loadout 4<br></button>
+            <button id="saveTeamBtn" class="save-btn" title="Save current team to selected loadout">Save Team</button>
         </div>
     </div>
 </div>

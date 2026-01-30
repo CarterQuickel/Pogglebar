@@ -328,6 +328,18 @@
 .loadout-btn .hint { display: block; font-weight: 400; opacity: 0.8; font-size: 11px; }
 .loadout-btn:hover { transform: translateY(-3px); }
 .loadout-btn.active { box-shadow: 0 8px 30px rgba(75,15,120,0.25); border-color: rgba(123,47,181,0.6); }
+.loadout-btn.selected { outline: 3px solid rgba(123,47,181,0.18); }
+
+.save-btn {
+	background: linear-gradient(90deg, rgba(59,21,55,0.9), rgba(43,10,34,0.9));
+	color: #fff;
+	border: 1px solid rgba(255,255,255,0.04);
+	padding: 8px 14px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 800;
+}
+.save-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(75,15,120,0.18); }
 
 @media (max-width: 900px) {
 	#MCselectWindow { width: 94vw; height: 72vh; flex-direction: column; }
