@@ -12,6 +12,11 @@ body {
     background-attachment: fixed;
 }
 
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
 /* ===== Root + Reset ===== */
 * {
     box-sizing: border-box;
@@ -155,25 +160,23 @@ li {
 }
 
 #buttonBar button {
-    background-color: #594769; /* Dark purple background */
-    color: #fff; /* White text */
-    border: transparent 2px solid; /* Remove default border */
+    background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
+    border: 2px solid transparent;
+    color: #fff;
     border-radius: 8px; /* Rounded corners */
     padding: 10px 20px; /* Add padding for better spacing */
     font-size: 1.2rem; /* Slightly larger font size */
     font-weight: bold; /* Make the text bold */
     cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s, transform 0.2s; /* Smooth hover effects */
+    transition: all 0.1s ease; /* Smooth hover effects */
 }
 
 #buttonBar button:hover {
-    background-color: #7d6381; /* Slightly lighter purple on hover */
-    transform: translateY(-3px); /* Lift the button on hover */
+    scale: 1.1;
 }
 
 #buttonBar button:active {
-    background-color: #4a4a4a; /* Darker shade when clicked */
-    transform: translateY(0); /* Reset lift effect */
+    scale: 0.95;
 }
 
 #contain {
@@ -198,7 +201,7 @@ li {
 .progressCont::before {
     content: "";
     position: absolute;
-    background-color: #ddd;
+    background-color: #2a2a2a85;
     top: 50%;
     left: 0;
     transform: translateY(-50%);
@@ -236,8 +239,23 @@ li {
     width: 30px;
     border-radius: 50%;
     z-index: 1;
-    transition: 0.4s ease;
+    transition: all 0.1s ease;
     font-weight: bold;
+}
+
+.circle.active {
+    border: 2px solid var(--line-border-fill);
+    box-shadow: var(--line-border-fill) 0px 0px 8px;
+}
+
+.circle:hover {
+    scale: 1.2;
+}
+
+.circle.claimed {
+    border: 2px solid #5934c6;
+    scale: 0.95;
+    box-shadow: none;
 }
 
 #infoBanner {
@@ -245,11 +263,11 @@ li {
     border: 1px solid rgba(255, 255, 255, 0.094);
     color: #fff;
     border-radius: 10px;
-    padding: 15px 20px;
+    padding: 5px 20px 15px 20px;
     margin: 0 auto 20px auto;
-    text-align: center;
     position: fixed;
     pointer-events: none;
+    text-align: center;
     top: 0;
     left: 0;
     z-index: 20;

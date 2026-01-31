@@ -5,9 +5,25 @@ const rewards = {
     1: "Perk",
     2: "Perk",
     3: "Perk",
-    4: "Perk",
+    4: "+1 ⬣",
     5: "Perk",
-    6: "Global Notch"
+    6: "Perk",
+    7: "Perk",
+    8: "Perk",
+    9: "+1 ⬣",
+    10: "Perk",
+    11: "Perk",
+    12: "Perk",
+    13: "Perk",
+    14: "Perk",
+    15: "+1 ⬣",
+    16: "Perk",
+    17: "Perk",
+    18: "Perk",
+    19: "Perk",
+    20: "Perk",
+    21: "Perk",
+    22: "+1 ⬣"
 };
 
 function updateProgress(tierNum) {
@@ -31,8 +47,12 @@ function updateProgress(tierNum) {
 }
 
 function setProgress(EXP) {
-    const totalEXP = 3000;
+    const totalEXP = 1100; // 22 tiers, 50 EXP each
     const percent = Math.min((EXP / totalEXP) * 100);
+    if (percent > 100) {
+        progress.style.width = '100%';
+        return;
+    }
     progress.style.width = percent + '%';
 }
 
@@ -45,8 +65,9 @@ document.addEventListener('mousemove', (e) => {
             info.style.display = 'none';
             return;
         }
-        info.style.display = 'flex';
-        info.innerHTML = `Reward Tier ${tier}: ${rewards[tier]}`;
+        info.style.display = 'block';
+        info.innerHTML = `<h4>Reward Tier ${tier}</h4>
+        <h5>${rewards[tier]}</h5>`;
     } else {
         info.style.display = 'none';
     }
@@ -61,6 +82,49 @@ let earned =
     achievements[1].filter(ach => ach.status === true).length + 
     achievements[2].filter(ach => ach.status === true).length + 
     achievements[3].filter(ach => ach.status === true).length + 
-    achievements[4].filter(ach => ach.status === true).length
-console.log("Achievements earned:", earned);
-setProgress(earned * 50);
+    achievements[4].filter(ach => ach.status === true).length;
+earned = 0;
+setProgress(50 * earned);
+
+document.getElementById('yyy').addEventListener('click', () => {
+    earned += 1;
+    setProgress(50 * earned);
+});
+
+function getReward(tier) {
+    // Placeholder function to handle reward logic
+    alert(`Reward for Tier ${tier} claimed!`);
+}
+
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('circle')) {
+        const tier = e.target.dataset.tier;
+        const requiredEXP = tier * 50;
+        const circles_list = document.querySelectorAll('.circle');
+        //claimed already
+        if (circles_list[tier].classList.contains('claimed')) {
+            alert(`Tier ${tier} reward already claimed.`);
+            return;
+        }
+        //claim reward
+        if (earned * 50 >= requiredEXP) {
+            getReward(tier);
+            circles_list[tier].classList.add('claimed');
+        //not enough EXP
+        } else {
+            alert(`Not enough EXP. Need ${requiredEXP}, have ${earned * 50}`);
+        }
+    }
+});
+
+setInterval(() => {
+    const circles_list = document.querySelectorAll('.circle');
+    for (let i = 0; i < circles_list.length; i++) {
+        const tier = circles_list[i].dataset.tier;
+        const requiredEXP = tier * 50;
+        if (earned * 50 >= requiredEXP) {
+            circles_list[i].classList.add('active');
+            console.log(`Tier ${tier} is active`);
+        }
+    }
+}, 100);
