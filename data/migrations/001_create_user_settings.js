@@ -16,6 +16,7 @@ module.exports = (db) => {
         cratesOpened INTEGER,
         pogamount TEXT,
         achievements TEXT,
+        tiers TEXT,
         mergeCount INTEGER,
         highestCombo INTEGER,
         wish INTEGER,

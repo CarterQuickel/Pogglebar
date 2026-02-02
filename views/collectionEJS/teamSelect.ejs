@@ -1,0 +1,55 @@
+<div id="teamSelectOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999;">
+    <div id="MCselectWindow" style="display: none;">
+        <!-- Selected pogs will appear above the selector -->
+        <div id="selectedPogs" class="team-selected"></div>
+        <!-- Left sidebar shows inventory (bigger rectangle) -->
+        <div class="team-sidebar" id="allCharacters"></div>
+        <!-- Right area can show current team / details -->
+        <div class="team-main" id="inTeam"></div>
+    </div>
+    <div id="teamSelect">
+        <button id="teamSelectClose" style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; color: #fff; font-size: 18px; cursor: pointer;">✕</button>
+        <h1>Select Your Team</h1>
+
+        <div class="mc-grid" role="list">
+            <!-- MC1 card -->
+            <div class="mc-card" id="MC1" data-slot="1" role="listitem">
+                <div class="slot-number">01</div>
+                <div class="slot">
+                    <div class="circle"></div>
+                </div>
+            </div>
+
+            <!-- MC2 card -->
+            <div class="mc-card" id="MC2" data-slot="2" role="listitem">
+                <div class="slot-number">02</div>
+                <div class="slot">
+                    <div class="circle"></div>
+                </div>
+            </div>
+
+            <!-- MC3 card -->
+            <div class="mc-card" id="MC3" data-slot="3" role="listitem">
+                <div class="slot-number">03</div>
+                <div class="slot">
+                    <div class="circle"></div>
+                </div>
+            </div>
+
+            <!-- MC4 card -->
+            <div class="mc-card" id="MC4" data-slot="4" role="listitem">
+                <div class="slot-number">04</div>
+                <div class="slot">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+        <div id="loadoutBar" style="display:flex; gap:8px; justify-content:center; margin-top:14px; align-items:center;">
+            <button class="loadout-btn" data-index="0">Loadout 1<br></button>
+            <button class="loadout-btn" data-index="1">Loadout 2<br></button>
+            <button class="loadout-btn" data-index="2">Loadout 3<br></button>
+            <button class="loadout-btn" data-index="3">Loadout 4<br></button>
+            <button id="saveTeamBtn" class="save-btn" title="Save current team to selected loadout">Save Team</button>
+        </div>
+    </div>
+</div>

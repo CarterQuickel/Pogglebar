@@ -98,9 +98,17 @@
     animation-duration: 0.75s;
 }
 
+#practice:hover {
+    background: linear-gradient(135deg, #444549, #000000);
+}
+
 #pvp {
     animation-name: show_pvp_panel;
     animation-duration: 0.75s;
+}
+
+#pvp:hover {
+    background: linear-gradient(135deg, #dd5248, #110707);
 }
 
 #pve {
@@ -108,9 +116,17 @@
     animation-duration: 0.75s;
 }
 
+#pve:hover {
+    background: linear-gradient(135deg, #8998f8, #0a0a0c);
+}
+
 #custom {
     animation-name: show_custom_panel;
     animation-duration: 0.75s;
+}
+
+#custom:hover {
+    background: linear-gradient(135deg, #ff9306, #18130d);
 }
 
 .game_panel:hover {

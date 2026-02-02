@@ -28,14 +28,61 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(econFunc, 1000);
     setInterval(uniqueFunc, 1000);
 });
- 
- 
- 
- 
-const achievements = window.achievements || (typeof userdata !== 'undefined' && userdata.achievements) || [];
- 
- 
- 
+
+let achievements = window.achievements || (typeof userdata !== 'undefined' && userdata.achievements) || [];
+
+// Normalize `achievements` into an array of category arrays. Two common shapes:
+// - already: [ [...], [...], ... ]
+// - flat: [ {name:..., ...}, {name:..., ...}, ... ] -> wrap into first category
+const EXPECTED_CATEGORIES = 5;
+if (!Array.isArray(achievements)) {
+    // not an array at all -> create empty categories
+    achievements = Array.from({ length: EXPECTED_CATEGORIES }, () => []);
+} else {
+    const firstIsArray = Array.isArray(achievements[0]);
+    if (!firstIsArray) {
+        // likely a flat list of achievement objects; wrap into the first category
+        const flat = achievements.slice();
+        achievements = Array.from({ length: EXPECTED_CATEGORIES }, () => []);
+        achievements[0] = flat;
+    } else {
+        // already an array-of-arrays; ensure each expected category exists
+        for (let i = 0; i < EXPECTED_CATEGORIES; i++) {
+            if (!Array.isArray(achievements[i])) achievements[i] = [];
+        }
+    }
+}
+// expose back to window so other scripts can access the normalized structure
+window.achievements = achievements;
+
+// Perk tiers: try to load from server-rendered userdata or fallback to default list
+const tiers = window.tiers || (typeof userdata !== 'undefined' && userdata.tiers) || [
+    { tier: 1, reward: "Perk", status: "locked"},
+    { tier: 2, reward: "Perk", status: "locked"},
+    { tier: 3, reward: "Perk", status: "locked"},
+    { tier: 4, reward: "Notch", status: "locked"},
+    { tier: 5, reward: "Perk", status: "locked"},
+    { tier: 6, reward: "Perk", status: "locked"},
+    { tier: 7, reward: "Perk", status: "locked"},
+    { tier: 8, reward: "Perk", status: "locked"},
+    { tier: 9, reward: "Notch", status: "locked"},
+    { tier: 10, reward: "Perk", status: "locked"},
+    { tier: 11, reward: "Perk", status: "locked"},
+    { tier: 12, reward: "Perk", status: "locked"},
+    { tier: 13, reward: "Perk", status: "locked"},
+    { tier: 14, reward: "Perk", status: "locked"},
+    { tier: 15, reward: "Notch", status: "locked"},
+    { tier: 16, reward: "Perk", status: "locked"},
+    { tier: 17, reward: "Perk", status: "locked"},
+    { tier: 18, reward: "Perk", status: "locked"},
+    { tier: 19, reward: "Perk", status: "locked"},
+    { tier: 20, reward: "Perk", status: "locked"},
+    { tier: 21, reward: "Perk", status: "locked"},
+    { tier: 22, reward: "Notch", status: "locked"},
+];
+
+window.tiers = tiers; // expose to other scripts (perktier.js)
+
 // category variable
 let cate = "";
  
@@ -52,9 +99,7 @@ function renderCollection () {
             // Darken and replace content for hidden achievements
             achievementElement.style.backgroundColor = "#333";
             achievementElement.innerHTML = `
-                <span class="icon">?</span><br>
-                <span class="name">???</span><br>
-                <span class="description">???</span><br>
+                <span class="icon">?</span>
             `;
         } else if (achievement.status) {
             // Render unlocked achievements with glowing effect
@@ -91,9 +136,7 @@ function renderLevel () {
             // Darken and replace content for hidden achievements
             achievementElement.style.backgroundColor = "#333";
             achievementElement.innerHTML = `
-                <span class="icon">?</span><br>
-                <span class="name">???</span><br>
-                <span class="description">???</span><br>
+                <span class="icon">?</span>
             `;
         } else if (achievement.status) {
             // Render unlocked achievements with glowing effect
@@ -129,9 +172,7 @@ function renderProgression () {
             // Darken and replace content for hidden achievements
             achievementElement.style.backgroundColor = "#333";
             achievementElement.innerHTML = `
-                <span class="icon">?</span><br>
-                <span class="name">???</span><br>
-                <span class="description">???</span><br>
+                <span class="icon">?</span>
             `;
         } else if (achievement.status) {
             // Render unlocked achievements with glowing effect
@@ -167,9 +208,7 @@ function renderEconomy () {
             // Darken and replace content for hidden achievements
             achievementElement.style.backgroundColor = "#333";
             achievementElement.innerHTML = `
-                <span class="icon">?</span><br>
-                <span class="name">???</span><br>
-                <span class="description">???</span><br>
+                <span class="icon">?</span>
             `;
         } else if (achievement.status) {
             // Render unlocked achievements with glowing effect
@@ -205,9 +244,8 @@ function renderUnique() {
             // Darken and replace content for hidden achievements
             achievementElement.style.backgroundColor = "#333";
             achievementElement.innerHTML = `
-                <span class="icon">?</span><br>
-                <span class="name">???</span><br>
-                <span class="description">???</span><br>
+                <span class="icon">?</span>
+                
             `;
         } else if (achievement.status) {
             // Render unlocked achievements with glowing effect
@@ -253,7 +291,7 @@ function fetchLeaderboardAndCheck() {
         .then(res => res.ok ? res.json() : Promise.resolve([]))
         .then(rows => {
             if (!Array.isArray(rows)) return;
-            const myName = (userdata && (userdata.displayName || userdata.displayname || '')).toString().toLowerCase();
+            const myName = (((userdata && (userdata.displayName || userdata.displayname)) || '')).toString().toLowerCase();
             let rank = null;
             for (let i = 0; i < rows.length; i++) {
                 const name = ((rows[i].displayname || rows[i].displayName) || '').toString().toLowerCase();
@@ -296,7 +334,7 @@ function collectFunc() {
                 break;
             case "6-7":
                 if (!achievement.status) {
-                    achievement.status = userdata.Isize >= 7 ? true : achievement.status;
+                    achievement.status = userdata.inventory.length >= 7 ? true : achievement.status;
                     achievementNotify(achievement);
                 }
                 break;
@@ -846,7 +884,7 @@ function refreshAchievementsView() {
     } catch (e) {
     }
 }
- 
+
  
 function processAchievementQueue() {
     if (sliderBusy) return;

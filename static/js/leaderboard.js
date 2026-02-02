@@ -26,16 +26,16 @@ document.querySelectorAll(".infobtn").forEach(button => {
         const info = document.getElementById("details");
         info.style.display = "block";
         info.innerHTML = ` <h1>Player Details</h1>
-                            <img id="pfpimg" src="${player.pfp}" style="width: 100px; height: 100px; border-radius: 50%;"><br>
-                            <h2>${player.displayname}</h2>
-                          <div style="display: flex; gap: 40px; justify-content: center;">
-                            <div>
+                            <img id="pfpimg" src="${player.pfp}" style="width: 100px; height: 100px; border-radius: 50%; margin-top: 20px;"><br>
+                            <h2 style="margin-top: 20px;">${player.displayname}</h2>
+                          <div style="margin-top: 20px; display: flex; gap: 40px; justify-content: center;">
+                            <div class="details-column">
                                 <h3>Score</h3> <p>${player.score}</p>
                                 <h3>Level</h3> <p>${player.level}</p>
                                 <h3>Current XP</h3> <p style="font-size: ${experience.toString().length > 9 ? "11px" : "13px"}">${player.xp}</p>
                                 <h3>Wishes</h3> <p>${player.wish}</p>
                             </div>
-                            <div>
+                            <div class="details-column">
                                 <h3>Income</h3> <p>$${player.income}/s</p>
                                 <h3>Total Sold</h3> <p>${player.totalSold} pogs</p>
                                 <h3>Crates Opened</h3> <p>${player.cratesOpened} crates</p>

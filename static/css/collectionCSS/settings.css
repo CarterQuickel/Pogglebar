@@ -4,7 +4,9 @@
     margin-top: 8px;
     top: 100px;
     right: 20px;
-    background-color: #7d6381;
+    background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
+    box-shadow: 0 0 10px black;
+    border: 1px solid rgba(255, 255, 255, 0.094);
     width: 400px;
     padding-bottom: 10px;
     min-height: auto;
@@ -31,7 +33,7 @@
     width: 35px;
     height: 35px;
     text-align: center;
-    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    
     font-style: bold;
     font-size: 18px;
     cursor: pointer;
@@ -114,7 +116,7 @@
     width: 35px;
     height: 35px;
     text-align: center;
-    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    
     font-style: bold;
     font-size: 18px;
     cursor: pointer;
@@ -127,15 +129,13 @@
 }
 
 #sortcont {
-    background-color: #3e1e42;
     margin: 10px;
     padding: 10px;
-    border: transparent;
     border-radius: 10px;
 }
 
 option {
-    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    
     font-style: bold;
     font-size: 18px;
     border-radius: 5px;
@@ -157,7 +157,7 @@ option {
     width: 400px;
     padding: 4px;
     text-align: center;
-    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    
     font-style: bold;
     font-size: 20px;
     cursor: text;
@@ -177,7 +177,7 @@ option {
     background-size: 12px;
     cursor: pointer;
     text-align: center;
-    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    
     transition: all 0.1s ease;
 }
 
@@ -211,29 +211,10 @@ option {
 }
 
 #stats {
-    border: transparent;
     margin: 10px;
     padding: 10px;
     border-radius: 10px;
-    background-color: #3e1e42;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-#sellAll {
-    border: transparent;
-    border-radius: 20px;
-    padding: 5px;
-    width: 200px;
-    height: 25px;
-    margin-top: 15px;
-    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    background-color: #659c54;
-    cursor: pointer;
-    transition: all 0.1s ease;
-}
-
-#sellAll:hover {
-    background-color: #568548;
 }

@@ -1,0 +1,348 @@
+#teamSelectOverlay {
+	display: none; /* controlled by JS */
+	position: fixed;
+	inset: 0;
+	background: radial-gradient(#0b1020, #02040a);
+	z-index: 9999;
+}
+
+#teamSelect {
+	position: relative;
+	max-width: 920px;
+	margin: 6vh auto;
+	background: linear-gradient(180deg, #3b1537 0%, #2a0f26 100%);
+	border-radius: 14px;
+	padding: 28px 22px;
+	box-shadow: 0 18px 50px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.02);
+	color: #ffffff;
+}
+
+#teamSelect h1 {
+	margin: 0 0 16px 0;
+	font-size: 26px;
+	text-align: center;
+}
+
+/* Grid of 4 MC cards, left-to-right */
+.mc-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 18px;
+	align-items: stretch;
+	padding: 6px 6px 2px 6px;
+}
+
+.mc-card {
+	background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.08));
+	backdrop-filter: blur(6px);
+	border: 1px solid rgba(255,255,255,0.03);
+	border-radius: 12px;
+	min-height: 170px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
+	padding: 22px 14px;
+	transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.mc-card .mc-content {
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	font-weight: 600;
+	color: #f5e6ff;
+}
+
+/* The plus button centered in the card */
+.mc-select {
+	width: 64px;
+	height: 64px;
+	border-radius: 999px;
+	border: none;
+	background: linear-gradient(180deg,#7b2fb5,#4b0f7a);
+	color: white;
+	font-size: 28px;
+	line-height: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+	transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.mc-select:focus { outline: 3px solid rgba(123,47,181,0.25); }
+
+@media (max-width: 900px) {
+	.mc-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 520px) {
+	.mc-grid { grid-template-columns: 1fr; gap: 10px; }
+	.mc-select { width: 56px; height: 56px; font-size: 24px; }
+}
+
+.slot {
+	position: relative;
+	width: 120px;
+	height: 120px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.circle {
+	position: relative;
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+	/* thicker white ring with soft outer glow */
+	border: 5px solid rgba(255,255,255,0.98);
+	background: radial-gradient(circle at 42% 32%, rgba(0,0,0,0.06), rgba(0,0,0,0.20) 45%);
+	box-shadow:
+		0 12px 30px rgba(0,0,0,0.65),
+		0 0 20px rgba(255,255,255,0.06),
+		inset 0 6px 18px rgba(0,0,0,0.45);
+	transition: transform 160ms ease, box-shadow 160ms ease, border-color 120ms ease;
+}
+
+.circle::before { display: none; }
+
+.plus {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.plus .h {
+	position: absolute;
+	width: 44px;
+	height: 4px;
+	background: rgba(255,255,255,0.98);
+	border-radius: 2px;
+}
+
+.plus .v {
+	position: absolute;
+	width: 4px;
+	height: 44px;
+	background: rgba(255,255,255,0.98);
+	border-radius: 2px;
+}
+
+.slot:hover .circle {
+	transform: translateY(-6px) scale(1.02);
+	border-color: rgba(255,255,255,1);
+	box-shadow:
+		0 22px 56px rgba(0,0,0,0.7),
+		0 0 28px rgba(255,255,255,0.06),
+		inset 0 0 20px rgba(255,255,255,0.02);
+}
+
+/* Place the clickable select button over the circle and make the plus visible */
+.slot .mc-select {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+}
+
+.slot .mc-select:focus { outline: 3px solid rgba(255,255,255,0.12); border-radius: 999px; }
+
+/* Smaller sizes on narrow screens */
+@media (max-width: 520px) {
+	.circle { width: 86px; height: 86px; border-width: 2px; }
+	.plus .h { width: 34px; height: 3px; }
+	.plus .v { width: 3px; height: 34px; }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(120, 160, 255, 0.15),
+      inset 0 0 12px rgba(120, 160, 255, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 28px rgba(120, 160, 255, 0.25),
+      inset 0 0 16px rgba(120, 160, 255, 0.2);
+  }
+}
+
+.circle {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+
+/* Slot number */
+.slot-number {
+	position: absolute;
+	top: 10px;
+	left: 12px;
+	color: rgba(240,240,255,0.9);
+	font-weight: 700;
+}
+
+/* Selection window layout: left sidebar with boxed names */
+#MCselectWindow {
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 86vw;
+	max-width: 980px;
+	height: 62vh;
+	background: linear-gradient(180deg, rgba(10,8,15,0.96), rgba(6,6,10,0.98));
+	border-radius: 10px;
+	display: flex;
+	gap: 18px;
+	padding: 14px;
+	z-index: 10001;
+	box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+}
+
+/* Left side bigger rectangle (sidebar) */
+.team-sidebar, #allCharacters {
+	background: rgba(255,255,255,0.02);
+	border: 1px solid rgba(255,255,255,0.03);
+	border-radius: 8px;
+	padding: 12px;
+	overflow: auto;
+}
+
+.team-sidebar {
+	width: 280px; /* the bigger rectangle on the left */
+	min-width: 220px;
+	display: flex;
+	flex-direction: column;
+}
+
+/* The right content area (optional) */
+.team-main {
+	flex: 1 1 auto;
+	min-width: 320px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+/* Each pog name in its own small box inside the sidebar */
+.team-pog-card {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 10px;
+	margin-bottom: 10px;
+	background: rgba(0,0,0,0.18);
+	border-radius: 6px;
+	border: 1px solid rgba(255,255,255,0.03);
+	cursor: pointer;
+	transition: transform 120ms ease, background 120ms ease;
+}
+
+.team-pog-card:hover {
+	transform: translateX(6px);
+	background: rgba(255,255,255,0.03);
+}
+
+.team-pog-color {
+	width: 28px;
+	height: 28px;
+	border-radius: 4px;
+	flex: 0 0 28px;
+	box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+}
+
+.team-pog-name {
+	background: rgba(255,255,255,0.04);
+	padding: 6px 8px;
+	border-radius: 6px;
+	font-weight: 600;
+	color: #f7f3ff;
+}
+
+.team-no-pogs { color: rgba(255,255,255,0.65); padding: 8px; }
+
+.assigned-pog {
+	padding: 6px 10px;
+	border-radius: 6px;
+	background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.12));
+	color: #fff;
+	font-weight: 600;
+}
+
+/* Selected pogs strip (above the inventory) */
+.team-selected {
+	width: 100%;
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	padding: 10px 12px;
+	margin-bottom: 8px;
+	min-height: 56px;
+	background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));
+	border: 1px solid rgba(255,255,255,0.03);
+	border-radius: 8px;
+	overflow-x: auto;
+}
+
+.team-selected .selected-card {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	background: rgba(0,0,0,0.18);
+	border-radius: 6px;
+	color: #fff;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.team-selected .selected-card .color-dot {
+	width: 12px;
+	height: 12px;
+	border-radius: 3px;
+	flex: 0 0 12px;
+}
+
+/* Loadout bar styles */
+#loadoutBar { margin-top: 12px; }
+.loadout-btn {
+	background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.12));
+	color: #fff;
+	border: 1px solid rgba(255,255,255,0.04);
+	padding: 8px 12px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 700;
+}
+.loadout-btn .hint { display: block; font-weight: 400; opacity: 0.8; font-size: 11px; }
+.loadout-btn:hover { transform: translateY(-3px); }
+.loadout-btn.active { box-shadow: 0 8px 30px rgba(75,15,120,0.25); border-color: rgba(123,47,181,0.6); }
+.loadout-btn.selected { outline: 3px solid rgba(123,47,181,0.18); }
+
+.save-btn {
+	background: linear-gradient(90deg, rgba(59,21,55,0.9), rgba(43,10,34,0.9));
+	color: #fff;
+	border: 1px solid rgba(255,255,255,0.04);
+	padding: 8px 14px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 800;
+}
+.save-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(75,15,120,0.18); }
+
+@media (max-width: 900px) {
+	#MCselectWindow { width: 94vw; height: 72vh; flex-direction: column; }
+	.team-sidebar { width: 100%; min-width: auto; order: 2; }
+	.team-main { order: 1; }
+}
