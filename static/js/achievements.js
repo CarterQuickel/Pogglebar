@@ -334,7 +334,7 @@ function collectFunc() {
                 break;
             case "6-7":
                 if (!achievement.status) {
-                    achievement.status = userdata.Isize >= 7 ? true : achievement.status;
+                    achievement.status = userdata.inventory.length >= 7 ? true : achievement.status;
                     achievementNotify(achievement);
                 }
                 break;

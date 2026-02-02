@@ -83,11 +83,12 @@ document.addEventListener('mousemove', (e) => {
 // Call updateProgress with the desired tier number
 updateProgress(22);
 let earned = 
-    achievements[0].filter(ach => ach.status === true).length + 
-    achievements[1].filter(ach => ach.status === true).length + 
-    achievements[2].filter(ach => ach.status === true).length + 
+    achievements[0].filter(ach => ach.status === true).length +
+    achievements[1].filter(ach => ach.status === true).length +
+    achievements[2].filter(ach => ach.status === true).length +
     achievements[3].filter(ach => ach.status === true).length + 
     achievements[4].filter(ach => ach.status === true).length;
+console.log(earned);
 setProgress(50 * earned);
 
 // Apply initial tier statuses (active/claimed) based on earned and tiers data
