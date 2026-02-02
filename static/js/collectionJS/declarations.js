@@ -1,11 +1,34 @@
 // reference userdata from ejs
-var userdata = JSON.parse(document.getElementById("userdata").textContent);
+// Parse server-injected JSON safely. If parsing fails or content is empty,
+// fall back to an empty object so downstream code doesn't blow up.
+try {
+    const el = document.getElementById("userdata");
+    const txt = el ? el.textContent.trim() : '';
+    if (txt) userdata = JSON.parse(txt);
+} catch (e) {
+    console.warn('Failed to parse userdata JSON; using empty object.', e);
+    userdata = {};
+}
 // ensure a global achievements object exists early so other scripts can read it
 window.achievements = window.achievements || userdata.achievements || [];
 // reference pogs from ejs
-var maxPogs = JSON.parse(document.getElementById("maxPogs").textContent);
+let maxPogs = 0;
+try {
+    const mpe = document.getElementById("maxPogs");
+    const mtxt = mpe ? mpe.textContent.trim() : '';
+    if (mtxt) maxPogs = JSON.parse(mtxt);
+} catch (e) {
+    console.warn('Failed to parse maxPogs JSON; using 0.', e);
+}
 // reference pogs from ejs
-var pogList = JSON.parse(document.getElementById("pogList").textContent);
+let pogList = [];
+try {
+    const ple = document.getElementById("pogList");
+    const ptxt = ple ? ple.textContent.trim() : '';
+    if (ptxt) pogList = JSON.parse(ptxt);
+} catch (e) {
+    console.warn('Failed to parse pogList JSON; using empty list.', e);
+}
 
 // pogiedia rarity defining
 rarityColor = [

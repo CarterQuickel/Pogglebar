@@ -148,20 +148,10 @@ document.getElementById("slotAmount").addEventListener("change", () => {
 document.getElementById("purchaseBtn_S").addEventListener("click", () => {
     const amount = parseInt(document.getElementById("slotAmount").value);
     const slotPrice = calcSlot(amount);
-    if (!validateSlotPurchase(slotPrice, amount)) return;
     const pinval = document.getElementById("pinField_slot").value;
     purchaseSlots(slotPrice, "Slots", pinval, amount);
     document.getElementById("slotOver").style.display = "none";
 });
-
-// VALIDATION FUNCTIONS
-function validateSlotPurchase(price, amount) {
-    if (money < (price * amount)) {
-        alert("You do not have enough money to purchase these slots.");
-        return false;
-    }
-    return true;
-}
 
 //buy slots function
 function purchaseSlots(price, reason, pin, amount) {

@@ -19,6 +19,7 @@ function save() {
             cratesOpened: cratesOpened,
             pogAmount: pogAmount,
             achievements: window.achievements,
+            tiers: window.tiers,
             mergeCount: window.mergeCount,
             highestCombo: window.highestCombo,
             wish: wish,
