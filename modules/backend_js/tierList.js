@@ -1,0 +1,26 @@
+const tiers = [
+    { tier: 1, reward: "Perk", status: "locked"},
+    { tier: 2, reward: "Perk", status: "locked"},
+    { tier: 3, reward: "Perk", status: "locked"},
+    { tier: 4, reward: "Notch", status: "locked"},
+    { tier: 5, reward: "Perk", status: "locked"},
+    { tier: 6, reward: "Perk", status: "locked"},
+    { tier: 7, reward: "Perk", status: "locked"},
+    { tier: 8, reward: "Perk", status: "locked"},
+    { tier: 9, reward: "Notch", status: "locked"},
+    { tier: 10, reward: "Perk", status: "locked"},
+    { tier: 11, reward: "Perk", status: "locked"},
+    { tier: 12, reward: "Perk", status: "locked"},
+    { tier: 13, reward: "Perk", status: "locked"},
+    { tier: 14, reward: "Perk", status: "locked"},
+    { tier: 15, reward: "Notch", status: "locked"},
+    { tier: 16, reward: "Perk", status: "locked"},
+    { tier: 17, reward: "Perk", status: "locked"},
+    { tier: 18, reward: "Perk", status: "locked"},
+    { tier: 19, reward: "Perk", status: "locked"},
+    { tier: 20, reward: "Perk", status: "locked"},
+    { tier: 21, reward: "Perk", status: "locked"},
+    { tier: 22, reward: "Notch", status: "locked"},
+];
+
+module.exports = tiers;

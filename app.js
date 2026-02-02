@@ -34,6 +34,7 @@ app.get('/api/perks', (req, res) => {
   res.json({ perks });
   console.log("Perks API accessed");
 });
+const tiers = require("./modules/backend_js/tierList.js");
 
 // API key for Formbar API access
 const API_KEY = process.env.API_KEY;
@@ -143,7 +144,6 @@ const pogs = new sqlite3.Database("pogipedia/db/pog.db", (err) => {
     }
 });
 
-
 let pogCount = 0;
 //show many pogs there are
 pogs.get(`SELECT COUNT(*) AS count FROM pogs`, (err, row) => {
@@ -219,6 +219,7 @@ app.get('/collection', (req, res) => {
             cratesOpened: row.cratesOpened,
             pogamount: (() => { try { return JSON.parse(row.pogamount || '[]'); } catch(e){ return []; } })(),
             achievements: (() => { try { return JSON.parse(row.achievements || '[]'); } catch(e){ return []; } })(),
+            tiers: (() => { try { return JSON.parse(row.tiers || '[]'); } catch(e){ return []; } })(),
             mergeCount: row.mergeCount,
             highestCombo: row.highestCombo || row.comboHigh || 0,
             wish: row.wish,
@@ -250,7 +251,7 @@ app.get('/', isAuthenticated, (req, res) => {
                     console.log(`User '${displayName}' already exists with uid ${row.uid} and fid ${id}`);
                     return;
                 } else {
-                    usdb.run(`INSERT INTO userSettings (fid, theme, score, inventory, Isize, xp, maxxp, level, income, totalSold, cratesOpened, pogamount, achievements, mergeCount, highestCombo, wish, crates, pfp, displayname) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    usdb.run(`INSERT INTO userSettings (fid, theme, score, inventory, Isize, xp, maxxp, level, income, totalSold, cratesOpened, pogamount, achievements, tiers, mergeCount, highestCombo, wish, crates, pfp, displayname) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                         [
                             id,
                             req.session.user.theme,
@@ -265,6 +266,7 @@ app.get('/', isAuthenticated, (req, res) => {
                             req.session.user.cratesOpened,
                             JSON.stringify(req.session.user.pogamount),
                             JSON.stringify(req.session.user.achievements),
+                            JSON.stringify(req.session.user.tiers),
                             req.session.user.mergeCount,
                             req.session.user.highestCombo,
                             req.session.user.wish,
@@ -277,6 +279,7 @@ app.get('/', isAuthenticated, (req, res) => {
                                 return console.error("Error inserting user:", err.message);
                             }
                             console.log(`User '${displayName}' inserted with rowid ${this.lastID} and fid ${id}`);
+                            console.log(req.session.user);
                         });
                 }
             });
@@ -298,6 +301,7 @@ app.get('/', isAuthenticated, (req, res) => {
             cratesOpened: req.session.user.cratesOpened || 0,
             pogamount: req.session.user.pogamount || [],
             achievements: req.session.user.achievements || achievements,
+            tiers: req.session.user.tiers || tiers,
             mergeCount: req.session.user.mergeCount || 0,
             highestCombo: req.session.user.highestCombo || 0,
             wish: req.session.user.wish || 0,
@@ -328,6 +332,7 @@ app.get('/', isAuthenticated, (req, res) => {
                     cratesOpened: row.cratesOpened,
                     pogamount: JSON.parse(row.pogamount),
                     achievements: JSON.parse(row.achievements),
+                    tiers: JSON.parse(row.tiers),
                     mergeCount: row.mergeCount,
                     highestCombo: row.comboHigh,
                     wish: row.wish,
@@ -352,6 +357,7 @@ app.get('/', isAuthenticated, (req, res) => {
                     cratesOpened: 0,
                     pogamount: [],
                     achievements: achievements,
+                    tiers: tiers,
                     mergeCount: 0,
                     highestCombo: 0,
                     wish: 0,
@@ -495,6 +501,7 @@ app.post('/datasave', (req, res) => {
         totalSold: req.body.totalSold,
         cratesOpened: req.body.cratesOpened,
         pogamount: req.body.pogAmount,
+        tiers: req.body.tiers,
         achievements: req.body.achievements,
         mergeCount: req.body.mergeCount,
         highestCombo: req.body.highestCombo,
@@ -509,7 +516,7 @@ app.post('/datasave', (req, res) => {
             console.error('Error saving session:', err);
             return res.status(500).json({ message: 'Error saving session' });
         } else {
-            const params = [
+                const params = [
                 req.session.user.fid,
                 userSave.theme,
                 userSave.score,
@@ -523,6 +530,7 @@ app.post('/datasave', (req, res) => {
                 userSave.cratesOpened,
                 JSON.stringify(userSave.pogamount),
                 JSON.stringify(userSave.achievements),
+                JSON.stringify(userSave.tiers),
                 userSave.mergeCount,
                 req.session.user.highestCombo,
                 userSave.wish,
@@ -530,7 +538,7 @@ app.post('/datasave', (req, res) => {
                 userSave.pfp,
                 req.session.user.displayName
             ]
-            usdb.run(`UPDATE userSettings SET fid = ?, theme = ?, score = ?, inventory = ?, Isize = ?, xp = ?, maxxp = ?, level = ?, income = ?, totalSold = ?, cratesOpened = ?, pogamount = ?, achievements = ?, mergeCount = ?, highestCombo = ?, wish = ?, crates = ?, pfp = ? WHERE displayname = ?`, params, function (err) {
+            usdb.run(`UPDATE userSettings SET fid = ?, theme = ?, score = ?, inventory = ?, Isize = ?, xp = ?, maxxp = ?, level = ?, income = ?, totalSold = ?, cratesOpened = ?, pogamount = ?, achievements = ?, tiers = ?, mergeCount = ?, highestCombo = ?, wish = ?, crates = ?, pfp = ? WHERE displayname = ?`, params, function (err) {
                 if (err) {
                     console.error('Error updating user settings:', err);
                     return res.status(500).json({ message: 'Error updating user settings' });
@@ -610,6 +618,7 @@ app.get('/login', (req, res) => {
             cratesOpened: tokenData.cratesOpened || 0,
             pogamount: tokenData.pogamount || [],
             achievements: tokenData.achievements || achievements,
+            tiers: tokenData.tiers || tiers,
             mergeCount: tokenData.mergeCount || 0,
             highestCombo: tokenData.highestCombo || 0,
             wish: tokenData.wish || 0,
@@ -652,6 +661,89 @@ app.get('/api/user-state', (req, res) => {
     const userState = initializeUserState(row);
     res.json({ userState, rarityColors: RARITY_COLORS });
   });
+});
+
+// API to claim or update a single perk tier status
+app.post('/api/perk-tiers/claim', express.json(), (req, res) => {
+    console.log('POST /api/perk-tiers/claim called');
+    if (!req.session || !req.session.user) {
+        console.log('No session or user for claim');
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+    const { tier: tierNum, status } = req.body || {};
+    if (typeof tierNum === 'undefined' || !status) {
+        console.log('Missing tier or status in body', req.body);
+        return res.status(400).json({ error: 'Missing tier or status' });
+    }
+
+    // ensure session tiers exist
+    req.session.user.tiers = Array.isArray(req.session.user.tiers) ? req.session.user.tiers : JSON.parse(JSON.stringify(tiers));
+
+    const idx = req.session.user.tiers.findIndex(t => Number(t.tier) === Number(tierNum));
+    if (idx === -1) return res.status(404).json({ error: 'Tier not found' });
+
+    req.session.user.tiers[idx].status = status;
+
+    // persist to DB
+    const tiersJson = JSON.stringify(req.session.user.tiers);
+    const displayName = req.session.user.displayName;
+    console.log('Saving tiers for', displayName, req.session.user.tiers);
+    usdb.run('UPDATE userSettings SET tiers = ? WHERE displayname = ?', [tiersJson, displayName], function(err) {
+        if (err) {
+            console.error('Error saving tiers for', displayName, err);
+            // try to add the column if it doesn't exist, then retry once
+            if (err.message && err.message.toLowerCase().includes('no such column')) {
+                usdb.run("ALTER TABLE userSettings ADD COLUMN tiers TEXT DEFAULT '[]'", [], function(altErr) {
+                    if (altErr) {
+                        console.error('Failed to add tiers column:', altErr);
+                        return res.status(500).json({ error: 'db' });
+                    }
+                    // retry update
+                    usdb.run('UPDATE userSettings SET tiers = ? WHERE displayname = ?', [tiersJson, displayName], function(err2) {
+                        if (err2) {
+                            console.error('Error saving tiers after adding column for', displayName, err2);
+                            return res.status(500).json({ error: 'db' });
+                        }
+                        // ensure session is saved before responding
+                        req.session.save(saveErr => {
+                            if (saveErr) console.error('Failed to save session after tiers update:', saveErr);
+                            console.log('Tiers saved and session saved (after ALTER) for', displayName);
+                            return res.json({ tiers: req.session.user.tiers });
+                        });
+                    });
+                });
+                return;
+            }
+            return res.status(500).json({ error: 'db' });
+        }
+        // ensure session is saved before responding
+        req.session.save(saveErr => {
+            if (saveErr) console.error('Failed to save session after tiers update:', saveErr);
+            console.log('Tiers saved and session saved for', displayName);
+            return res.json({ tiers: req.session.user.tiers });
+        });
+    });
+});
+
+// GET saved tiers (reads DB to confirm persisted data)
+app.get('/api/perk-tiers', (req, res) => {
+    if (!req.session || !req.session.user) return res.status(401).json({ error: 'Not authenticated' });
+    const displayName = req.session.user.displayName || req.session.user.displayname;
+    const tiers = (req.session.user.tiers);
+    console.log(req.session.user);
+    if (!displayName) return res.status(400).json({ error: 'Missing displayName in session' });
+    usdb.get('SELECT tiers FROM userSettings WHERE displayname = ?', [displayName], (err, row) => {
+        if (err) {
+            console.error('Error reading tiers from DB for', displayName, err);
+            return res.status(500).json({ error: 'db' });
+        }
+        try {
+            return res.json({ tiers });
+        } catch (e) {
+            console.error('Failed to parse tiers JSON from DB for', displayName, e);
+            return res.json({ tiers: req.session.user.tiers || [] });
+        }
+    });
 });
 
 //listens

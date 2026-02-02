@@ -1,6 +1,9 @@
 const circles = document.getElementById('circles');
 const progress = document.getElementById('progress');
 const circle = document.querySelectorAll('.circle');
+// read tiers provided by `achievements.js` or server-rendered userdata
+// use `tiersData` to avoid redeclaring a global `tiers` identifier
+let tiersData = (typeof window !== 'undefined' && window.tiers) ? window.tiers : [];
 const rewards = {
     1: "Perk",
     2: "Perk",
@@ -38,7 +41,9 @@ function updateProgress(tierNum) {
     for (let i = 0; i < tierNum; i++) {
         const circleClone = document.createElement('div');
         circleClone.className = 'circle';
-        circleClone.innerHTML = i + 1;
+        const tnum = i + 1;
+        // show tier number or reward shorthand
+        circleClone.innerHTML = tnum;
         circleClone.style = 
         'display: inline-flex; justify-content: center; align-items: center;';
         circleClone.dataset.tier = i + 1; // Store tier number
@@ -83,8 +88,52 @@ let earned =
     achievements[2].filter(ach => ach.status === true).length + 
     achievements[3].filter(ach => ach.status === true).length + 
     achievements[4].filter(ach => ach.status === true).length;
-earned = 0;
 setProgress(50 * earned);
+
+// Apply initial tier statuses (active/claimed) based on earned and tiers data
+function applyTierStates() {
+    const circles_list = document.querySelectorAll('.circle');
+    for (let i = 0; i < circles_list.length; i++) {
+        const el = circles_list[i];
+        const t = Number(el.dataset.tier);
+        if (!t) continue;
+        // reset state classes then reapply
+        el.classList.remove('active', 'claimed', 'available');
+        // mark active when enough EXP
+        const requiredEXP = t * 50;
+        if (earned * 50 >= requiredEXP) el.classList.add('active');
+        // mark claimed if tiers data says so
+        const tierObj = (Array.isArray(tiersData) && tiersData.find) ? tiersData.find(x => Number(x.tier) === t) : null;
+        if (tierObj && (tierObj.status === 'claimed' || tierObj.status === 'available')) {
+            if (tierObj.status === 'claimed') el.classList.add('claimed');
+            if (tierObj.status === 'available') el.classList.add('available');
+        }
+    }
+}
+applyTierStates();
+
+// Load persisted tiers from server and reapply states
+function loadServerTiers() {
+    fetch('/api/perk-tiers', { credentials: 'include' })
+        .then(res => {
+            if (!res.ok) throw new Error('Failed to fetch tiers');
+            return res.json();
+        })
+        .then(json => {
+            if (json && Array.isArray(json.tiers)) {
+                tiersData = json.tiers;
+                if (typeof window !== 'undefined') window.tiers = tiersData;
+                applyTierStates();
+            }
+        })
+        .catch(err => {
+            // not fatal; keep using client-side tiersData
+            console.debug('Could not load server tiers:', err);
+        });
+}
+
+// attempt to load persisted tiers from server on page load
+loadServerTiers();
 
 document.getElementById('yyy').addEventListener('click', () => {
     earned += 1;
@@ -100,16 +149,44 @@ document.addEventListener('click', (e) => {
     if (e.target.classList.contains('circle')) {
         const tier = e.target.dataset.tier;
         const requiredEXP = tier * 50;
-        const circles_list = document.querySelectorAll('.circle');
         //claimed already
-        if (circles_list[tier].classList.contains('claimed')) {
+        // note: circles_list is zero-indexed; find element by dataset instead to be safe
+        const clickedEl = e.target;
+        if (clickedEl.classList.contains('claimed')) {
             alert(`Tier ${tier} reward already claimed.`);
             return;
         }
         //claim reward
-        if (earned * 50 >= requiredEXP) {
+        if (earned * 50 >= requiredEXP && !clickedEl.classList.contains('claimed')) {
             getReward(tier);
-            circles_list[tier].classList.add('claimed');
+            // update UI immediately
+            clickedEl.classList.add('claimed');
+            // update local tiers state if present
+            const tierObj = (Array.isArray(tiersData) && tiersData.find) ? tiersData.find(x => Number(x.tier) === Number(tier)) : null;
+            if (tierObj) tierObj.status = 'claimed';
+
+            // persist claim to server
+            fetch('/api/perk-tiers/claim', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tier: Number(tier), status: 'claimed' })
+            }).then(res => {
+                if (!res.ok) throw new Error('Failed to save tier claim');
+                return res.json();
+            }).then(json => {
+                // server returned updated tiers, update local copy if provided
+                if (json && Array.isArray(json.tiers)) {
+                    // copy server tiers into window.tiers if present
+                    if (typeof window !== 'undefined') window.tiers = json.tiers;
+                }
+            }).catch(err => {
+                console.error('Error saving tier claim:', err);
+                // revert UI and local state on failure
+                clickedEl.classList.remove('claimed');
+                if (tierObj) tierObj.status = 'available';
+                alert('Could not save tier claim. Please try again.');
+            });
         //not enough EXP
         } else {
             alert(`Not enough EXP. Need ${requiredEXP}, have ${earned * 50}`);
@@ -124,7 +201,6 @@ setInterval(() => {
         const requiredEXP = tier * 50;
         if (earned * 50 >= requiredEXP) {
             circles_list[i].classList.add('active');
-            console.log(`Tier ${tier} is active`);
         }
     }
 }, 100);
