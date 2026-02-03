@@ -118,7 +118,7 @@
         if (mcSelectWindow) mcSelectWindow.style.display = 'none';
 
         function show() {
-            teamOverlay.style.display = 'block';
+            teamOverlay.style.display = 'flex';
             teamPanel.style.display = 'block';
             if (teamClose) teamClose.focus();
         }

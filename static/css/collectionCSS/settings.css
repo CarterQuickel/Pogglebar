@@ -45,69 +45,6 @@
      scale: 1.1;
 }
 
-#keyCont {
-    position: relative;
-}
-
-#colorKey {
-    background-color: #ecdcdc;
-    color: black;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 10px;
-    border-radius: 5px;
-    position: absolute;
-    box-shadow: 0 0 5px black;
-    z-index: 10;
-    transform: translateY(-50%);
-    display: none;
-    top: 50%;
-    left: auto;
-    right: 110%;
-}
-
-.key-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.color-box {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-    border: 2px solid black;
-}
-
-.trash {
-    background-color: red;
-}
-
-.common {
-    background-color: yellow;
-}
-
-.uncommon {
-    background-color: lime;
-}
-
-.rare {
-    background-color: aqua;
-}
-
-.mythic {
-    background-color: fuchsia;
-}
-
-.unique {
-    background-color: lightgray;
-}
-
-.otherworldly {
-    background-color: black;
-}
-
 #searchbtn {
     background-color: #ecdcdc;
     border: transparent;
