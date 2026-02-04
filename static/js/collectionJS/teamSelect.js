@@ -24,8 +24,13 @@
         return inv.map(item => {
             if (!item) return null;
             if (typeof item === 'object') {
-                // object cartridge: try to keep id/name
-                return item;
+                // normalize object-shaped inventory entries so callers can rely on
+                // consistent keys (id, name, color, rarity)
+                const id = item.id || item.pogid || item.pogId || item.pogID || item.pog_id || item.pog || null;
+                const name = item.name || item.pogname || item.pogName || item.pog || String(id || '');
+                const color = item.color || item.pogcol || item.pogCol || item.pog_color || '';
+                const rarity = item.rarity || item.rarityName || item.pograrity || '';
+                return { ...item, id, name, color, rarity };
             }
             // primitive: try to find in pogList by id or name
             const found = (pogList || []).find(p => String(p.id) === String(item) || String(p.name) === String(item));
@@ -45,13 +50,28 @@
         title.className = 'team-pog-name';
         title.textContent = pog.name || 'Unknown';
 
-        // optional small color box if color provided
-        if (pog.color) {
-            const color = document.createElement('div');
-            color.className = 'team-pog-color';
-            color.style.background = pog.color;
-            div.appendChild(color);
-        }
+        // Apply rarity color (match binder behavior). Prefer rarity-derived color
+        // so Team Select visuals are consistent with the binder. If the pog has
+        // its own explicit color, keep that for the small color box but still
+        // use rarity for the title text to match binder.
+        try {
+            const meta = (window.rarityColor || []).find(r => r.name === pog.rarity) || null;
+            if (meta && meta.color) {
+                title.style.color = meta.color;
+            }
+        } catch (e) { /* ignore if rarityColor not available */ }
+
+        // optional small color box: prefer an explicit pog.color if present,
+        // otherwise fall back to the rarity color so a consistent marker exists.
+        try {
+            const boxColor = pog.color || ((window.rarityColor || []).find(r => r.name === pog.rarity) || {}).color || '';
+            if (boxColor) {
+                const color = document.createElement('div');
+                color.className = 'team-pog-color';
+                color.style.background = boxColor;
+                div.appendChild(color);
+            }
+        } catch (e) { /* ignore DOM errors */ }
 
         div.appendChild(title);
         return div;
@@ -59,6 +79,8 @@
 
     // Main setup when DOM ready
     function buildInventory(pogList, userdata) {
+    // local inventory variable to avoid leaking/overwriting a global `inventory`
+    let inventory = [];
     try {
         const binderEl = document.getElementById('binderItems');
         if (binderEl) {
@@ -127,7 +149,16 @@
             const binderEl = document.getElementById('binderItems');
             if (binderEl) {
                 const observer = new MutationObserver(() => {
-                    refreshInventory();
+                    // Only refresh the Team Select inventory when the panel/overlay is visible.
+                    // This prevents background binder updates (e.g. crate opens) from
+                    // changing the Team Select UI while the user isn't actively using it.
+                    try {
+                        const panelVisible = teamPanel && window.getComputedStyle(teamPanel).display !== 'none';
+                        const overlayVisible = teamOverlay && window.getComputedStyle(teamOverlay).display !== 'none';
+                        if (panelVisible || overlayVisible) {
+                            refreshInventory();
+                        }
+                    } catch (e) { /* ignore any DOM read errors */ }
                 });
 
                 observer.observe(binderEl, {
@@ -199,14 +230,18 @@
             const seen = new Set();
 
             inventory.forEach(pog => {
-                const pogKey = (pog.name || pog.id || '').toString();
+                const pogId = String(pog.id || '');
+                const pogName = String(pog.name || '');
+                const pogKey = (pogName || pogId).toString();
 
-                // prevent duplicates in sidebar using pogAmount as authoritative list of owned names
+                // prevent duplicates in sidebar using pogName/id as authoritative key
                 if (seen.has(pogKey)) return;
                 seen.add(pogKey);
 
                 // hide pogs that are already assigned (prevent dupes across slots)
-                if (assignedNames.has(String(pogKey))) return;
+                // check both id and name because assigned elements may store id while
+                // inventory entries may contain name (or vice-versa)
+                if (assignedNames.has(pogId) || assignedNames.has(pogName) || assignedNames.has(pogKey)) return;
 
                 // If pogAmount exists, only show one entry per owned name (avoid duplicate copies)
                 if (ownedNames && !ownedNames.has(pog.name)) {
@@ -233,9 +268,15 @@
                 const name = el.textContent || '';
                 const id = el.dataset.pogId || '';
                 const color = (function() {
-                    // try to lookup color from inventory or pogList
-                    const found = inventory.find(p => String(p.id) === String(id) || p.name === name);
-                    return (found && found.color) ? found.color : null;
+                    // try to lookup color from inventory or pogList; prefer explicit
+                    // item color but fall back to rarityColor (to match binder)
+                    const found = inventory.find(p => String(p.id) === String(id) || p.name === name) ||
+                        (pogList || []).find(p => String(p.id) === String(id) || p.name === name) || null;
+                    if (!found) return null;
+                    const explicit = found.color || found.pogcol || '';
+                    if (explicit) return explicit;
+                    const meta = (window.rarityColor || []).find(r => r.name === found.rarity) || null;
+                    return (meta && meta.color) ? meta.color : null;
                 })();
 
                 const card = document.createElement('div');
@@ -389,7 +430,10 @@
             for (let i = 0; i < slots.length; i++) {
                 const slot = slots[i];
                 const inner = slot.querySelector('.slot');
-                inner.innerHTML = '';
+                // restore initial empty-slot markup first (this contains the '+')
+                try {
+                    inner.innerHTML = slot._initialInner || '';
+                } catch (e) { inner.innerHTML = ''; }
                 slot.classList.remove('mc-assigned');
                 const item = teamArray[i];
                 if (item) {
@@ -397,6 +441,8 @@
                     assignedDiv.className = 'assigned-pog';
                     assignedDiv.setAttribute('data-pog-id', item.id || '');
                     assignedDiv.textContent = item.name || '';
+                    // replace the initial content with the assigned pog
+                    inner.innerHTML = '';
                     inner.appendChild(assignedDiv);
                     slot.classList.add('mc-assigned');
                 }
@@ -579,8 +625,16 @@
             try { updateSaveButtonState(); } catch (e) { /* ignore */ }
         }
 
-        // Wire mc-card click handlers
+        // Wire mc-card click handlers and preserve each slot's initial content
         const slots = qsa('.mc-card');
+        // preserve original innerHTML for each slot so we can restore the '+' UI
+        slots.forEach(slot => {
+            try {
+                const inner = slot.querySelector('.slot');
+                slot._initialInner = inner ? inner.innerHTML : '';
+            } catch (e) { slot._initialInner = ''; }
+        });
+
         slots.forEach(slot => {
             slot.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -602,10 +656,17 @@
                     const pog = (inventory.find(p => String(p.id) === String(a.id)) || a);
                     const slotInner = slot.querySelector('.slot');
                     if (slotInner) {
-                        slotInner.innerHTML = '';
+                        // restore initial empty UI when rehydrating; we'll replace it
+                        // with assigned content if present
+                        slotInner.innerHTML = slot._initialInner || '';
                         const assignedDiv = document.createElement('div');
                         assignedDiv.className = 'assigned-pog';
+                        // ensure assigned elements include a data-pog-id so other code
+                        // can reliably detect assigned pogs and lookup colors
+                        assignedDiv.setAttribute('data-pog-id', (pog && (pog.id || pog.pogid)) || (a && (a.id || a.pogid)) || '');
                         assignedDiv.textContent = pog.name || a.name || 'Unknown';
+                        // replace the inner content with assigned content
+                        slotInner.innerHTML = '';
                         slotInner.appendChild(assignedDiv);
                         slot.classList.add('mc-assigned');
                     }

@@ -1,9 +1,9 @@
 #pfpChanger {
-    background-color: #9f75a5;
-    border: transparent;
+    background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
+    box-shadow: 0 0 10px black;
+    border: 1px solid rgba(255, 255, 255, 0.094);
     border-radius: 10px;
     padding: 5px;
-    
     font-style: bold;
     font-size: 15px;
     z-index: 50;
@@ -12,20 +12,22 @@
 }
 
 #closePfpChanger {
-    background-color: rgb(255, 233, 233);
-    border: transparent;
+    background: #0d131a;
+    color: #9d42f7;
+    border: 2px solid #9d42f7;
+    box-shadow: inset 0 0 12px rgba(106, 0, 255, 0.623);
     border-radius: 40px;
     width: 70px;
     height: 25px;
-    
-    font-style: bold;
+    font-weight: bold;
     font-size: 15px;
     cursor: pointer;
     scale: 0.8;
+    transition: all 0.1s ease;
 }
 
 #closePfpChanger:hover {
-    background-color: rgb(112, 106, 106);
+    scale: 0.85;
 }
 
 #filepfp {
@@ -33,8 +35,6 @@
     border: transparent;
     border-radius: 10px;
     padding: 5px;
-    
-    font-style: bold;
     font-size: 15px;
-    background-color: rgb(112, 48, 165);
+    background: linear-gradient(90deg, #6b3df0, #9d42f7);
 }

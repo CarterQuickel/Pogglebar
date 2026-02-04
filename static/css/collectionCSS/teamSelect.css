@@ -200,6 +200,7 @@
 	padding: 14px;
 	z-index: 10001;
 	box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+	animation: slideInTeam 0.3s ease forwards;
 }
 
 @keyframes slideInTeam {
