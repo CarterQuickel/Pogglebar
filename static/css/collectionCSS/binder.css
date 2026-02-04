@@ -90,6 +90,85 @@
     transition: none;
 }
 
+#colors {
+    cursor: pointer;
+    background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
+    box-shadow: 0 0 10px black;
+    border: 1px solid rgba(255, 255, 255, 0.094);
+    padding: 7px;
+    border-radius: 10px;
+    width: 35px;
+    height: 35px;
+    transition: all 0.1s ease;
+}
+
+#colors:hover {
+    scale: 1.1;
+}
+
+#keyCont {
+    position: relative;
+}
+
+#colorKey {
+    background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
+    box-shadow: 0 0 10px black;
+    border: 1px solid rgba(255, 255, 255, 0.094);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 10;
+    transform: translateY(-10%);
+    display: none;
+    top: 50%;
+    left: auto;
+    right: 110%;
+}
+
+.key-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.color-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+.trash {
+    background-color: red;
+}
+
+.common {
+    background-color: yellow;
+}
+
+.uncommon {
+    background-color: lime;
+}
+
+.rare {
+    background-color: aqua;
+}
+
+.mythic {
+    background-color: fuchsia;
+}
+
+.unique {
+    background-color: lightgray;
+}
+
+.otherworldly {
+    background-color: black;
+}
+
 .singleI{
     padding: 15px;
     border-radius: 120px;
