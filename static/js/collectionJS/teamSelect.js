@@ -58,6 +58,46 @@
     }
 
     // Main setup when DOM ready
+    function buildInventory(pogList, userdata) {
+    try {
+        const binderEl = document.getElementById('binderItems');
+        if (binderEl) {
+            const singles = Array.from(binderEl.querySelectorAll('.singleI'))
+                .filter(el => window.getComputedStyle(el).display !== 'none');
+
+            if (singles.length) {
+                inventory = singles.map(el => ({
+                    id: el.dataset.name,
+                    name: el.dataset.name,
+                    color: el.dataset.color || '',
+                    rarity: el.dataset.rarity || ''
+                }));
+
+                const cap = Array.isArray(window.pogAmount)
+                    ? window.pogAmount.length
+                    : (typeof maxPogs !== 'undefined'
+                        ? maxPogs
+                        : (typeof maxBinder !== 'undefined' ? maxBinder : null));
+
+                const seen = new Set();
+                inventory = inventory.filter(p => {
+                    if (!p?.name || seen.has(p.name)) return false;
+                    seen.add(p.name);
+                    return true;
+                });
+
+                if (cap && inventory.length > cap) inventory = inventory.slice(0, cap);
+            }
+        }
+    } catch (e) {}
+
+    if (!inventory.length) {
+        inventory = normalizeInventory(userdata.inventory || [], pogList);
+    }
+
+    return inventory;
+}
+
     function setup() {
         const teamTrigger = document.getElementById('teamSelectButton') || document.getElementById('team');
         const teamOverlay = document.getElementById('teamSelectOverlay');
@@ -65,7 +105,6 @@
         const teamPanel = document.getElementById('teamSelect');
         const mcSelectWindow = document.getElementById('MCselectWindow');
         const allCharacters = document.getElementById('allCharacters');
-        const inTeam = document.getElementById('inTeam');
 
         if (!teamOverlay || !teamPanel) {
             console.warn('teamSelect: overlay or panel not found in DOM. Aborting teamSelect setup.');
@@ -78,32 +117,23 @@
 
         // Prefer using the binder's items (if present) instead of userdata.inventory.
         // binderint.js populates #binderItems with `.singleI` elements; use those if available.
-        let inventory = [];
+        let inventory = buildInventory(pogList, userdata);
+        function refreshInventory() {
+            inventory = buildInventory(pogList, userdata);
+            renderInventory();
+            renderSelectedStrip();
+        }
         try {
             const binderEl = document.getElementById('binderItems');
             if (binderEl) {
-                const singles = Array.from(binderEl.querySelectorAll('.singleI'))
-                    .filter(el => window.getComputedStyle(el).display !== 'none');
-                if (singles.length) {
-                    inventory = singles.map(el => ({
-                        id: el.dataset.name || el.dataset.name,
-                        name: el.dataset.name || el.dataset.name,
-                        color: el.dataset.color || '',
-                        rarity: el.dataset.rarity || ''
-                    }));
+                const observer = new MutationObserver(() => {
+                    refreshInventory();
+                });
 
-                    // Deduplicate by name using the global maxPogs (or maxBinder) to cap results
-                    // Prefer using pogAmount (array of owned pogs) as the cap; fall back to maxPogs or maxBinder
-                    const cap = (Array.isArray(window.pogAmount) ? window.pogAmount.length : (typeof maxPogs !== 'undefined' ? maxPogs : (typeof maxBinder !== 'undefined' ? maxBinder : null)));
-                    const seen = new Set();
-                    inventory = inventory.filter(p => {
-                        if (!p || !p.name) return false;
-                        if (seen.has(p.name)) return false;
-                        seen.add(p.name);
-                        return true;
-                    });
-                    if (cap && inventory.length > cap) inventory = inventory.slice(0, cap);
-                }
+                observer.observe(binderEl, {
+                    childList: true,
+                    subtree: true
+                });
             }
         } catch (e) { /* ignore DOM errors, fallback below */ }
 
@@ -118,8 +148,9 @@
         if (mcSelectWindow) mcSelectWindow.style.display = 'none';
 
         function show() {
-            teamOverlay.style.display = 'flex';
+            teamOverlay.style.display = 'block';
             teamPanel.style.display = 'block';
+            refreshInventory();
             if (teamClose) teamClose.focus();
         }
 

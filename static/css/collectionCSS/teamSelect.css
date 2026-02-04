@@ -1,12 +1,16 @@
 #teamSelectOverlay {
-	display: none; /* controlled by JS */
-	position: fixed;
 	inset: 0;
 	background:
         radial-gradient(circle at 30% 40%, rgba(80, 53, 168, 0.15), transparent 60%),
         radial-gradient(circle at 70% 60%, rgba(165, 52, 129, 0.12), transparent 55%),
         radial-gradient(circle at center, #080b0f 0%, #090a0f 70%);
-	z-index: 9999;
+	justify-content: center;
+	align-items: center;
+	padding: 20px;
+}
+
+#teamSelectContainer {
+	display: flex;
 	justify-content: center;
 	align-items: center;
 }
@@ -29,15 +33,16 @@
 .mc-grid {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
-	gap: 200px;
-	align-items: stretch;
+	gap: auto;
+	flex: 1;
+	align-items: center;
 	padding: 6px 6px 2px 6px;
 }
 
 .mc-card {
 	border-radius: 12px;
-	min-height: 170px;
-	min-width: 170px;
+	min-height: 300px;
+	min-width: 300px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -45,6 +50,7 @@
 	position: relative;
 	overflow: hidden;
 	transition: transform 160ms ease, box-shadow 160ms ease;
+	cursor: pointer;
 }
 
 .mc-card .mc-content {
@@ -78,8 +84,8 @@
 
 .circle {
 	position: relative;
-	width: 120px;
-	height: 120px;
+	width: 110px;
+	height: 110px;
 	border-radius: 50%;
 	/* thicker white ring with soft outer glow */
 	border: 5px solid rgba(255,255,255,0.98);
@@ -88,7 +94,7 @@
 		0 12px 30px rgba(0,0,0,0.65),
 		0 0 20px rgba(255,255,255,0.06),
 		inset 0 6px 18px rgba(0,0,0,0.45);
-	transition: transform 160ms ease, box-shadow 160ms ease, border-color 120ms ease;
+	transition: all 0.1s ease;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -129,7 +135,7 @@
 }
 
 .slot:hover .circle {
-	transform: translateY(-6px) scale(1.02);
+	scale: 1.1;
 	border-color: rgba(255,255,255,1);
 	box-shadow:
 		0 22px 56px rgba(0,0,0,0.7),
@@ -175,32 +181,30 @@
   animation: pulse 3s ease-in-out infinite;
 }
 
-
-/* Slot number */
-.slot-number {
-	position: absolute;
-	top: 10px;
-	left: 12px;
-	color: rgba(240,240,255,0.9);
-	font-weight: 700;
-}
-
 /* Selection window layout: left sidebar with boxed names */
 #MCselectWindow {
 	position: fixed;
-	left: 50%;
+	left: 200px;
 	top: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
 	transform: translate(-50%, -50%);
 	width: 86vw;
-	max-width: 980px;
+	max-width: 350px;
 	height: 62vh;
 	background: linear-gradient(180deg, rgba(10,8,15,0.96), rgba(6,6,10,0.98));
 	border-radius: 10px;
-	display: flex;
 	gap: 18px;
 	padding: 14px;
 	z-index: 10001;
 	box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+}
+
+@keyframes slideInTeam {
+	from { opacity: 0; transform: translate(-50%, -60%); }
+	to { opacity: 1; transform: translate(-50%, -50%); }
 }
 
 /* Left side bigger rectangle (sidebar) */
@@ -213,19 +217,18 @@
 }
 
 .team-sidebar {
-	width: 280px; /* the bigger rectangle on the left */
-	min-width: 220px;
-	display: flex;
-	flex-direction: column;
+	min-width: 50px;
+	max-height: 50vh;
+	flex: 0 0 220px;
+	display: grid;
+	gap: 10px;
+	justify-content: center;
+	grid-template-columns: repeat(auto-fill, 300px);
 }
 
-/* The right content area (optional) */
-.team-main {
-	flex: 1 1 auto;
-	min-width: 320px;
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
+.team-sidebar::-webkit-scrollbar {
+	width: 0;
+	height: 0;
 }
 
 /* Each pog name in its own small box inside the sidebar */
@@ -266,16 +269,46 @@
 .team-no-pogs { color: rgba(255,255,255,0.65); padding: 8px; }
 
 .assigned-pog {
-	padding: 6px 10px;
-	border-radius: 6px;
-	background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.12));
-	color: #fff;
-	font-weight: 600;
+	border: 4px solid black;
+    box-shadow:
+        /* 1. Outer shadow to ground the object on the page */
+        0 10px 20px rgba(0, 0, 0, 0.3),
+        /* 2. Inner dark shadow: creates the 'drop' from the border rim */
+        inset 0 6px 12px rgba(0, 0, 0, 0.5),
+        /* 3. Inner light highlight: creates a 'lip' on the opposite edge */
+        inset 0 -2px 8px rgba(255, 255, 255, 0.2);
+    background:
+        /* The "3D Printed" Streaks Layer */
+        repeating-radial-gradient(circle at 50% 50%,
+            rgba(0, 0, 0, 0.08) 0px,
+            rgba(0, 0, 0, 0.08) 1px,
+            transparent 1px,
+            transparent 3px);
+	background-color: rgb(66, 51, 66);
+    border-radius: 300px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+	text-align: center;
+    font-style: bold;
+    font-size: 30px;
+    min-width: 220px;
+    min-height: 220px;
+    max-height: 260px;
+    cursor: pointer;
+    scale: 0.55;
+    transition: all 0.1s ease;
+}
+
+.assigned-pog:hover {
+    scale: 0.6;
 }
 
 /* Selected pogs strip (above the inventory) */
 .team-selected {
-	width: 100%;
+	min-width: 220px;
 	display: flex;
 	gap: 8px;
 	align-items: center;
@@ -317,22 +350,26 @@
 	border-radius: 8px;
 	cursor: pointer;
 	font-weight: 700;
+	transition: all 0.1s ease;
 }
 .loadout-btn .hint { display: block; font-weight: 400; opacity: 0.8; font-size: 11px; }
-.loadout-btn:hover { transform: translateY(-3px); }
+.loadout-btn:hover { scale: 1.1; }
 .loadout-btn.active { box-shadow: 0 8px 30px rgba(75,15,120,0.25); border-color: rgba(123,47,181,0.6); }
-.loadout-btn.selected { outline: 3px solid rgba(123,47,181,0.18); }
+.loadout-btn.selected { outline: 3px solid rgba(255, 255, 255, 0.623); }
 
 .save-btn {
-	background: linear-gradient(90deg, rgba(59,21,55,0.9), rgba(43,10,34,0.9));
+	background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
 	color: #fff;
 	border: 1px solid rgba(255,255,255,0.04);
 	padding: 8px 14px;
 	border-radius: 8px;
 	cursor: pointer;
-	font-weight: 800;
+	font-weight: bold;
+	transition: all 0.1s ease;
 }
-.save-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(75,15,120,0.18); }
+.save-btn:hover {
+	scale: 1.1;
+}
 
 @media (max-width: 900px) {
 	#MCselectWindow { width: 94vw; height: 72vh; flex-direction: column; }
