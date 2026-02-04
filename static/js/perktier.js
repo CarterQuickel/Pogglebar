@@ -82,14 +82,34 @@ document.addEventListener('mousemove', (e) => {
 
 // Call updateProgress with the desired tier number
 updateProgress(22);
-let earned = 
-    achievements[0].filter(ach => ach.status === true).length +
-    achievements[1].filter(ach => ach.status === true).length +
-    achievements[2].filter(ach => ach.status === true).length +
-    achievements[3].filter(ach => ach.status === true).length + 
-    achievements[4].filter(ach => ach.status === true).length;
-console.log(earned);
+
+// compute earned tiers by counting achievements with notified === true
+function computeEarned() {
+    try {
+        const achs = (typeof window !== 'undefined' && window.achievements) ? window.achievements : achievements;
+        if (!Array.isArray(achs)) return 0;
+        return achs.reduce((sum, cat) => {
+            if (!Array.isArray(cat)) return sum;
+            return sum + cat.filter(a => a && a.notified === true).length;
+        }, 0);
+    } catch (e) {
+        return 0;
+    }
+}
+
+let earned = computeEarned();
+console.log('perktier: earned=', earned);
 setProgress(50 * earned);
+
+// update function exposed for other scripts to call when achievement notified state changes
+function updatePerkEarned() {
+    try {
+        earned = computeEarned();
+        setProgress(50 * earned);
+        applyTierStates();
+    } catch (e) { /* ignore */ }
+}
+window.updatePerkEarned = updatePerkEarned;
 
 // Apply initial tier statuses (active/claimed) based on earned and tiers data
 function applyTierStates() {
