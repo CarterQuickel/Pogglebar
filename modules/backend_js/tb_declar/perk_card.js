@@ -1,32 +1,30 @@
-const { type } = require("node:os");
-
 const perks = [
     {
-        name: "Critcal Strike",
+        name: "Critical Strike",
         description: "Prioritized target takes +5% damage per hit target.",
         type: "attack",
         notches: 1
     },
     {
-        name: "Element Inflcitor",
-        description: "Basic attacks have a 10% chance to buildup a random elemental effect.",
+        name: "Element Inflictor",
+        description: "Basic attacks have a 10% chance to build up a random elemental effect.",
         type: "element",
         notches: 1
     },
     {
-        name: "Attack+",
+        name: "Attack+", 
         description: "Attack increased by 4%.",
         type: "attack",
         notches: 1
     },
     {
-        name: "Resistance+",
+        name: "Resistance+", 
         description: "Raise defense by 6%.",
         type: "defense",
         notches: 2
     },
     {
-        name: "Resnonance",
+        name: "Resonance",
         description: "Attacks inflict twice, but only with 20% damage.",
         type: "attack",
         notches: 2
@@ -56,7 +54,7 @@ const perks = [
         notches: 4
     },
     {
-        name: "Elemental Block",
+        name: "Elemental Block", 
         description: "Reduces elemental effect hit rate by 12%.",
         type: "defense",
         notches: 2
@@ -122,7 +120,7 @@ const perks = [
         notches: 3
     },
     {
-        name: "Eye for an Eye",
+        name: "Eye for an Eye", 
         description: "Lose 2 perk notches but gain 2 equipment slots.",
         type: "utility",
         notches: 0
@@ -134,7 +132,7 @@ const perks = [
         notches: 0
     },
     {
-        name: "Half-hearted",
+        name: "Half-hearted", 
         description: "Only have 50% the maximum health, but skill attacks do 30% more damage.",
         type: "attack",
         notches: 5
@@ -152,7 +150,7 @@ const perks = [
         notches: 4
     },
     {
-        name: "Walking Dead",
+        name: "Walking Dead", 
         description: "When unit is killed, they will be revived once with 30% health.",
         type: "support",
         notches: 6
@@ -164,13 +162,13 @@ const perks = [
         notches: 4
     },
     {
-        name: "Overcharge",
+        name: "Overcharge", 
         description: "Excessive healing given to this unit will convert into increased damage in their next attack.",
         type: "support",
         notches: 5
     },
     {
-        name: "Health+",
+        name: "Health+", 
         description: "Health increased by 4%.",
         type: "utility",
         notches: 1

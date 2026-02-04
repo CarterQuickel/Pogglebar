@@ -1,4 +1,4 @@
-document.getElementById("play_btn").addEventListener(("click"), () => {
+/*document.getElementById("play_btn").addEventListener(("click"), () => {
     const gamemodes = document.getElementById("gamemode_overlay");
     gamemodes.style.display = "flex";
 });
@@ -10,4 +10,4 @@ document.getElementById("gamemode_overlay").addEventListener(("click"), (overlay
     if (target === gamemodes) {
         gamemodes.style.display = "none";
     };
-});
+});*/
