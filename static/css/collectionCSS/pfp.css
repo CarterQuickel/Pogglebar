@@ -19,7 +19,7 @@
     border-radius: 40px;
     width: 70px;
     height: 25px;
-    font-style: bold;
+    font-weight: bold;
     font-size: 15px;
     cursor: pointer;
     scale: 0.8;
@@ -35,7 +35,6 @@
     border: transparent;
     border-radius: 10px;
     padding: 5px;
-    font-style: bold;
     font-size: 15px;
     background: linear-gradient(90deg, #6b3df0, #9d42f7);
 }
