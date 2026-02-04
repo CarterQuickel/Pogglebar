@@ -21,6 +21,46 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.color = 'white';
     }
  
+    // delegated click handler: mark an earned achievement as notified when clicked
+    // and show a slide-in popup from the bottom-left
+    if (achievementContainer) {
+        achievementContainer.addEventListener('click', (evt) => {
+            try {
+                const el = evt.target.closest && evt.target.closest('.achievement');
+                if (!el || !achievementContainer.contains(el)) return;
+                const catIndex = Number(el.dataset.catIndex);
+                const idx = Number(el.dataset.index);
+                if (!Number.isInteger(catIndex) || !Number.isInteger(idx)) return;
+                const ach = (achievements && achievements[catIndex] && achievements[catIndex][idx]) || null;
+                if (!ach) return;
+                // If it's earned but not yet notified, mark it notified on click
+                // and show a small slide-in popup; do not popup if already notified
+                if (ach.status && !ach.notified) {
+                    ach.notified = true;
+                    // enqueue popup (so multiple popups are shown sequentially)
+                    try {
+                        const already = popupQueue.some(p => p && p.name === ach.name);
+                        if (!already) { popupQueue.push(ach); processPopupQueue(); }
+                    } catch (e) { /* ignore */ }
+                    // refresh view so any visuals relying on notified update
+                    try { refreshAchievementsView(); } catch (e) { /* ignore */ }
+                    // inform perktier to recompute earned (if available)
+                    try { if (typeof window.updatePerkEarned === 'function') window.updatePerkEarned(); } catch (e) { /* ignore */ }
+                }
+            } catch (e) { /* ignore */ }
+        });
+
+        // keyboard accessibility: Enter/Space activates the achievement
+        achievementContainer.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const el = e.target.closest && e.target.closest('.achievement');
+                if (!el) return;
+                el.click();
+                e.preventDefault();
+            }
+        });
+    }
+
     // start periodic checks now that DOM and userdata are available
     setInterval(collectFunc, 1000);
     setInterval(levelFuncs, 1000);
@@ -94,6 +134,11 @@ function renderCollection () {
         const achievementElement = document.createElement("div");
         achievementElement.classList.add("achievement");
         achievementElement.id = `achievement-${index}`;
+    // data attributes for delegated events and accessibility
+    achievementElement.dataset.catIndex = '0';
+    achievementElement.dataset.index = String(index);
+    achievementElement.tabIndex = 0;
+    achievementElement.setAttribute('role', 'button');
  
         if (achievement.hidden && !achievement.status) {
             // Darken and replace content for hidden achievements
@@ -131,6 +176,11 @@ function renderLevel () {
         const achievementElement = document.createElement("div");
         achievementElement.classList.add("achievement");
         achievementElement.id = `achievement-${index}`;
+    // data attributes for delegated events and accessibility
+    achievementElement.dataset.catIndex = '1';
+    achievementElement.dataset.index = String(index);
+    achievementElement.tabIndex = 0;
+    achievementElement.setAttribute('role', 'button');
  
         if (achievement.hidden && !achievement.status) {
             // Darken and replace content for hidden achievements
@@ -167,6 +217,11 @@ function renderProgression () {
         const achievementElement = document.createElement("div");
         achievementElement.classList.add("achievement");
         achievementElement.id = `achievement-${index}`;
+    // data attributes for delegated events and accessibility
+    achievementElement.dataset.catIndex = '2';
+    achievementElement.dataset.index = String(index);
+    achievementElement.tabIndex = 0;
+    achievementElement.setAttribute('role', 'button');
  
         if (achievement.hidden && !achievement.status) {
             // Darken and replace content for hidden achievements
@@ -203,6 +258,11 @@ function renderEconomy () {
         const achievementElement = document.createElement("div");
         achievementElement.classList.add("achievement");
         achievementElement.id = `achievement-${index}`;
+    // data attributes for delegated events and accessibility
+    achievementElement.dataset.catIndex = '3';
+    achievementElement.dataset.index = String(index);
+    achievementElement.tabIndex = 0;
+    achievementElement.setAttribute('role', 'button');
  
         if (achievement.hidden && !achievement.status) {
             // Darken and replace content for hidden achievements
@@ -239,6 +299,11 @@ function renderUnique() {
         const achievementElement = document.createElement("div");
         achievementElement.classList.add("achievement");
         achievementElement.id = `achievement-${index}`;
+    // data attributes for delegated events and accessibility
+    achievementElement.dataset.catIndex = '4';
+    achievementElement.dataset.index = String(index);
+    achievementElement.tabIndex = 0;
+    achievementElement.setAttribute('role', 'button');
  
         if (achievement.hidden && !achievement.status) {
             // Darken and replace content for hidden achievements
@@ -855,6 +920,9 @@ function uniqueFunc() {
 //notification slider logic bc im lazy
 const achievementQueue = [];
 let sliderBusy = false;
+// queue for bottom-left click/popups
+const popupQueue = [];
+let popupBusy = false;
 const SLIDE_IN = "20px";
 const SLIDE_OUT = "-320px";
 const DISPLAY_MS = 3000;
@@ -867,6 +935,13 @@ function achievementNotify(achievement) {
         achievementQueue.push(achievement);
         processAchievementQueue();
         refreshAchievementsView();
+        // inform perktier to recompute earned (if available)
+        try { if (typeof window.updatePerkEarned === 'function') window.updatePerkEarned(); } catch (e) { /* ignore */ }
+        // also enqueue a popup for the achievement (click/popups) if not already queued
+        try {
+            const already = popupQueue.some(p => p && p.name === achievement.name);
+            if (!already) { popupQueue.push(achievement); processPopupQueue(); }
+        } catch (e) { /* ignore */ }
     }
 }
  
@@ -936,6 +1011,30 @@ function processAchievementQueue() {
         }, TRANSITION_MS);
     }, DISPLAY_MS);
 }
+
+// process the bottom-left popup queue sequentially
+function processPopupQueue() {
+    try {
+        if (popupBusy) return;
+        if (popupQueue.length === 0) return;
+        popupBusy = true;
+        const ach = popupQueue.shift();
+        // showAchievementPopup returns a Promise that resolves when popup hides
+        try {
+            showAchievementPopup(ach).then(() => {
+                popupBusy = false;
+                // slight gap before next popup
+                setTimeout(processPopupQueue, 120);
+            }).catch(() => {
+                popupBusy = false;
+                setTimeout(processPopupQueue, 120);
+            });
+        } catch (e) {
+            popupBusy = false;
+            setTimeout(processPopupQueue, 120);
+        }
+    } catch (e) { /* ignore */ }
+}
  
 setInterval(collectFunc, 1000);
 setInterval(levelFuncs, 1000);
@@ -954,4 +1053,84 @@ function checkAllAchievements() {
 }
  
 window.checkAllAchievements = checkAllAchievements;
- 
+
+// small slide-in popup for manual achievement clicks (bottom-left)
+function showAchievementPopup(achievement) {
+    return new Promise((resolve) => {
+        try {
+            if (!achievement) return resolve();
+            const ID = 'achievement-click-popup';
+            const WIDTH = 320;
+            const OUT_LEFT = `-${WIDTH + 40}px`; // off-screen left
+            const IN_LEFT = '20px';
+            const DISPLAY = 3500; // ms
+
+            // ensure previous popup is removed so we start fresh
+            let existing = document.getElementById(ID);
+            if (existing) {
+                try { existing.remove(); } catch (e) { /* ignore */ }
+            }
+
+            const popup = document.createElement('div');
+            popup.id = ID;
+            popup.style.position = 'fixed';
+            popup.style.bottom = '20px';
+            popup.style.left = OUT_LEFT;
+            popup.style.width = WIDTH + 'px';
+            popup.style.maxWidth = 'calc(100% - 40px)';
+            popup.style.background = 'rgba(18,18,18,0.95)';
+            popup.style.color = 'white';
+            popup.style.padding = '12px';
+            popup.style.borderRadius = '8px';
+            popup.style.boxShadow = '0 8px 30px rgba(0,0,0,0.6)';
+            popup.style.transition = `left ${TRANSITION_MS}ms ease`;
+            popup.style.zIndex = 12000;
+            popup.style.cursor = 'pointer';
+            popup.style.display = 'flex';
+            popup.style.alignItems = 'center';
+            popup.style.gap = '8px';
+            document.body.appendChild(popup);
+
+            // build content
+            const icon = achievement.icon ? `<img src="${achievement.icon}" width="56" height="56" style="flex:0 0 56px;border-radius:6px"/>` : '';
+            const name = `<div style="font-weight:700">${achievement.name || 'Achievement'}</div>`;
+            const desc = `<div style="font-size:12px;opacity:0.9">${achievement.description || ''}</div>`;
+            popup.innerHTML = `${icon}<div style="flex:1">${name}${desc}</div>`;
+
+            let finished = false;
+            function cleanupAndResolve() {
+                if (finished) return;
+                finished = true;
+                try { popup.remove(); } catch (e) { /* ignore */ }
+                try {
+                    // ensure the achievement is marked notified (in case it wasn't)
+                    if (achievement && achievement.notified !== true) achievement.notified = true;
+                    // remove any other queued popups for the same achievement
+                    let idx;
+                    while ((idx = popupQueue.findIndex(p => p && p.name === achievement.name)) !== -1) {
+                        popupQueue.splice(idx, 1);
+                    }
+                } catch (e) { /* ignore */ }
+                resolve();
+            }
+
+            // click to dismiss early
+            popup.addEventListener('click', () => {
+                try { popup.style.left = OUT_LEFT; } catch (e) { /* ignore */ }
+                setTimeout(cleanupAndResolve, TRANSITION_MS + 50);
+            });
+
+            // show
+            requestAnimationFrame(() => { try { popup.style.left = IN_LEFT; } catch (e) {} });
+
+            // auto-hide after DISPLAY ms
+            const hideTimer = setTimeout(() => {
+                try { popup.style.left = OUT_LEFT; } catch (e) { /* ignore */ }
+                setTimeout(cleanupAndResolve, TRANSITION_MS + 50);
+            }, DISPLAY);
+        } catch (e) {
+            resolve();
+        }
+    });
+}
+
