@@ -223,7 +223,8 @@
 	display: grid;
 	gap: 10px;
 	justify-content: center;
-	grid-template-columns: repeat(auto-fill, 300px);
+	place-items: center;
+	grid-template-columns: repeat(2, 1fr);
 }
 
 .team-sidebar::-webkit-scrollbar {
@@ -256,6 +257,74 @@
 	border-radius: 4px;
 	flex: 0 0 28px;
 	box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+}
+
+.team-pog-box {
+	width: 90px;              
+	height: 90px;              
+	padding: 8px;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+	border: 1px solid rgba(255,255,255,0.04);
+	margin-bottom: 10px;
+	gap: 0;
+}
+
+.team-pog-name.center {
+	text-align: center;
+	font-weight: 700;
+	padding: 6px 8px;
+	width: 100%;
+}
+
+.team-pog-color { display: none; }
+
+/* Responsive tweak: stack smaller cards */
+@media (max-width: 900px) {
+	.team-sidebar { grid-template-columns: repeat(2, 1fr); }
+	.team-pog-box { height: 76px; }
+}
+@media (max-width: 520px) {
+	.team-sidebar { grid-template-columns: 1fr; }
+	.team-pog-box { height: 68px; }
+}
+
+/* Selected pogs area (top of select) as boxed cards */
+.team-selected {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 8px;
+	align-items: start;
+	padding: 10px 12px;
+	margin-bottom: 8px;
+	min-height: auto;
+	background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));
+	border: 1px solid rgba(255,255,255,0.03);
+	border-radius: 8px;
+}
+
+.team-selected .selected-card {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 6px 8px;
+	background: rgba(255,255,255,0.9);
+	border-radius: 6px;
+	min-width: 0;
+	height: 64px;
+	box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+	font-weight: 700;
+	color: #000;
+}
+
+@media (max-width: 900px) {
+	.team-selected { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+	.team-selected { grid-template-columns: 1fr; }
 }
 
 .team-pog-name {

@@ -41,40 +41,111 @@
     // Build a simple pog card element
     function makePogCard(pog) {
         const div = document.createElement('div');
-        div.className = 'team-pog-card';
+        div.className = 'team-pog-card team-pog-box';
         div.tabIndex = 0;
         div.setAttribute('data-pog-id', pog.id || '');
         div.setAttribute('data-pog-name', pog.name || '');
+        // expose original color/rarity for debugging and downstream lookups
+        if (pog.color) div.setAttribute('data-pog-color', pog.color);
+        if (pog.rarity) div.setAttribute('data-pog-rarity', pog.rarity);
 
         const title = document.createElement('div');
-        title.className = 'team-pog-name';
+        title.className = 'team-pog-name center';
         title.textContent = pog.name || 'Unknown';
 
-        // Apply rarity color (match binder behavior). Prefer rarity-derived color
-        // so Team Select visuals are consistent with the binder. If the pog has
-        // its own explicit color, keep that for the small color box but still
-        // use rarity for the title text to match binder.
+        // robust color resolution: check multiple common keys and fallback to rarity map
+        let bgColor = '';
         try {
-            const meta = (window.rarityColor || []).find(r => r.name === pog.rarity) || null;
-            if (meta && meta.color) {
-                title.style.color = meta.color;
+            // explicit color keys used across codepaths
+            bgColor = pog.color || pog.pogcol || pog.pogCol || pog.col || '';
+            // if pog came from a DOM node mapping it may have dataset-like fields
+            if (!bgColor && pog.dataset) bgColor = pog.dataset.color || pog.dataset.pogcol || '';
+            // fallback to rarity mapping
+            if (!bgColor && pog.rarity && Array.isArray(window.rarityColor)) {
+                const meta = window.rarityColor.find(r => r.name === pog.rarity);
+                if (meta && meta.color) bgColor = meta.color;
             }
-        } catch (e) { /* ignore if rarityColor not available */ }
+            // normalize
+            if (bgColor) bgColor = String(bgColor).trim();
+        } catch (e) { bgColor = (pog.color || ''); }
 
-        // optional small color box: prefer an explicit pog.color if present,
-        // otherwise fall back to the rarity color so a consistent marker exists.
+        // Validate that bgColor is a usable CSS color. If it's a descriptive name
+        // (e.g. 'Iridescent') it won't apply — fall back to rarityColor mapping.
         try {
-            const boxColor = pog.color || ((window.rarityColor || []).find(r => r.name === pog.rarity) || {}).color || '';
-            if (boxColor) {
-                const color = document.createElement('div');
-                color.className = 'team-pog-color';
-                color.style.background = boxColor;
-                div.appendChild(color);
+            let validBg = '';
+            if (bgColor) {
+                const tester = document.createElement('div');
+                tester.style.backgroundColor = bgColor;
+                tester.style.display = 'none';
+                document.body.appendChild(tester);
+                const applied = window.getComputedStyle(tester).backgroundColor;
+                tester.remove();
+                if (applied && applied !== 'rgba(0, 0, 0, 0)') validBg = bgColor;
             }
-        } catch (e) { /* ignore DOM errors */ }
+            // fallback to rarity mapping if the candidate wasn't a valid CSS color
+            if (!validBg && pog.rarity && Array.isArray(window.rarityColor)) {
+                const meta = window.rarityColor.find(r => r.name === pog.rarity) || null;
+                if (meta && meta.color) validBg = meta.color;
+            }
+            // last-resort: use a soft white
+            if (!validBg) validBg = 'rgba(255,255,255,0.9)';
+
+            // Apply overlay + background color separately to avoid concat issues
+            div.style.backgroundImage = 'linear-gradient(rgba(255,255,255,0.12), rgba(255,255,255,0.12))';
+            div.style.backgroundColor = validBg;
+
+            // debugging: show the resolved color for this pog so we can trace disappearances
+            try { console.debug('teamSelect: makePogCard', { pog: pog, candidate: bgColor, applied: validBg }); } catch (e) {}
+        } catch (e) {
+            // safe fallback if DOM ops fail
+            div.style.background = 'rgba(255,255,255,0.9)';
+            try { console.debug('teamSelect: makePogCard fallback', { pog: pog, err: e && e.message }); } catch (e) {}
+        }
+
+        // ensure name is centered and use black text as requested
+        title.style.display = 'flex';
+        title.style.alignItems = 'center';
+        title.style.justifyContent = 'center';
+        title.style.height = '100%';
+        title.style.width = '100%';
+        title.style.fontSize = '14px';
+        title.style.color = '#000';
 
         div.appendChild(title);
         return div;
+    }
+
+    // Resolve a valid CSS color for a pog object. Tries explicit color keys,
+    // then validates the candidate; falls back to rarityColor mapping, then a soft white.
+    function resolveValidColor(pog) {
+        let candidate = '';
+        try {
+            candidate = pog && (pog.color || pog.pogcol || pog.pogCol || pog.col || '');
+            if (!candidate && pog && pog.dataset) candidate = pog.dataset.color || pog.dataset.pogcol || '';
+        } catch (e) { candidate = '' }
+
+        // validate candidate by applying to an off-DOM element
+        try {
+            if (candidate) {
+                const tester = document.createElement('div');
+                tester.style.backgroundColor = candidate;
+                tester.style.display = 'none';
+                document.body.appendChild(tester);
+                const applied = window.getComputedStyle(tester).backgroundColor;
+                tester.remove();
+                if (applied && applied !== 'rgba(0, 0, 0, 0)') return candidate;
+            }
+        } catch (e) { /* fallthrough to rarity map */ }
+
+        // fallback to rarity mapping
+        try {
+            if (pog && pog.rarity && Array.isArray(window.rarityColor)) {
+                const meta = window.rarityColor.find(r => r.name === pog.rarity) || null;
+                if (meta && meta.color) return meta.color;
+            }
+        } catch (e) { /* ignore */ }
+
+        return 'rgba(255,255,255,0.9)';
     }
 
     // Main setup when DOM ready
@@ -88,12 +159,37 @@
                 .filter(el => window.getComputedStyle(el).display !== 'none');
 
             if (singles.length) {
-                inventory = singles.map(el => ({
-                    id: el.dataset.name,
-                    name: el.dataset.name,
-                    color: el.dataset.color || '',
-                    rarity: el.dataset.rarity || ''
-                }));
+                    inventory = singles.map(el => {
+                        // binder HTML may include color on the <h4> or as data-color.
+                        const h4 = el.querySelector('h4');
+                        const fromH4Color = (h4 && h4.style && h4.style.color) ? h4.style.color : '';
+                        // prefer the element's computed backgroundColor if present (binder tiles may set bg)
+                        let fromComputedBg = '';
+                        try { fromComputedBg = window.getComputedStyle(el).backgroundColor || ''; } catch (e) { fromComputedBg = ''; }
+                        const name = el.dataset.name;
+                        const base = {
+                            id: name,
+                            name: name,
+                            color: el.dataset.color || fromComputedBg || fromH4Color || '',
+                            rarity: el.dataset.rarity || ''
+                        };
+                        // If color/rarity still missing, try to find canonical info from pogList
+                        try {
+                            if ((!base.color || !base.rarity) && Array.isArray(pogList) && pogList.length) {
+                                const meta = pogList.find(p => String(p.name) === String(name) || String(p.id) === String(name));
+                                if (meta) {
+                                    if (!base.color) base.color = meta.color || meta.pogcol || '';
+                                    if (!base.rarity) base.rarity = meta.rarity || '';
+                                }
+                            }
+                        } catch (e) { /* ignore lookup errors */ }
+                        return base;
+                    });
+
+                // quick debug: show what we read from the binder so missing colors are visible
+                try {
+                    console.debug('teamSelect: buildInventory read from binder', { count: inventory.length, sample: inventory.slice(0,5) });
+                } catch (e) { /* ignore console errors */ }
 
                 const cap = Array.isArray(window.pogAmount)
                     ? window.pogAmount.length
@@ -254,6 +350,10 @@
                     assignPogToSlot(pog);
                 });
                 allCharacters.appendChild(card);
+                try {
+                    const applied = window.getComputedStyle(card).backgroundColor;
+                    console.debug('teamSelect: renderInventory appended card', { name: pog.name, dataColor: pog.color, appliedBackgroundColor: applied });
+                } catch (e) { /* ignore compute errors */ }
             });
         }
 
@@ -279,17 +379,27 @@
                     return (meta && meta.color) ? meta.color : null;
                 })();
 
+                // Render selected pogs as boxed cards to match left sidebar
                 const card = document.createElement('div');
-                card.className = 'selected-card';
+                card.className = 'selected-card team-pog-box selected-box';
                 card.setAttribute('data-pog-id', id);
-                if (color) {
-                    const dot = document.createElement('div');
-                    dot.className = 'color-dot';
-                    dot.style.background = color;
-                    card.appendChild(dot);
+
+                // apply background color (validate candidate; fall back to rarity)
+                try {
+                    const found = inventory.find(p => String(p.id) === String(id) || p.name === name) ||
+                        (pogList || []).find(p => String(p.id) === String(id) || p.name === name) || null;
+                    const selBg = found ? resolveValidColor(found) : 'rgba(255,255,255,0.9)';
+                    card.style.backgroundImage = 'linear-gradient(rgba(255,255,255,0.12), rgba(255,255,255,0.12))';
+                    card.style.backgroundColor = selBg;
+                    try { console.debug('teamSelect: renderSelectedStrip applied', { name, selBg }); } catch (e) {}
+                } catch (e) {
+                    card.style.background = 'rgba(255,255,255,0.9)';
                 }
+
                 const txt = document.createElement('div');
                 txt.textContent = name;
+                txt.style.color = '#000';
+                txt.style.fontWeight = '700';
                 card.appendChild(txt);
                 selContainer.appendChild(card);
             });
