@@ -32,13 +32,13 @@ let crates = (userdata && userdata.crates) ? userdata.crates : [
                 chance: 0.15
             },
             {
-                name: "Rare",
-                chance: 0.0
+                name: "Mythic",
+                chance: 0.055
             },
             {
-                name: "Mythic",
-                chance: 0.06
-            },
+                name: "Unique",
+                chance: 0.005    // new tiny chance for Unique
+            }
         ]
     },
     {
@@ -47,7 +47,7 @@ let crates = (userdata && userdata.crates) ? userdata.crates : [
         rarities: [
             {
                 name: "Trash",
-                chance: 0.0
+                chance: 0.13
             },
             {
                 name: "Common",
@@ -58,13 +58,13 @@ let crates = (userdata && userdata.crates) ? userdata.crates : [
                 chance: 0.16
             },
             {
-                name: "Rare",
-                chance: 0.13
+                name: "Mythic",
+                chance: 0.1
             },
             {
-                name: "Mythic",
-                chance: 0.11
-            },
+                name: "Unique",
+                chance: 0.01    // new tiny chance for Unique
+            }
         ]
     },
     {
@@ -73,7 +73,7 @@ let crates = (userdata && userdata.crates) ? userdata.crates : [
         rarities: [
             {
                 name: "Trash",
-                chance: 0.0
+                chance: 0.11
             },
             {
                 name: "Common",
@@ -83,39 +83,14 @@ let crates = (userdata && userdata.crates) ? userdata.crates : [
                 name: "Uncommon",
                 chance: 0.27
             },
-            {
-                name: "Rare",
-                chance: 0.21
-            },
+
             {
                 name: "Mythic",
-                chance: 0.12
-            },
-        ]
-    },
-    {
-        name: "rare crate",
-        price: 5000,
-        rarities: [
-            {
-                name: "Trash",
-                chance: 0.1
+                chance: 0.2
             },
             {
-                name: "Common",
-                chance: 0.25
-            },
-            {
-                name: "Uncommon",
-                chance: 0.20
-            },
-            {
-                name: "Rare",
-                chance: 0.30
-            },
-            {
-                name: "Mythic",
-                chance: 0.15
+                name: "Unique",
+                chance: 0.02    // new tiny chance for Unique
             }
         ]
     },
@@ -125,19 +100,15 @@ let crates = (userdata && userdata.crates) ? userdata.crates : [
         rarities: [
             {
                 name: "Trash",
-                chance: 0.0
+                chance: 0.09933
             },
             {
                 name: "Common",
-                chance: 0.025   // lowered a bit
+                chance: 0.18   // lowered a bit
             },
             {
                 name: "Uncommon",
-                chance: 0.15    // unchanged
-            },
-            {
-                name: "Rare",
-                chance: 0.32    // increased a bit
+                chance: 0.17    // unchanged
             },
             {
                 name: "Mythic",
@@ -145,8 +116,13 @@ let crates = (userdata && userdata.crates) ? userdata.crates : [
             },
             {
                 name: "Unique",
-                chance: 0.005    // new tiny chance for Unique
+                chance: 0.05    // new tiny chance for Unique
+            },
+            {
+                name: "Otherwordly",
+                chance: 0.00067    // new tiny chance for Otherwordly
             }
+
         ]
     }
 ];

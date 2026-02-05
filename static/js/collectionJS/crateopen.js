@@ -1210,9 +1210,6 @@ document.addEventListener('DOMContentLoaded', function() {
         transaction(1000, 2) // Uncommon Crate - $1000
     );
     document.getElementById('crate4').addEventListener('click', () => 
-        transaction(5000, 3) // Rare Crate - $5000
-    );
-    document.getElementById('crate5').addEventListener('click', () => 
-        transaction(7000, 4) // Mythic Crate - $7000
+        transaction(7000, 3) // Mythic Crate - $7000
     );
 });

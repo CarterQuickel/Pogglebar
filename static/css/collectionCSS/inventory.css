@@ -21,11 +21,36 @@
     justify-content: center;
     place-items: center;
     overflow-y: auto;
+    overflow-x: hidden;
     min-height: 175px;
     max-height: 80vh;
     flex: 1;
-    overflow-x: hidden;
     transition: all 0.1s ease;
+}
+
+#inventory::-webkit-scrollbar {
+    width: 9px;
+}
+
+#inventory::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.094);
+    border-radius: 6px;
+}
+
+#inventory::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.233);
+}
+
+#inventory::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#inventory::-webkit-scrollbar-track:hover {
+    background: transparent;
+}
+
+#inventory::-webkit-scrollbar-track:active {
+    background: transparent;
 }
 
 .multiplier {
@@ -128,12 +153,6 @@
 
 #sellbtn:hover {
     scale: 0.85;
-}
-
-/* Scrollbar track (background) */
-#inventory::-webkit-scrollbar {
-    width: 0;
-    height: 0;
 }
 
 /* inventory items */

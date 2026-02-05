@@ -147,9 +147,17 @@ document.getElementById("slotAmount").addEventListener("change", () => {
 
 document.getElementById("purchaseBtn_S").addEventListener("click", () => {
     const amount = parseInt(document.getElementById("slotAmount").value);
+    if (amount < 1 || amount > 999 || isNaN(amount)) {
+        alert("Please select a valid amount of slots (1-999).");
+        return;
+    }
+    if (Isize + amount > 999) {
+        alert("You cannot have more than 999 inventory slots.");
+        return;
+    }
     const slotPrice = calcSlot(amount);
     const pinval = document.getElementById("pinField_slot").value;
-    purchaseSlots(slotPrice, "Slots", pinval, amount);
+    purchaseSlots(slotPrice, `Slots x${amount}`, pinval, amount);
     document.getElementById("slotOver").style.display = "none";
 });
 

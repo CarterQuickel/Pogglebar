@@ -90,7 +90,7 @@ inventoryDiv.innerHTML = inventoryDiv.innerHTML +
     // add empty slots
     Array.from({ length: emptySlot }, (_, i) => `<div class="emptySlot"></div>`).join("") +
     //add buy slot button
-    `<div id="buySlot">+</div>`;
+    (Isize >= 999 ? '' : `<div id="buySlot">+</div>`);
 // Get tradeable items from inventory
 const tradeableItems = inventory.filter(item => item.rarity !== "Unique");
 bindBuySlot();
