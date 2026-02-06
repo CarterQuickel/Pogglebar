@@ -66,6 +66,7 @@
                 if (meta && meta.color) bgColor = meta.color;
             }
             // normalize
+            
             if (bgColor) bgColor = String(bgColor).trim();
         } catch (e) { bgColor = (pog.color || ''); }
 
