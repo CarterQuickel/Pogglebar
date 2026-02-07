@@ -26,7 +26,6 @@ process.on('exit', (code) => {
 //modules
 const achievements = require("./modules/backend_js/trophyList.js")
 const crateRef = require("./modules/backend_js/crateRef.js")
-console.log(crateRef);
 const { initializeUserState, RARITY_COLORS } = require('./modules/backend_js/userState.js');
 const { perks } = require('./modules/backend_js/tb_declar/perk_card.js');
 require('./backend_data/marketplace/trading_socket')(io);
@@ -38,16 +37,19 @@ const tiers = require("./modules/backend_js/tierList.js");
 const { getPogCount, getAllPogs, initializePogDatabase } = require('./backend_data/pog_ref.js');
 let pogCount = 0;
 let results = [];
+
 async function initApp() {
-    [pogCount, results] = await Promise.all([
-        getPogCount(),
-        getAllPogs()
-    ]);
+  try {
+    results = await initializePogDatabase();
     pogCount = await getPogCount();
-    results = await getAllPogs();
-    console.log('Pog count:', pogCount);
-    console.log('First pog:', results[0]);
+    console.log('Pog CSV count:', results.length);
+    console.log('DB pog count:', pogCount);
+  } catch (err) {
+    console.error("Error initializing app:", err);
+    process.exit(1);
+  }
 }
+
 initApp();
 /* This creates session middleware with given options;
 The 'secret' option is used to sign the session ID cookie.
@@ -187,7 +189,6 @@ app.get('/', isAuthenticated, (req, res) => {
                                 return console.error("Error inserting user:", err.message);
                             }
                             console.log(`User '${displayName}' inserted with rowid ${this.lastID} and fid ${id}`);
-                            console.log(req.session.user);
                         });
                 }
             });
@@ -636,7 +637,6 @@ app.get('/api/perk-tiers', (req, res) => {
     if (!req.session || !req.session.user) return res.status(401).json({ error: 'Not authenticated' });
     const displayName = req.session.user.displayName || req.session.user.displayname;
     const tiers = (req.session.user.tiers);
-    console.log(req.session.user);
     if (!displayName) return res.status(400).json({ error: 'Missing displayName in session' });
     usdb.get('SELECT tiers FROM userSettings WHERE displayname = ?', [displayName], (err, row) => {
         if (err) {

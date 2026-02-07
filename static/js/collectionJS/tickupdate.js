@@ -28,8 +28,8 @@ function update() {
     //sell all width
     document.getElementById("sellAll").style.width = searching ? "150px" : "100px";
 
-    if (inventory.length >= 999) {
-        while (inventory.length > 999) {
+    if (inventory.length >= 100) {
+        while (inventory.length > 100) {
             const item = inventory[0];
             sellItem(item.id, Math.round(item.income * 1.05), false);
         }

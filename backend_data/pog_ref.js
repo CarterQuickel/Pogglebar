@@ -16,16 +16,24 @@ const headers = [
 ];
 
 function initializePogDatabase() {
+  return new Promise((resolve, reject) => {
     const results = [];
     fs.createReadStream('pogipedia/db/pogs.csv')
-        .pipe(csv({ headers }))
-        .on('data', (row) => {
-            const { id, name, color, description, rarity, creator } = row;
-            results.push({ id, name, color, description, rarity, creator });
-        })
-        .on('end', () => {
-        });
-    }
+      .pipe(csv({ headers }))
+      .on('data', (row) => {
+        const { id, name, color, description, rarity, creator } = row;
+        results.push({ id, name, color, description, rarity, creator });
+      })
+      .on('end', () => {
+        console.log(`Loaded ${results.length} pogs from CSV`);
+        resolve(results);
+      })
+      .on('error', (err) => {
+        console.error("Error reading pogs.csv:", err);
+        reject(err);
+      });
+  });
+}
 
 function getPogCount() {
     return new Promise((resolve, reject) => {

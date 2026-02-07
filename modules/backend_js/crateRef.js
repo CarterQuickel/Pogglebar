@@ -68,7 +68,6 @@ const crateRef = [
                 name: "Uncommon",
                 chance: 0.27
             },
-
             {
                 name: "Mythic",
                 chance: 0.2

@@ -26,17 +26,18 @@ try {
     const ple = document.getElementById("pogList");
     const ptxt = ple ? ple.textContent.trim() : '';
     if (ptxt) pogList = JSON.parse(ptxt);
+    console.log(pogList);
 } catch (e) {
     console.warn('Failed to parse pogList JSON; using empty list.', e);
 }
 
 // pogiedia rarity defining
 rarityColor = [
-    { name: "Trash", color: "red", income: 4 }, //trash
-    { name: "Common", color: "yellow", income: 15 }, //common
-    { name: "Uncommon", color: "lime", income: 27 }, //uncommon
-    { name: "Mythic", color: "fuchsia", income: 63 }, //mythic
-    { name: "Unique", color: "lightgray", income: 134 }, //unique
+    { name: "Trash", color: "red", income: 2 }, //trash
+    { name: "Common", color: "yellow", income: 7 }, //common
+    { name: "Uncommon", color: "lime", income: 13 }, //uncommon
+    { name: "Mythic", color: "fuchsia", income: 20 }, //mythic
+    { name: "Unique", color: "lightgray", income: 28 }, //unique
 ]
 
 // used for crate display

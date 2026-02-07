@@ -156,11 +156,6 @@ function loadServerTiers() {
 // attempt to load persisted tiers from server on page load
 loadServerTiers();
 
-document.getElementById('yyy').addEventListener('click', () => {
-    earned += 1;
-    setProgress(50 * earned);
-});
-
 function getReward(tier) {
     // Placeholder function to handle reward logic
     alert(`Reward for Tier ${tier} claimed!`);

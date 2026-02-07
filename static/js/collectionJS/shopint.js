@@ -147,12 +147,12 @@ document.getElementById("slotAmount").addEventListener("change", () => {
 
 document.getElementById("purchaseBtn_S").addEventListener("click", () => {
     const amount = parseInt(document.getElementById("slotAmount").value);
-    if (amount < 1 || amount > 999 || isNaN(amount)) {
-        alert("Please select a valid amount of slots (1-999).");
+    if (amount < 1 || amount > 100 || isNaN(amount)) {
+        alert("Please select a valid amount of slots (1-100).");
         return;
     }
-    if (Isize + amount > 999) {
-        alert("You cannot have more than 999 inventory slots.");
+    if (Isize + amount > 100) {
+        alert("You cannot have more than 100 inventory slots.");
         return;
     }
     const slotPrice = calcSlot(amount);

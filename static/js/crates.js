@@ -100,7 +100,7 @@ let crates = (userdata && userdata.crates) ? userdata.crates : [
         rarities: [
             {
                 name: "Trash",
-                chance: 0.09933
+                chance: 0.1
             },
             {
                 name: "Common",
@@ -117,12 +117,7 @@ let crates = (userdata && userdata.crates) ? userdata.crates : [
             {
                 name: "Unique",
                 chance: 0.05    // new tiny chance for Unique
-            },
-            {
-                name: "Otherwordly",
-                chance: 0.00067    // new tiny chance for Otherwordly
             }
-
         ]
     }
 ];

@@ -4,7 +4,8 @@ const router = express.Router();
 const usdb = new sqlite3.Database('./data/usersettings.sqlite');
 const {
     getPogCount,
-    getAllPogs
+    getAllPogs,
+    initializePogDatabase
 } = require('../backend_data/pog_ref.js');
 
 // home page
@@ -12,7 +13,7 @@ router.get('/collection', async (req, res) => {
     try {
         const [pogCount, results] = await Promise.all([
             getPogCount(),
-            getAllPogs()
+            initializePogDatabase()
         ]);
     if (!req.session.user) {
         return res.redirect('/');
