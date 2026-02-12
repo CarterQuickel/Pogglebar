@@ -51,9 +51,16 @@
         </div>
     </div>
     <!--Profile Pic Container-->
-    <div id="pfpChanger">
-        <h3>Choose your Profile Picture</h3>
-        <img id="bigpfp" width="100" height="100" src="static/icons/pfp/defaultpfp.png" />
+    <div id="pfpChanger" style="display: none;">
+        <div id="toppfp">
+            <h2><%= userdata.displayName %></h2>
+            <button id="logout">Log Out</button>
+        </div>
+        <h3 style="margin-top: -15px; font-weight: normal;">Choose your Profile Preferences</h3>
+        <div style="display: flex; gap: 20px;">
+            <img id="bigpfp" width="100" height="100" src="static/icons/pfp/defaultpfp.png" />
+            <input id="picker" type="color">
+        </div>
         <p id="fileSizeMessage"></p>
         <input id="filepfp" type="file" accept="image/*" />
         <button id="closePfpChanger">Close</button>
@@ -99,7 +106,7 @@
             <div id="inventory"></div>
         </div>
         <!--Settings and Crate-->
-        <%- include("collectionEJS/leftmost.ejs") %>
+        <%- include("collectionEJS/info_right.ejs") %>
     </div>
     <!-- Gacha Animation Overlay -->
     <%- include("collectionEJS/gacha.ejs") %>

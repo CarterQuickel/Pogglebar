@@ -80,7 +80,7 @@ li {
 
 /* Table Container */
 .board {
-    margin: 200px auto 60px auto;
+    margin: 0px auto 60px auto;
     background: linear-gradient(135deg, #2b2f4a, #1a1d2e);
     border: 1px solid rgba(255, 255, 255, 0.094);
     border-radius: 12px;

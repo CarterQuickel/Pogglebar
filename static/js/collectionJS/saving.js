@@ -7,7 +7,7 @@ function save() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            lightMode: "dark",
+            lightMode: theme_col,
             money: money,
             inventory: inventory,
             Isize: Isize,

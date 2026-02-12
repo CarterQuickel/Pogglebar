@@ -18,8 +18,12 @@ const crateRef = [
             },
             {
                 name: "Mythic",
-                chance: 0.06
+                chance: 0.055
             },
+            {
+                name: "Unique",
+                chance: 0.005    // new tiny chance for Unique
+            }
         ]
     },
     {
@@ -40,8 +44,12 @@ const crateRef = [
             },
             {
                 name: "Mythic",
-                chance: 0.11
+                chance: 0.1
             },
+            {
+                name: "Unique",
+                chance: 0.01    // new tiny chance for Unique
+            }
         ]
     },
     {
@@ -63,29 +71,11 @@ const crateRef = [
 
             {
                 name: "Mythic",
-                chance: 0.22
-            },
-        ]
-    },
-    {
-        name: "rare crate",
-        price: 5000,
-        rarities: [
-            {
-                name: "Trash",
-                chance: 0.20
+                chance: 0.2
             },
             {
-                name: "Common",
-                chance: 0.25
-            },
-            {
-                name: "Uncommon",
-                chance: 0.25
-            },
-            {
-                name: "Mythic",
-                chance: 0.30
+                name: "Unique",
+                chance: 0.02    // new tiny chance for Unique
             }
         ]
     },
@@ -95,11 +85,11 @@ const crateRef = [
         rarities: [
             {
                 name: "Trash",
-                chance: 0.09933
+                chance: 0.1
             },
             {
                 name: "Common",
-                chance: 0.225   // lowered a bit
+                chance: 0.18   // lowered a bit
             },
             {
                 name: "Uncommon",
@@ -111,15 +101,10 @@ const crateRef = [
             },
             {
                 name: "Unique",
-                chance: 0.005    // new tiny chance for Unique
-            },
-            {
-                name: "Otherwordly",
-                chance: 0.00067    // new tiny chance for Otherwordly
+                chance: 0.05    // new tiny chance for Unique
             }
-
         ]
     }
-]
+];
 
 module.exports = crateRef;

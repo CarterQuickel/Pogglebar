@@ -31,21 +31,6 @@ console.log('Parsed userdata:', userdata);
 console.log('Parsed pogList length:', pogList.length);
 console.log('================================');
 
-
-// Theme setup
-if (userdata.theme === "light") { 
-    document.body.style.backgroundColor = "white"; 
-    document.body.style.color = "black"; 
-    const messageCont = document.getElementById("messageCont");
-    if (messageCont) {
-        messageCont.style.backgroundColor = "white";
-        messageCont.style.color = "black";
-    }
-} else if (userdata.theme === "dark") { 
-    document.body.style.backgroundColor = "black"; 
-    document.body.style.color = "white"; 
-}
-
 // PFP (default for current user)
 const pfp = (userdata && userdata.pfp) ? userdata.pfp : '/static/icons/pfp/defaultpfp.png';
 
@@ -148,11 +133,6 @@ function renderAuction(auction) {
     const currentBid = auction.winner_bid || auction.startPrice;
     const isFirstBid = !auction.winner_bid;
     
-    // Theme setup (following your trade room)
-    const isLight = userdata.theme === 'light';
-    const textColor = isLight ? 'black' : 'white';
-    const metaColor = isLight ? '#333' : '#ddd';
-    
     // Can user interact with this auction?
     const canBid = auction.AuctionStatus === 'active' && 
                    timeLeft > 0 && 
@@ -162,18 +142,18 @@ function renderAuction(auction) {
     wrapper.innerHTML = `
     <!-- Your layout: item, time, bid+bidder, buy now, buttons -->
     <div class="pog-name">
-        <strong style="color: ${textColor};">${auction.pog}</strong>
+        <strong style="color: white;">${auction.pog}</strong>
     </div>
-    <div class="pog-time" style="color: ${metaColor};">${timeDisplay}</div>
-    <div class="pog-bid" style="color: ${textColor};">
+    <div class="pog-time" style="color: #ddd;">${timeDisplay}</div>
+    <div class="pog-bid" style="color: white;">
         Current Bid: $${currentBid} ${isFirstBid ? '(Starting Price)' : ''}
     </div>
-    <div class="pog-bidder" style="color: ${metaColor};">
+    <div class="pog-bidder" style="color: #ddd;">
         ${auction.winner_name ? 
             `<img src="${auction.winner_pfp || '/static/icons/pfp/defaultpfp.png'}" class="winner-pfp"> Highest Bidder: ${auction.winner_name}` 
             : 'No bids yet'}
     </div>
-    <div class="buy-now-price" style="color: ${textColor};">
+    <div class="buy-now-price" style="color: white;">
         Buy It Now: $${auction.maxAcceptedBid}
     </div>
     <div class="pog-actions">
@@ -188,15 +168,9 @@ function renderAuction(auction) {
     // keep reference for future calls
     pogContainer = container;
     container.appendChild(wrapper);
-    
-    // Theme styling (following your trade room pattern)
-    if (isLight) {
-        wrapper.style.backgroundColor = 'rgba(255,255,255,0.9)';
-        wrapper.style.color = 'black';
-    } else {
-        wrapper.style.backgroundColor = 'rgba(0,0,0,0.3)';
-        wrapper.style.color = 'white';
-    }
+
+    wrapper.style.backgroundColor = 'rgba(0,0,0,0.3)';
+    wrapper.style.color = 'white';
 }
 
 function placeBid(sellerId, pogName, currentBid, minIncrement) {
@@ -413,8 +387,8 @@ function showCreateAuctionPopup() {
     const popup = document.createElement('div');
     popup.id = 'auctionPopup';
     popup.style.cssText = `
-        background-color: ${userdata.theme === 'light' ? 'white' : '#333'};
-        color: ${userdata.theme === 'light' ? 'black' : 'white'};
+        background-color: #333
+        color: 'white';
         padding: 30px;
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);

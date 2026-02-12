@@ -51,25 +51,6 @@
     gap: 5px;
 }
 
-#openCratesBtn:hover {
-    background-color: #d4bebe;
-    scale: 0.7;
-}
-
-#openCratesBtn:active {
-    scale: 0.65;
-}
-
-#crate1:disabled,
-#crate2:disabled,
-#crate3:disabled,
-#crate4:disabled,
-#crate5:disabled {
-    pointer-events: none;
-    cursor: not-allowed;
-    background-color: #a3a3a3;
-}
-
 #cratesCont {
     flex-direction: row;
     justify-content: space-between;
@@ -80,29 +61,4 @@
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 20px;
-}
-
-/* crate 1 */
-#crate1 {
-    background-color: rgb(245, 88, 88);
-}
-
-/* crate 2 */
-#crate2 {
-    background-color: rgb(250, 250, 114);
-}
-
-/* crate 3 */
-#crate3 {
-    background-color: rgb(128, 255, 128);
-}
-
-/* crate 4 */
-#crate4 {
-    background-color: lightskyblue;
-}
-
-/* crate 5 */
-#crate5 {
-    background-color: rgb(219, 143, 255);
 }

@@ -1,6 +1,6 @@
 const { dot } = require("node:test/reporters");
 
-const classes = {
+window.classes = {
     tank: {
         name: "Tank",
         desc: "Reduces incoming damage to your team",
@@ -32,7 +32,7 @@ const classes = {
         desc: "Deals high damage to enemies.",
         subclasses: {
             dot: {
-                name: "Dot", //EX. Black Swan
+                name: "DoT", //EX. Black Swan
                 desc: "Applies damage over time effects to enemies.",
                 prop: {
                     health: 2000,
@@ -172,4 +172,3 @@ const classes = {
         }
     }
 }
-

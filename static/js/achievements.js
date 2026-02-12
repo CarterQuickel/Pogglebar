@@ -13,14 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
  
     achievementContainer = document.getElementById('achievementsList');
  
-    if (userdata && userdata.theme === 'light') {
-        document.body.style.backgroundColor = 'white';
-        document.body.style.color = 'black';
-    } else if (userdata && userdata.theme === 'dark') {
-        document.body.style.backgroundColor = 'black';
-        document.body.style.color = 'white';
-    }
- 
     // delegated click handler: mark an earned achievement as notified when clicked
     // and show a slide-in popup from the bottom-left
     if (achievementContainer) {

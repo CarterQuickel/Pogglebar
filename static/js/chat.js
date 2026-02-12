@@ -2,17 +2,6 @@
 const userdata = (() => { try { return JSON.parse(document.getElementById("userdata")?.textContent || '{}'); } catch (e) { return {}; } })();
 const pogList = (() => { try { return JSON.parse(document.getElementById("pogList")?.textContent || '[]'); } catch (e) { return []; } })();
 
-// Theme setup
-if (userdata.theme === "light") { 
-    document.body.style.backgroundColor = "white"; 
-    document.body.style.color = "black"; 
-    document.getElementById("messageCont").style.backgroundColor = "white";
-    document.getElementById("messageCont").style.color = "black";
-} else if (userdata.theme === "dark") { 
-    document.body.style.backgroundColor = "black"; 
-    document.body.style.color = "white"; 
-}
-
 const socket = io(); 
 const myName = userdata.displayName || userdata.displayname || 'Guest';
 
@@ -102,10 +91,6 @@ function renderTrade(trade) {
     if (tradeId) wrapper.setAttribute('data-trade-id', tradeId);
     const time = trade.time ? new Date(Number(trade.time)) : new Date();
     const timeStr = time.toLocaleTimeString();
-    
-    const isLight = userdata.theme === 'light';
-    const textColor = isLight ? 'black' : 'white';
-    const metaColor = isLight ? '#333' : '#ddd';
 
     // Profile picture logic
     let pfp;
@@ -131,12 +116,12 @@ function renderTrade(trade) {
         <div class="trade-header">
             ${pfp ? `<img src="${pfp}" alt="${trade.name}'s profile picture" class="trade-pfp">` : ''}
             <div class="trade-meta">
-                <strong style="color: ${metaColor}">${trade.name || 'Anonymous'}</strong>
-                <span style="color: ${metaColor}; font-size: 0.9em">${timeStr}</span>
+                <strong style="color: #ddd">${trade.name || 'Anonymous'}</strong>
+                <span style="color: #ddd; font-size: 0.9em">${timeStr}</span>
             </div>
         </div>
-        ${trade.message ? `<div class="trade-message" style="color: ${textColor}">${escapeHtml(trade.message)}</div>` : ''}
-        <div class="trade-details" style="color: ${textColor}">
+        ${trade.message ? `<div class="trade-message" style="color: white">${escapeHtml(trade.message)}</div>` : ''}
+        <div class="trade-details" style="color: white">
         <div id="givingBox">
             <strong>Giving:</strong> 
             <span style="color: ${givingItemColor}; font-weight: bold;">${escapeHtml(trade.giving_item_name)} (${givingItemColor})</span>
@@ -159,14 +144,9 @@ function renderTrade(trade) {
         document.body.appendChild(wrapper);
     }
 
-    // Ensure wrapper background/text follow theme
-    if (isLight) {
-        wrapper.style.backgroundColor = 'rgba(255,255,255,0.9)';
-        wrapper.style.color = 'black';
-    } else {
-        wrapper.style.backgroundColor = 'rgba(0,0,0,0.3)';
-        wrapper.style.color = 'white';
-    }
+    wrapper.style.backgroundColor = 'rgba(0,0,0,0.3)';
+    wrapper.style.color = 'white';
+
 }
 
 

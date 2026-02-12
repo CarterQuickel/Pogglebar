@@ -58,6 +58,7 @@
             <div id="pogView">
                 <div id="viewed">
                     <div class="singleI">
+                        <img id="rar_back" width="75" height="75" style="display: none;">
                         <h4></h4>
                         <div id="pognotv"></div>
                     </div>
@@ -66,19 +67,23 @@
             <div id="statBlock" style="visibility: hidden;">
                 <div class="statBox">
                     <h4 style="margin: 0;">HP</h4>
-                    <progress class="statBar" id="HP_PB" value="50" max="100"></progress>
+                    <progress class="statBar" id="HP_PB" value="50" max="6600"></progress>
+                    <div id="hpAr"></div>
                 </div>
                 <div class="statBox">
                     <h4 style="margin: 0;">ATK</h4>
-                    <progress class="statBar" id="ATK_PB" value="50" max="100"></progress>
+                    <progress class="statBar" id="ATK_PB" value="50" max="3200"></progress>
+                    <div id="atkAr"></div>
                 </div>
                 <div class="statBox">
                     <h4 style="margin: 0;">DEF</h4>
-                    <progress class="statBar" id="DEF_PB" value="50" max="100"></progress>
+                    <progress class="statBar" id="DEF_PB" value="50" max="2800"></progress>
+                    <div id="defAr"></div>
                 </div>
                 <div class="statBox">
                     <h4 style="margin: 0;">SPD</h4>
-                    <progress class="statBar" id="SPD_PB" value="50" max="100"></progress>
+                    <progress class="statBar" id="SPD_PB" value="50" max="150"></progress>
+                    <div id="spdAr"></div>
                 </div>
                 <h3>Perks</h3>
                 <div id="perkCardCont">
@@ -90,19 +95,21 @@
                     <p id="descStat"></p>
                     <div id="attRow">
                         <div class="attCont">
-                            <img src="../static/icons/attributes/creator.png" width="20" height="20">
+                            <img id="icon" src="../static/icons/attributes/creator.png" width="20" height="20">
                             <div id="creatorStat"></div>
                         </div>
                         <div class="attCont">
-                            <img src="../static/icons/attributes/class.png" width="20" height="20">
+                            <img id="icon" src="../static/icons/attributes/class.png" width="20" height="20">
                             <div id="classStat"></div>
                         </div>
                         <div class="attCont">
-                            <img src="../static/icons/attributes/paint.png" width="20" height="20">
+                            <div id="rari_cont">
+                                <img id="rar_icon" width="20" height="20">
+                            </div>
                             <div id="rarStat"></div>
                         </div>
                         <div class="attCont">
-                            <img src="../static/icons/attributes/atom.png" width="20" height="20">
+                            <img id="icon" src="../static/icons/attributes/atom.png" width="20" height="20">
                             <div id="elemStat"></div>
                         </div>
                     </div>

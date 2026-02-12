@@ -1,7 +1,6 @@
 // Add this at the very top of your file
 let debugCounter = 0;
 
-
 // ===== ANIMATION SEQUENCES =====
 async function showAnimationForRarity(rarity, pogResult) {
     if (!isAnimationRunning) return; // Check if we should continue
@@ -253,70 +252,110 @@ async function createMiniExplosion() {
     return new Promise(resolve => setTimeout(resolve, 800));
 }
 
-function validateCrateOpening(type, cost, count) {
-    if (type === "Money") {
-        if (money < cost) {
-            alert(`Not enough money to open ${count} crate${count > 1 ? 's' : ''}! (Need $${abbreviateNumber(cost-money)} more)`);
-            return false;
-        }
-    }
+function validateCrateOpening(count) {
     if (inventory.length + count > Isize) {
         alert(`Not enough inventory space to open ${count} crate${count > 1 ? 's' : ''}!`);
         return false;
     }
-    if (inventory.length + count >= 999) {
+    if (inventory.length + count >= 100) {
         alert("Inventory full! Sell some pogs to make space.");
         return false;
     }
     return true;
 }
 
-function calculatePogResult(cost, index) {
-    console.log(`🎲 Attempting to calculate pog result for index ${index}`);
-    
-    const crateKeys = Object.keys(crates || {});
-    const key = crateKeys[index];
-    
-    if (!key) {
-        console.log(`❌ No key found for index ${index}. Available keys:`, crateKeys);
-        return null;
-    }
-    
-    const crate = crates[key];
-    if (!crate || !Array.isArray(crate.rarities)) {
-        console.log(`❌ Invalid crate data for key ${key}:`, crate);
-        return null;
-    }
+// crateopen.js (client-side)
+function calculatePogResult(index) {
+  console.log(`🎲 Attempting to calculate pog result for index ${index}`);
 
-    console.log(`✅ Using crate ${key} with rarities:`, crate.rarities);
+  // ensure crates is an array (coming from server-side render)
+  if (!Array.isArray(window.userCrates) && Array.isArray(window.crates)) {
+    window.userCrates = window.crates;
+  }
+  const cratesArr = Array.isArray(window.userCrates) ? window.userCrates : (Array.isArray(window.crates) ? window.crates : crates);
 
-    let rand = Math.random();
-    let cumulativeChance = 0;
-
-    for (const item of crate.rarities) {
-        cumulativeChance += Number(item.chance) || 0;
-        if (rand < cumulativeChance) {
-            const candidates = (pogList || []).filter(p => p.rarity === item.name);
-            if (candidates.length === 0) return null;
-            const chosen = candidates[Math.floor(Math.random() * candidates.length)];
-            console.log(chosen)
-
-            const meta = (rarityColor || []).find(r => r.name === chosen.rarity) || {};
-            return {
-                locked: false,
-                pogid: chosen.id || null,
-                name: chosen.name,
-                id: Date.now() + Math.floor(Math.random() * 10000),
-                rarity: chosen.rarity,
-                pogcol: chosen.color || 'white',
-                color: meta.color || 'white',
-                income: meta.income || 5,
-                description: chosen.description || '',
-                creator: chosen.creator || ''
-            };
-        }
-    }
+  const crate = cratesArr[index];
+  if (!crate || !Array.isArray(crate.rarities)) {
+    console.error("Invalid crate index or configuration:", index, crate);
     return null;
+  }
+  console.log(`✅ Using crate ${crate.name || index} with rarities:`, crate.rarities);
+
+  // Ensure pogList exists on the client
+  const localPogList = Array.isArray(window.pogList) ? window.pogList : (typeof pogList !== 'undefined' ? pogList : []);
+  if (!localPogList.length) {
+    console.warn("pogList empty on client — cannot open crates");
+    return null;
+  }
+
+  // helper: normalized string compare
+  const norm = s => String(s || "").trim().toLowerCase();
+
+  // roll
+  let rand = Math.random();
+  let cumulativeChance = 0;
+
+  for (const item of crate.rarities) {
+    cumulativeChance += Number(item.chance) || 0;
+    if (rand < cumulativeChance) {
+      // find candidates using case-insensitive match
+      const candidates = localPogList.filter(p => norm(p.rarity) === norm(item.name));
+
+      // debug output (unique, deduped rarity list)
+      console.log("Looking for rarity:", item.name);
+      console.log("Available pog rarities:", [...new Set(localPogList.map(p => p.rarity))]);
+
+      if (candidates.length === 0) {
+        console.warn(`No pogs for rarity "${item.name}", skipping this rarity (roll continues)`);
+        // continue looping: this lets another rarer/cheaper tier be used if present
+        continue;
+      }
+
+      const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+      console.log("Chosen pog:", chosen);
+
+      const meta = (typeof rarityColor !== 'undefined' ? rarityColor : []).find(r => norm(r.name) === norm(chosen.rarity)) || {};
+
+      return {
+        locked: false,
+        pogid: chosen.id || null,
+        name: chosen.name,
+        id: Date.now() + Math.floor(Math.random() * 10000),
+        rarity: chosen.rarity,
+        pogcol: chosen.color || 'white',
+        color: meta.color || 'white',
+        income: meta.income || 5,
+        description: chosen.description || '',
+        creator: chosen.creator || ''
+      };
+    }
+  }
+
+  // fallback: choose from the crate's last rarity bucket if present
+  const fallbackRarity = crate.rarities[crate.rarities.length - 1];
+  if (fallbackRarity) {
+    const fallbackCandidates = localPogList.filter(p => norm(p.rarity) === norm(fallbackRarity.name));
+    if (fallbackCandidates.length > 0) {
+      const chosen = fallbackCandidates[Math.floor(Math.random() * fallbackCandidates.length)];
+      const meta = (typeof rarityColor !== 'undefined' ? rarityColor : []).find(r => norm(r.name) === norm(chosen.rarity)) || {};
+      console.warn("Using fallback rarity because roll missed:", fallbackRarity.name);
+      return {
+        locked: false,
+        pogid: chosen.id || null,
+        name: chosen.name,
+        id: Date.now() + Math.floor(Math.random() * 10000),
+        rarity: chosen.rarity,
+        pogcol: chosen.color || 'white',
+        color: meta.color || 'white',
+        income: meta.income || 5,
+        description: chosen.description || '',
+        creator: chosen.creator || ''
+      };
+    }
+  }
+
+  console.error("No pog could be selected — crate misconfigured:", crate);
+  return null;
 }
 
 function addPogToInventory(pogResult) {
@@ -484,15 +523,15 @@ function cleanupGachaOverlay() {
 
 
 // ===== MAIN ANIMATION FUNCTIONS =====
-async function openCrateWithAnimation(cost, index) {
+async function openCrateWithAnimation(index) {
     clearAllEventListeners();
-    if (!validateCrateOpening(cost, 1)) return;
+    if (!validateCrateOpening(1)) return;
     if (isAnimationRunning) {
         console.log('❌ Animation already running, blocking new animation');
         return;
     }
 
-    const result = calculatePogResult(cost, index);
+    const result = calculatePogResult(index);
     if (!result) return;
 
     addPogToInventory(result);
@@ -514,9 +553,9 @@ async function openCrateWithAnimation(cost, index) {
     }
 }
 
-async function openMultipleCratesWithAnimation(cost, index, count) {
+async function openMultipleCratesWithAnimation(index, count) {
     clearAllEventListeners();
-    if (!validateCrateOpening(cost, count)) return;
+    if (!validateCrateOpening(count)) return;
     if (isAnimationRunning) {
         console.log('❌ Animation already running, blocking new animation');
         return;
@@ -524,11 +563,12 @@ async function openMultipleCratesWithAnimation(cost, index, count) {
 
     const results = [];
     for (let i = 0; i < count; i++) {
-        const result = calculatePogResult(cost, index);
+        const result = calculatePogResult(index);
         if (result) results.push(result);
     }
 
     const rarityOrder = { 'Unique': 6, 'Mythic': 5, 'Rare': 4, 'Uncommon': 3, 'Common': 2, 'Trash': 1 };
+    console.log(results);
     const highestRarity = results.reduce((highest, pog) => 
         rarityOrder[pog.rarity] > rarityOrder[highest.rarity] ? pog : highest
     );
@@ -1210,9 +1250,6 @@ document.addEventListener('DOMContentLoaded', function() {
         transaction(1000, 2) // Uncommon Crate - $1000
     );
     document.getElementById('crate4').addEventListener('click', () => 
-        transaction(5000, 3) // Rare Crate - $5000
-    );
-    document.getElementById('crate5').addEventListener('click', () => 
-        transaction(7000, 4) // Mythic Crate - $7000
+        transaction(7000, 3) // Mythic Crate - $7000
     );
 });

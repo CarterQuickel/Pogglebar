@@ -1,15 +1,6 @@
 var userdata = JSON.parse(document.getElementById("userdata").textContent);
 var scores = JSON.parse(document.getElementById("scores").textContent);
 
-//mode
-if (userdata.theme === "light") {
-    document.body.style.backgroundColor = "white";
-    document.body.style.color = "black";
-} else if (userdata.theme === "dark") {
-    document.body.style.backgroundColor = "black";
-    document.body.style.color = "white";
-}
-
 function hide() {
     const info = document.getElementById("details");
     info.style.display = "none";
@@ -25,10 +16,11 @@ document.querySelectorAll(".infobtn").forEach(button => {
         let experience = player.xp;
         const info = document.getElementById("details");
         info.style.display = "block";
+        info.style.background = player.theme;
         info.innerHTML = ` <h1>Player Details</h1>
                             <img id="pfpimg" src="${player.pfp}" style="width: 100px; height: 100px; border-radius: 50%; margin-top: 20px;"><br>
                             <h2 style="margin-top: 20px;">${player.displayname}</h2>
-                          <div style="margin-top: 20px; display: flex; gap: 40px; justify-content: center;">
+                            <div style="margin-top: 20px; display: flex; gap: 40px; justify-content: center;">
                             <div class="details-column">
                                 <h3>Score</h3> <p>${player.score}</p>
                                 <h3>Level</h3> <p>${player.level}</p>
@@ -41,8 +33,8 @@ document.querySelectorAll(".infobtn").forEach(button => {
                                 <h3>Crates Opened</h3> <p>${player.cratesOpened} crates</p>
                                 <h3>Pogs in Inventory</h3> <p>${sortedI.length}</p>
                             </div>
-                          </div>
-                          <button id="hideBtn" onclick="hide()" style="margin-bottom: 10px;">Hide Details</button>`;
+                            </div>
+                            <button id="hideBtn" onclick="hide()" style="margin-bottom: 10px;">Hide Details</button>`;
     })
 });
 
