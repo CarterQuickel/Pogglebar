@@ -9,6 +9,9 @@ canvas.width = 1900;
 canvas.height = 890;
 canvas.style.backgroundColor = '#000000';
 
+// set target nav system
+let targetStartIndex = 0;
+const maxTargetSlots = 2;
 /*
       # ###           #####  #  ##### /##       # ###       ##### /          ##### ##    
     /  /###  /     ######  / ######  / ##     /  /###  / ######  /        ######  /### / 
@@ -626,8 +629,22 @@ function activateUltimate(characterIndex) {
             }
         }
     });
-    updateUltimates(dt);
 }
+
+function getTargetableEnemies() {
+  return enemies.map((enemy, index) => ({
+    id: `enemy_${index}`,
+    name: enemy.name,
+    position: enemy.position,
+    isAlive: enemy.currentHp > 0,
+    index: index,
+    hp: enemy.currentHp,
+    maxHp: enemy.maxHp
+  })).filter(enemy => enemy.isAlive);
+}
+
+let selectedTarget = null;
+
 
   // updat
 /*
@@ -797,44 +814,74 @@ function drawHealAchievementStyle(x, y, size) {
 }
 
 function render() {
-  // clear
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // clear
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // background
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // background
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Draw enemy panel (replaces simple enemy circles)
-  drawEnemyPanelUI();
+    // Draw enemy panel
+    drawEnemyPanelUI();
 
-  // Draw character panel
-  drawCharacterPanelUI();
+    // Draw character panel
+    drawCharacterPanelUI();
 
-  // draw turn timeline
-  drawTurnTimeline();
+    // draw turn timeline
+    drawTurnTimeline();
 
-  // UI buttons (keep existing)
-  drawCircle(1850, 50, 40, '', '#ffffff');
-  drawCircle(1750, 50, 40, '', '#ffffff');
-  drawCircle(1650, 50, 40, '', '#ffffff');
+    // UI buttons 
+    drawCircle(1800, 700, 60, '', '#ffffff');
+    drawCircle(1850, 50, 40, '', '#ffffff');
+    drawCircle(1750, 50, 40, '', '#ffffff');
+    drawCircle(1650, 50, 40, '', '#ffffff');
+    drawCircle(1500, 850, 60, '', '#ffffff');
 
-  drawPauseIcon(1850, 50, 40, '#ffffff');
-  drawDoubleTriangleIcon(1750, 50, 40, '#ffffff', '#ffffff');
-  drawAutoBattleIconA(1650, 50, 40, '#ffffff');
+    // attack icon
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('⚔️', 1500, 850);
+    
+    // other icons
+    drawPauseIcon(1850, 50, 40, '#ffffff');
+    drawDoubleTriangleIcon(1750, 50, 40, '#ffffff', '#ffffff');
+    drawAutoBattleIconA(1650, 50, 40, '#ffffff');
 
-  drawAttackTypeButtons();
+    // Skill points
+    drawFourPointStar(ctx, 1300, 800, 25, 5, 'white', '#ffffff', 1);
+    drawFourPointStar(ctx, 1360, 800, 25, 5, 'white', '#ffffff', 1);
+    drawFourPointStar(ctx, 1420, 800, 25, 5, 'white', '#ffffff', 1);
+    drawFourPointStar(ctx, 1480, 800, 25, 5, '', '#ffffff', 1);
+    drawFourPointStar(ctx, 1540, 800, 25, 5, '', '#ffffff', 1);
 
-  // Skill points (keep existing)
-  drawFourPointStar(ctx, 1300, 800, 25, 5, 'white', '#ffffff', 1);
-  drawFourPointStar(ctx, 1360, 800, 25, 5, 'white', '#ffffff', 1);
-  drawFourPointStar(ctx, 1420, 800, 25, 5, 'white', '#ffffff', 1);
-  drawFourPointStar(ctx, 1480, 800, 25, 5, '', '#ffffff', 1);
-  drawFourPointStar(ctx, 1540, 800, 25, 5, '', '#ffffff', 1);
+    // drawAttackTypeButtons();
+    drawTargetSelectionButtons();
 
-  // draw projectiles on top
-  for (const prj of gameState.projectiles) renderProjectile(prj);
+    // draw projectiles on top
+    for (const prj of gameState.projectiles) renderProjectile(prj);
 
-  
+    // Draw flash effects
+    if (gameState.flash && gameState.flash.t < gameState.flash.dur) {
+      drawFlashEffect(gameState.flash);
+  }
+  // rendering
+  if (gameState.flash) {
+    console.log('🎨 Rendering flash at:', gameState.flash.x, gameState.flash.y); // DEBUG
+    const progress = gameState.flash.t / gameState.flash.dur;
+    const opacity = Math.max(0, 1 - progress);
+    const radius = 20 + (progress * 30);
+    
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = gameState.flash.color || '#ffff00';
+    ctx.beginPath();
+    ctx.arc(gameState.flash.x, gameState.flash.y, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+}
+
 }
 
 function update(dt) { 
@@ -848,7 +895,15 @@ function update(dt) {
     }
   }
 
-  // TODO: advance other animations / timers / cooldowns here
+    // Flash update with debug
+    if (gameState.flash) {
+      gameState.flash.t += dt;
+      console.log('⏱️ Flash timer:', gameState.flash.t, '/', gameState.flash.dur); // ADD THIS
+      if (gameState.flash.t >= gameState.flash.dur) {
+          console.log('✅ Flash completed, removing'); // ADD THIS
+          gameState.flash = null;
+      }
+  }
 }
 
 try { console.log && console.log('battle.js loaded'); } catch (e) {}
@@ -900,13 +955,47 @@ requestAnimationFrame(mainLoop);
 
 
 canvas.addEventListener('click', function(e) {
-    const rect = canvas.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
-    
-    // Debug logging
-    console.log(`Click detected at: ${clickX}, ${clickY}`);
+  const rect = canvas.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  const clickY = e.clientY - rect.top;
+  
+  console.log(`Click detected at: ${clickX}, ${clickY}`);
 
+  const targetableEnemies = getTargetableEnemies();
+  const totalTargets = targetableEnemies.length;
+
+  const dx = clickX - 1500, dy = clickY - 850;
+
+  // Navigation arrow clicks
+  const arrowY = 750;
+  const leftArrowX = 1600;
+  const rightArrowX = 1850;
+  const arrowSize = 20;
+    // left click
+    const leftDx = clickX - leftArrowX, leftDy = clickY - arrowY;
+    if (leftDx * leftDx + leftDy * leftDy <= arrowSize * arrowSize) {
+      if (targetStartIndex > 0) {
+        targetStartIndex = Math.max(0, targetStartIndex - maxTargetSlots);
+        console.log(`◄ Previous targets (showing ${targetStartIndex + 1}-${Math.min(targetStartIndex + maxTargetSlots, totalTargets)})`);
+        selectedTarget = null;
+      } else {
+        console.log('◄ Already at first targets');
+      }
+      return;
+    }
+    // right click
+    const rightDx = clickX - rightArrowX, rightDy = clickY - arrowY;
+    if (rightDx * rightDx + rightDy * rightDy <= arrowSize * arrowSize) {
+        if (targetStartIndex + maxTargetSlots < totalTargets) {
+            targetStartIndex = Math.min(totalTargets - maxTargetSlots, targetStartIndex + maxTargetSlots);
+            console.log(`► Next targets (showing ${targetStartIndex + 1}-${Math.min(targetStartIndex + maxTargetSlots, totalTargets)})`);
+            selectedTarget = null;
+        } else {
+            console.log('► Already at last targets');
+        }
+        return;
+    }
+    // everything else
     const pauseX = 1850, pauseY = 50, pauseR = 40;
     const pdx = clickX - pauseX, pdy = clickY - pauseY;
     if (pdx * pdx + pdy * pdy <= pauseR * pauseR) {
@@ -917,18 +1006,38 @@ canvas.addEventListener('click', function(e) {
         }
     }
 
-
-    const dx = clickX - 1650, dy = clickY - 800;
     if (dx * dx + dy * dy <= 60 * 60) {
-        console.log('✅ Basic attack fired!');
+        if (selectedTarget) {
+            console.log(`🔥 Launching attack on ${selectedTarget.name}!`);
+            console.log(`💥 Target: ${selectedTarget.name} | HP: ${selectedTarget.hp}/${selectedTarget.maxHp}`);
+        
+            spawnProjectile(fire, playerPogsPos[2], selectedTarget.position, {
+                duration: 700, arc: -200, size: 0.6,
+                onComplete: () => {
+                    console.log(`💥 Direct hit on ${selectedTarget.name}!`);
+                    gameState.flash = { 
+                        t: 0, 
+                        dur: 200, 
+                        x: selectedTarget.position.x, 
+                        y: selectedTarget.position.y,
+                        color: '#ff6600'
+                    };
+                }
+            });
+    } else {
+        console.log('⚠️ No target selected! Select an enemy first.');
+        console.log('💡 Click on an enemy portrait to select your target.');
+        
+        // Fallback attack with warning
         spawnProjectile(fire, playerPogsPos[2], enemyPogsPos[0], {
             duration: 700, arc: -200, size: 0.6,
             onComplete: () => {
                 gameState.flash = { t: 0, dur: 200, x: enemyPogsPos[0].x, y: enemyPogsPos[0].y };
             }
         });
-        return;
     }
+    return;
+}
 
     const buttonY = 820; 
     const buttonWidth = 70;
@@ -968,23 +1077,28 @@ canvas.addEventListener('click', function(e) {
         }
     });
 
-    const attackPositions = [
-      { x: 1650, y: 800, radius: 60, type: 'single' },
-      { x: 1800, y: 700, radius: 60, type: 'aoe' }
+    // target positions
+
+    const visibleTargets = targetableEnemies.slice(targetStartIndex, targetStartIndex + maxTargetSlots);
+    
+    const buttonPositions = [
+        { x: 1650, y: 800, radius: 60 },
+        { x: 1800, y: 700, radius: 60 }
     ];
 
-    attackPositions.forEach(pos => {
-    const dx = clickX - pos.x;
-    const dy = clickY - pos.y;
-    
-    if (dx * dx + dy * dy <= pos.radius * pos.radius) {
-        currentAttackType = pos.type;
-        console.log(`✅ Selected attack type: ${pos.type}`);
-        return;
-    }
-  });
-});
-
+    buttonPositions.forEach((pos, index) => {
+        if (visibleTargets[index]) {
+            const dx = clickX - pos.x;
+            const dy = clickY - pos.y;
+        
+            if (dx * dx + dy * dy <= pos.radius * pos.radius) {
+                selectedTarget = visibleTargets[index];
+                console.log(`🎯 Target selected: ${selectedTarget.name}`);
+                return;
+            }
+        }
+    });
+})
 
 function spawnProjectile(img, startPos, endPos, opts = {}) {
   const prj = {
@@ -1030,6 +1144,8 @@ function renderProjectile(prj) {
     drawCircle(pos.x, pos.y, 12 * (prj.size || 1), '#ff6600');
   }
 }
+
+
 /*
    ##### /  ##     ##### ##    # ###      ##### ##      ##### ######## ##### #####   
 ######  /####   ######  /### /  /###   ######  /##   ######  /#######/ ####/ ####    
@@ -1109,7 +1225,7 @@ const attackTypes = {
       name: "Support",
       key: "R"
     }
-  };
+};
 // ultimate system
 const ultimates = [
   {
@@ -1412,6 +1528,29 @@ function drawHealAchievementStyle(x, y, size) {
     ctx.stroke();
 }
 
+function drawFlashEffect (flash) {
+  const progress = flash.t / flash.dur;
+  const opacity = Math.max(0, 1 - progress);
+  const radius = 20 + (progress * 30);
+
+  ctx.save();
+  ctx.globalAlpha = opacity;
+
+  const flashColor = flash.color || '#ffff00';
+  ctx.fillStyle = flashColor;
+  ctx.beginPath();
+  ctx.arc(flash.x, flash.y, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.globalAlpha = opacity * 0.6;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(flash.x, flash.y, radius * 0.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
 // function for drawing icons inside the circles
 function drawAttackIconInCircle(x, y, attackData, isSelected, keyBinding) {
   const circleRadius = 60;
@@ -1449,25 +1588,256 @@ function drawAttackIconInCircle(x, y, attackData, isSelected, keyBinding) {
   ctx.fillText(attackData.name, x, y + circleRadius + 10);
 }
 
-// updated attack type buttons
-function drawAttackTypeButtons() {
-    const positions = [
-      { x: 1650, y: 800 },
-      { x: 1800, y: 700 }
-    ];
+// updated attack type buttons 
+function drawAttackTypeButtons() { 
+  const positions = [ 
+    { x: 1650, y: 800 }, 
+    { x: 1800, y: 700 } 
+  ];
 
-    const attackList = Object.entries(attackTypes);
+  const attackList = Object.entries(attackTypes);
 
-    positions.forEach((pos, index) => {
-      if (attackList[index]) {
-        const [type, data] = attackList[index];
-        const isSelected = currentAttackType === type;
+  positions.forEach((pos, index) => { 
+    if (attackList[index]) { 
+      const [type, data] = attackList[index];
+      const isSelected = currentAttackType === type;
 
-        drawAttackIconInCircle(pos.x, pos.y, data, isSelected, data.key)
-      }
-    });
+      drawAttackIconInCircle(pos.x, pos.y, data, isSelected, data.key)
+    }
+ }); 
 }
 
+function drawTargetSelectionButtons() {
+  const targetableEnemies = getTargetableEnemies();
+  const totalTargets = targetableEnemies.length;
+  
+  const visibleTargets = targetableEnemies.slice(targetStartIndex, targetStartIndex + maxTargetSlots);
+  
+  const buttonPositions = [
+      { x: 1650, y: 800, radius: 60 },
+      { x: 1800, y: 700, radius: 60 }
+  ];
+  
+  buttonPositions.forEach((pos, index) => {
+      if (visibleTargets[index]) {
+          const enemy = visibleTargets[index];
+          const isSelected = selectedTarget && selectedTarget.id === enemy.id;
+          drawEnhancedTargetButton(pos, enemy, isSelected);
+      } else {
+          drawEmptyTargetSlot(pos);
+      }
+  });
+  
+  if (totalTargets > maxTargetSlots) {
+      drawTargetNavigationArrows(totalTargets);
+  }
+
+  drawTargetCounter(totalTargets);
+}
+// individual target button
+function drawEnhancedTargetButton(pos, enemy, isSelected) {
+  const bgColor = isSelected ? 'rgba(255, 100, 100, 0.9)' : 'rgba(40, 40, 60, 0.8)';
+  const borderColor = isSelected ? '#ff6666' : '#ffffff';
+  
+  // Selection glow effect
+  if (isSelected) {
+      ctx.shadowColor = '#ff4444';
+      ctx.shadowBlur = 15;
+      drawCircle(pos.x, pos.y, pos.radius + 5, 'rgba(255, 68, 68, 0.3)', '');
+      ctx.shadowBlur = 0;
+  }
+  
+  // Main button circle
+  drawCircle(pos.x, pos.y, pos.radius, bgColor, borderColor);
+  
+  // Enemy portrait
+  const pogKey = enemyPogKeys[enemy.index] || `enemy${enemy.index + 1}`;
+  drawPogImage(pogKey, pos.x, pos.y - 8, pos.radius * 0.5, '#ffffff');
+  
+  // Health bar inside button
+  const barWidth = pos.radius * 1.4;
+  const barHeight = 8;
+  const barX = pos.x - barWidth/2;
+  const barY = pos.y + pos.radius - 20;
+  
+  // Health bar background
+  roundRect(ctx, barX, barY, barWidth, barHeight, 4, '#333', '#555', 1);
+  
+  // Health fill
+  const healthPercent = enemy.hp / enemy.maxHp;
+  if (healthPercent > 0) {
+      const fillWidth = barWidth * healthPercent;
+      let healthColor = healthPercent < 0.25 ? '#cc0000' : 
+                       healthPercent < 0.5 ? '#ff6666' : '#ff4444';
+      roundRect(ctx, barX, barY, fillWidth, barHeight, 4, healthColor);
+  }
+  
+  // Enemy name
+  ctx.fillStyle = isSelected ? '#ffff00' : '#ffffff';
+  ctx.font = 'bold 10px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  const shortName = enemy.name.length > 10 ? enemy.name.substring(0, 8) + '..' : enemy.name;
+  ctx.fillText(shortName, pos.x, pos.y + pos.radius - 8);
+  
+  // HP text
+  ctx.fillStyle = isSelected ? '#ffff00' : '#ffffff';
+  ctx.font = 'bold 8px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(`${enemy.hp}/${enemy.maxHp}`, pos.x, pos.y - pos.radius + 5);
+  
+  // Selection indicator arrow
+  if (isSelected) {
+      ctx.fillStyle = '#ffff00';
+      ctx.font = 'bold 16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('►', pos.x - pos.radius - 20, pos.y);
+  }
+}
+
+// Empty slot styling
+function drawEmptyTargetSlot(pos) {
+  drawCircle(pos.x, pos.y, pos.radius, 'rgba(60, 60, 60, 0.5)', '#666');
+  
+  // Dashed border
+  ctx.setLineDash([5, 5]);
+  ctx.strokeStyle = '#999';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(pos.x, pos.y, pos.radius, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  ctx.fillStyle = '#999';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('---', pos.x, pos.y);
+}
+
+// Navigation arrows
+function drawTargetNavigationArrows(totalTargets) {
+  const arrowY = 750;
+  const leftArrowX = 1600;
+  const rightArrowX = 1850;
+  const arrowSize = 20;
+  
+  const canGoLeft = targetStartIndex > 0;
+  const canGoRight = targetStartIndex + maxTargetSlots < totalTargets;
+  
+  // Left arrow
+  const leftColor = canGoLeft ? '#4CAF50' : '#666';
+  const leftBg = canGoLeft ? 'rgba(76, 175, 80, 0.8)' : 'rgba(100, 100, 100, 0.3)';
+  
+  drawCircle(leftArrowX, arrowY, arrowSize, leftBg, leftColor);
+  ctx.fillStyle = canGoLeft ? '#ffffff' : '#999';
+  ctx.font = 'bold 16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('◄', leftArrowX, arrowY);
+  
+  // Right arrow
+  const rightColor = canGoRight ? '#4CAF50' : '#666';
+  const rightBg = canGoRight ? 'rgba(76, 175, 80, 0.8)' : 'rgba(100, 100, 100, 0.3)';
+  
+  drawCircle(rightArrowX, arrowY, arrowSize, rightBg, rightColor);
+  ctx.fillStyle = canGoRight ? '#ffffff' : '#999';
+  ctx.font = 'bold 16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('►', rightArrowX, arrowY);
+}
+
+// Target counter display
+function drawTargetCounter(totalTargets) {
+  const counterX = 1725; 
+  const counterY = 720;
+  
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  
+  const currentPage = Math.floor(targetStartIndex / maxTargetSlots) + 1;
+  const totalPages = Math.ceil(totalTargets / maxTargetSlots);
+  
+  ctx.fillText(`Targets: ${currentPage}/${totalPages}`, counterX, counterY);
+  
+  const targetableEnemies = getTargetableEnemies();
+  const visibleTargets = targetableEnemies.slice(targetStartIndex, targetStartIndex + maxTargetSlots);
+  
+  ctx.fillStyle = '#aaa';
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  
+  const visibleNames = visibleTargets.map(t => t.name.substring(0, 6)).join(' | ');
+  ctx.fillText(visibleNames, counterX, counterY + 15);
+}
+
+/*function drawTargetSelectionButtons() {
+    const targetableEnemies = getTargetableEnemies();
+
+    const buttonPositions = [
+      { x: 1650, y: 800, radius: 60 },
+      { x: 1800, y: 700, radius: 60 }
+    ];
+
+    buttonPositions.forEach((pos, index) => {
+        if (targetableEnemies[index]) {
+            const enemy = targetableEnemies[index];
+            const isSelected = selectedTarget && selectedTarget.id === enemy.id;
+            
+            drawTargetButton(pos.x, pos.y, pos.radius, enemy, isSelected);
+        } else {
+            drawCircle(pos.x, pos.y, pos.radius, 'rgba(100, 100, 100, 0.3)', '#666');
+        }
+    });
+}*/
+
+// drawing target button
+
+/*function drawTargetButton (x, y, radius, enemy, isSelected) {
+  const bgColor = isSelected ? 'rgba(255, 100, 100, 0.8)' : 'rgba(40, 40, 60, 0.9)';
+  const borderColor = isSelected ? '#ff4444' : '#ffffff';
+
+  drawCircle(x, y, radius, bgColor, borderColor);
+
+  const pogKey = enemyPogKeys[enemy.index] || `enemy${enemy.index + 1}`;
+  drawPogImage(pogKey, x, y, radius * 0.6, enemy.isAlive ? '#ffffff' : '#666');
+
+  const barWidth = radius * 1.2;
+  const barHeight = 6;
+  const barX = x - barWidth/2;
+  const barY = y + radius - 15;
+
+  roundRect(ctx, barX, barY, barWidth, barHeight, 3, '#333', '#666', 1);
+
+  const healthPercent = enemy.hp / enemy.maxHp;
+  if (healthPercent > 0) {
+      const fillWidth = barWidth * healthPercent;
+      let healthColor = '#ff4444'; 
+      if (healthPercent < 0.25) healthColor = '#cc0000';
+        
+      roundRect(ctx, barX, barY, fillWidth, barHeight, 3, healthColor);
+  }
+
+  // for the enemy name 
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 10px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText(enemy.name, x, y + radius + 10);
+
+  // hp text
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 8px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(`${enemy.hp}/${enemy.maxHp}`, x, y - radius - 5);  
+}*/
 
 /*
 ##### #     ##      ##### ###    # ###  ###  ### ##### ##    # ###        ##### /          ##### ##    
