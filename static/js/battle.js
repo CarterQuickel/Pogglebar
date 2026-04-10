@@ -835,14 +835,14 @@ function render() {
     drawCircle(1850, 50, 40, '', '#ffffff');
     drawCircle(1750, 50, 40, '', '#ffffff');
     drawCircle(1650, 50, 40, '', '#ffffff');
-    drawCircle(1500, 850, 60, '', '#ffffff');
+    drawCircle(1500, 730, 40, '', '#ffffff');
 
     // attack icon
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 24px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('⚔️', 1500, 850);
+    ctx.fillText('⚔️', 1500, 730);
     
     // other icons
     drawPauseIcon(1850, 50, 40, '#ffffff');
@@ -964,7 +964,7 @@ canvas.addEventListener('click', function(e) {
   const targetableEnemies = getTargetableEnemies();
   const totalTargets = targetableEnemies.length;
 
-  const dx = clickX - 1500, dy = clickY - 850;
+  const dx = clickX - 1500, dy = clickY - 730;
 
   // Navigation arrow clicks
   const arrowY = 750;
@@ -1006,10 +1006,15 @@ canvas.addEventListener('click', function(e) {
         }
     }
 
-    if (dx * dx + dy * dy <= 60 * 60) {
+    if (dx * dx + dy * dy <= 40 * 40) {
         if (selectedTarget) {
             console.log(`🔥 Launching attack on ${selectedTarget.name}!`);
             console.log(`💥 Target: ${selectedTarget.name} | HP: ${selectedTarget.hp}/${selectedTarget.maxHp}`);
+
+            const attackTarget = {
+              name: selectedTarget.name,
+              position: { x: selectedTarget.position.x, y: selectedTarget.position.y }
+            };
         
             spawnProjectile(fire, playerPogsPos[2], selectedTarget.position, {
                 duration: 700, arc: -200, size: 0.6,
