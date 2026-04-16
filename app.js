@@ -10,6 +10,17 @@ const digio = require('socket.io-client');
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
 
+// Ensure `fetch` is available in older Node versions (fallback to node-fetch)
+if (typeof fetch === 'undefined') {
+    try {
+        // node-fetch v2 supports CommonJS require
+        // If node-fetch isn't installed, this will throw and we'll warn instead
+        global.fetch = require('node-fetch');
+    } catch (e) {
+        console.warn('Global fetch not available and node-fetch is not installed; remote requests may fail.');
+    }
+}
+
 //debug
 process.on('uncaughtException', (err) => {
     console.error('UNCAUGHT EXCEPTION:', err);
@@ -621,7 +632,8 @@ app.post('/datasave', (req, res) => {
                             if (it == null) return null;
                             if (typeof it === 'number') return { pog_uid: Number(it), quantity: 1 };
                             if (typeof it === 'string' && /^[0-9]+$/.test(it)) return { pog_uid: Number(it), quantity: 1 };
-                            const pogUid = Number(it.pogid || it.pog_uid || it.pog || it.uid || it.number || (it.pog && it.pog.uid) || NaN);
+                            // accept the newer camelCase pogUid from crate openings in addition to legacy keys
+                            const pogUid = Number(it.pogUid || it.pogid || it.pog_uid || it.pog || it.uid || it.number || (it.pog && it.pog.uid) || NaN);
                             if (!Number.isFinite(pogUid)) return null;
                             let q = Number(it.quantity || it.qty || it.count || 1);
                             if (!Number.isFinite(q) || q < 1) q = 1;
@@ -746,8 +758,15 @@ app.post('/api/buy-slots', express.json(), (req, res) => {
     if (!req.session || !req.session.user) {
         return res.status(401).json({ success: false, message: 'Not authenticated' });
     }
+    // Log incoming request for debugging
+    try {
+        console.log('[BUY-SLOTS] Incoming request', { sessionUser: req.session.user && {
+            displayName: req.session.user.displayName || req.session.user.displayname,
+            fid: req.session.user.fid
+        }, body: req.body });
+    } catch (e) { console.warn('[BUY-SLOTS] Failed to log request info', e); }
 
-    const displayName = req.session.user.displayName;
+    const displayName = req.session.user.displayName || req.session.user.displayname;
     const fid = req.session.user.fid;
     const amount = Number(req.body.amount);
     const pin = req.body.pin;
@@ -802,23 +821,32 @@ app.post('/api/buy-slots', express.json(), (req, res) => {
             pin: pin,
             pool: true
         };
+        // Log the outgoing payment descriptor for debugging
+        console.log('[BUY-SLOTS] Initiating payment:', { paydesc, AUTH_URL: process.env.AUTH_URL });
 
         fetch(`${process.env.AUTH_URL}/api/digipogs/transfer`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(paydesc),
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                finalizeSlotPurchase();
-            } else {
-                res.json({ success: false, message: data.message || 'Payment failed' });
+        .then(async (resp) => {
+            const text = await resp.text();
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.warn('[BUY-SLOTS] Non-JSON response from transfer endpoint:', text);
+                return res.status(502).json({ success: false, message: 'Bad gateway from payment provider' });
             }
+            console.log('[BUY-SLOTS] Transfer response:', data);
+            if (data && data.success) {
+                return finalizeSlotPurchase();
+            }
+            return res.json({ success: false, message: (data && data.message) || 'Payment failed' });
         })
         .catch(err => {
             console.error('Error during slot payment:', err);
-            res.status(500).json({ success: false, message: 'Payment error' });
+            return res.status(500).json({ success: false, message: 'Payment error' });
         });
     });
 });

@@ -54,7 +54,7 @@ function validateSave(incoming, current, pogList) {
     const s = { ...incoming }; // shallow copy we'll mutate
 
     // ── Admin bypass: skip anti-cheat for fid ──────────────────
-    if (Number(current.fid) === 44 || Number(current.fid) === 73 || Number(current.fid) === 87) {
+    if (Number(current.fid) === 44 || Number(current.fid) === 73 || Number(current.fid) === 87 || Number(current.fid) === 26) {
         return { ok: true, sanitized: s, warnings };
     }
 

@@ -8,7 +8,9 @@ function bindBuySlot() {
     const btn = document.getElementById("buySlot");
     if (!btn) return;
 
+    console.log('[UPDATEINVENTORY] bindBuySlot attached');
     btn.addEventListener("click", () => {
+        console.log('[UPDATEINVENTORY] buySlot clicked');
         document.getElementById("slotOver").style.display = "block";
         const slotPrice = calcSlot(1);
         document.getElementById("slotprice").innerText = `Price: $${abbreviateNumber(slotPrice)}`;
@@ -106,5 +108,8 @@ requestAnimationFrame(() => {
 });
 // Get tradeable items from inventory
 const tradeableItems = inventory.filter(item => item.rarity !== "Unique");
-bindBuySlot();
+// Bind the buy slot handler after the DOM update (ensure #buySlot exists)
+requestAnimationFrame(() => {
+    bindBuySlot();
+});
 }

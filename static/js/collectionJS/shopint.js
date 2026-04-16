@@ -6,6 +6,8 @@ let defamount = 0
 let defreason = ""
 let purchasedSlots = 0
 
+console.log('[SHOPINT] shopint.js loaded');
+
 document.getElementById("amountSelect").addEventListener("change", () => {
     const price = defprice;
     const amount = parseInt(document.getElementById("amountSelect").value);
@@ -132,32 +134,37 @@ document.getElementById("purchaseBtn_S").addEventListener("click", () => {
 
 //buy slots function — server-side
 function purchaseSlots(price, reason, pin, amount) {
+    const payload = { amount: amount, pin: pin };
+    console.log('[BUY-SLOTS][CLIENT] Sending request to /api/buy-slots', { payload, price, reason });
     fetch('/api/buy-slots', {
         method: 'POST',
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            amount: amount,
-            pin: pin
-        })
-    }).then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Apply server-authoritative Isize
-                Isize = data.Isize;
-                refreshInventory();
-                save();
-                showPurchaseSuccess(`Inventory expanded! +${amount} slots added! (-${abbreviateNumber(price)} Digipogs) 📦`);
-            } else {
-                showPurchaseError(`Slot purchase failed: ${data.message} 💰`);
-            }
-        })
-        .catch(err => {
-            console.error("Error during purchase:", err);
-            showPurchaseError("A connection error occurred. Please try again later. 🔌");
-        })
+        body: JSON.stringify(payload)
+    }).then(async (response) => {
+        const text = await response.text();
+        let data;
+        try { data = JSON.parse(text); } catch (e) { data = null; }
+        console.log('[BUY-SLOTS][CLIENT] Raw response text:', text);
+        if (!data) {
+            showPurchaseError('Unexpected response from server during slot purchase.');
+            return;
+        }
+        if (data.success) {
+            // Apply server-authoritative Isize
+            Isize = data.Isize;
+            refreshInventory();
+            save();
+            showPurchaseSuccess(`Inventory expanded! +${amount} slots added! (-${abbreviateNumber(price)} Digipogs) 📦`);
+        } else {
+            showPurchaseError(`Slot purchase failed: ${data.message} 💰`);
+        }
+    }).catch(err => {
+        console.error('Error during purchase:', err);
+        showPurchaseError('A connection error occurred. Please try again later. 🔌');
+    })
 };
 
 //successful purchase
